@@ -1,0 +1,15 @@
+version: '3'
+services:
+  app:
+    image: openjdk:17-jdk-alpine   # Using a predefined JDK image
+    volumes: 
+      - ./src:/backend/src          
+      - ./target:/backend/target  
+      - ./mvnw:/backend/mvnw  
+      - ./.mvn:/backend/.mvn
+      - ./pom.xml:/backend/pom.xml
+
+    working_dir: /backend
+    ports:
+      - "8080:8080"
+    command: ./mvnw spring-boot:run  # Run Spring Boot app from the working directory
