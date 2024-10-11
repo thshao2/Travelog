@@ -13,3 +13,14 @@ services:
     ports:
       - "8080:8080"
     command: ./mvnw spring-boot:run  # Run Spring Boot app from the working directory
+
+  postgres:
+    container_name: trvelogdata
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
