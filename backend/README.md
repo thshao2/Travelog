@@ -1,16 +1,6 @@
-# Instructions
-- Download Java JDK: https://www.oracle.com/java/technologies/downloads/#jdk23-windows
-  - you need to download the JDK (which includes JRE), not the JRE or else it'll say no compiler available
-    - JDK is for development and execution, including compilation. It includes JRE and other stuff
-    - JRE is only for executing Java Code
-- Running the application:
-  - Travel to Travelog/backend
-  - Linux / Mac: run `./mvnw spring-boot:run`
-  - Window: run `.\mvnw spring-boot:run`
-- Adding a dependency
-  - Add the dependency using the <dependency> tag (will need to look up the group and artifact ID)
-  - run `./mvnw spring-boot:run` (replace the slash with \ if you're on windows)
-- Endpoint URL: `http://localhost:8080`
+# Setup Instructions
+The application is dockerized, meaning that starting the docker container will start the Spring application. It also offers live reload.
+- `cd backend && docker compose up`
 
 # Repository Information
 The backend will be built using Java Spring. 
