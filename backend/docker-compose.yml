@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    image: openjdk:17-jdk-alpine   # Using a predefined JDK image
+    image: bellsoft/liberica-openjdk-alpine-musl:17 # openjdk:17-jdk-alpine   # Using a predefined JDK image
     volumes: 
       - ./src:/backend/src          
       - ./target:/backend/target  
