@@ -1,4 +1,4 @@
-package travelog.backend;
+package backend.auth_service;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
