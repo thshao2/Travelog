@@ -3,12 +3,12 @@ services:
   app:
     image: maven:latest
     volumes: 
-      - ./src:/backend/src          
-      - ./target:/backend/target  
-      - ./.mvn:/backend/.mvn
-      - ./pom.xml:/backend/pom.xml
+      - ./auth_service/src:/backend/auth_service/src          
+      - ./auth_service/target:/backend/auth_service/target  
+      - ./auth_service/.mvn:/backend/auth_service/.mvn
+      - ./auth_service/pom.xml:/backend/auth_service/pom.xml
 
-    working_dir: /backend
+    working_dir: /backend/auth_service
     ports:
       - "8080:8080"
     command: mvn spring-boot:run
