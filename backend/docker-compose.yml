@@ -1,6 +1,18 @@
 version: '3'
+
 services:
-  app:
+  auth-service-db:
+    container_name: auth-service-db
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: auth_db_user
+      POSTGRES_PASSWORD: auth_db_password
+    volumes:
+      - ./auth_service/sql/account.sql:/docker-entrypoint-initdb.d/account.sql
+
+  auth-service:
     image: maven:latest
     volumes: 
       - ./auth_service/src:/backend/auth_service/src          
@@ -11,15 +23,25 @@ services:
     working_dir: /backend/auth_service
     ports:
       - "8080:8080"
+    depends_on:
+      - auth-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: auth_db_user
+      SPRING_DATASOURCE_PASSWORD: auth_db_password
     command: mvn spring-boot:run
 
-  postgres:
-    container_name: trvelogdata
-    image: postgres:alpine
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - ./sql:/docker-entrypoint-initdb.d
+  # networks:
+  #   default:
+  #     driver: bridge
+
+  # postgres:
+  #   container_name: trvelogdata
+  #   image: postgres:alpine
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   volumes:
+  #     - ./sql:/docker-entrypoint-initdb.d
