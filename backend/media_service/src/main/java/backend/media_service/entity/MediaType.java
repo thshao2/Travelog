@@ -3,6 +3,8 @@ package backend.media_service.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import backend.auth_service.entity.User;
+
 public enum MediaType {
     PHOTO,
     VIDEO
@@ -28,7 +30,7 @@ public class Media {
     private User user; // FK to User in User Service (references user ID)
 
     @ManyToOne
-    @JoinColumn(name = "trip_id", nullable = false)
+    @JoinColumn(name = "trip_id", nullable = true) // nullable = true cause it could be a user pfp
     private Trip trip; // FK to Trip in Memory Service (references trip ID)
 
     @Column(nullable = false)
