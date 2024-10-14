@@ -1,0 +1,82 @@
+package backend.travel_service.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import backend.auth_service.entity.User;
+import backend.travel_service.entity.Location;
+import backend.travel_service.entity.Media;
+
+@Entity
+@Table(name = "memories")
+public class Memory {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+	@JoinColumn(name = "user_id", nullable = false) 
+    private User user; // FK to User in User Service
+
+    @Column(nullable = false)
+    private String captionText; 
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt; 
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false) // FK to Location
+    private Location location;
+
+    @OneToMany(mappedBy = "memory", cascade = CascadeType.ALL)
+    private List<Media> mediaLinks; // List of associated media links
+
+   	@PrePersist
+	protected void onCreate() {
+		this.createdAt = LocalDateTime.now();
+	}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getCaptionText() {
+        return this.captionText;
+    }
+
+    public void setCaptionText(String captionText) {
+        this.captionText = captionText;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public List<Media> getMediaLinks() {
+        return this.mediaLinks;
+    }
+
+    public void setMediaLinks(List<Media> mediaLinks) {
+        this.mediaLinks = mediaLinks;
+    }
+}
