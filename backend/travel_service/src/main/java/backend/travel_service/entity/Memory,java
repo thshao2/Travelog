@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import backend.auth_service.entity.User;
-import backend.travel_service.entity.Location;
 import backend.travel_service.entity.Media;
 
 @Entity
