@@ -11,9 +11,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "lint:old": "expo lint"
+    "lint": "expo lint",
+    "lint:fix": "eslint . --fix"
   },
   "jest": {
     "preset": "jest-expo"
