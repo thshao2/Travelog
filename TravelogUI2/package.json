@@ -11,8 +11,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint",
-    "test:eslint": "echo \"\\033[33mRunning eslint check\" && eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:old": "expo lint"
   },
   "jest": {
     "preset": "jest-expo"
