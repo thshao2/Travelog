@@ -1,0 +1,3 @@
+\c travel_db
+CREATE TABLE location(id UUID UNIQUE PRIMARY KEY DEFAULT gen_random_uuid());
+INSERT INTO account(id) VALUES ('11111111-1111-1111-1111-111111111111');

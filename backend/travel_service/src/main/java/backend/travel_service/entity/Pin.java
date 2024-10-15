@@ -2,7 +2,10 @@ package backend.travel_service.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import backend.auth_service.entity.User;
+// import backend.auth_service.entity.User;
+import backend.travel_service.entity.Memory;
+import backend.travel_service.entity.Location;
+
 
 
 @Entity
