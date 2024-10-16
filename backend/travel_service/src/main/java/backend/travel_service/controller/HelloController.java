@@ -16,14 +16,14 @@ public class HelloController {
 
     @GetMapping("/")
     public String index() {
-        return "Greetings from Spring Boot!";
+        return "Greetings from Spring Boot - Travel Service!!!!";
     }
 
-    @GetMapping("/auth-db-test")
+    @GetMapping("/location-db-test")
     public String testConnection() {
         try {
             // Execute a simple query to test the connection
-            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM account LIMIT 1");
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM location LIMIT 1");
             return "Connection successful! Retrieved data: " + result.toString();
         } catch (Exception e) {
             return "Connection failed: " + e.getMessage();

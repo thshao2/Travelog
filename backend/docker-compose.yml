@@ -9,6 +9,8 @@ services:
       POSTGRES_PASSWORD: auth_db_password
     volumes:
       - ./auth_service/sql/account.sql:/docker-entrypoint-initdb.d/account.sql
+    networks:
+      - auth
 
   auth-service:
     image: maven:latest
@@ -28,6 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: auth_db_user
       SPRING_DATASOURCE_PASSWORD: auth_db_password
     command: mvn spring-boot:run
+    networks:
+      - auth
 
   travel-service-db:
     container_name: travel-service-db
@@ -38,6 +42,8 @@ services:
     volumes:
       - ./travel_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./travel_service/sql/location.sql:/docker-entrypoint-initdb.d/location.sql
+    networks:
+      - travel
 
   travel-service:
     image: maven:latest
@@ -57,11 +63,15 @@ services:
       SPRING_DATASOURCE_USERNAME: travel_db_user
       SPRING_DATASOURCE_PASSWORD: travel_db_password
     command: mvn spring-boot:run
+    networks:
+      - travel
 
 
-  # networks:
-  #   default:
-  #     driver: bridge
+networks:
+  auth:
+    driver: bridge
+  travel:
+    driver: bridge
 
   # postgres:
   #   container_name: trvelogdata
