@@ -80,19 +80,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Dependency on media_service -->
-        <!-- <dependency>
-            <groupId>travelog_backend</groupId>
-            <artifactId>media_service</artifactId>
-            <version>${project.version}</version>
-        </dependency> -->
-
-        <!-- Dependency on auth_service -->
-        <!-- <dependency>
-            <groupId>travelog_backend</groupId>
-            <artifactId>auth_service</artifactId>
-            <version>${project.version}</version>
-        </dependency> -->
     </dependencies>
 
     <build>

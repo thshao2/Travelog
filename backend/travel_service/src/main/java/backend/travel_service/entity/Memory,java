@@ -3,19 +3,22 @@ package backend.travel_service.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import backend.auth_service.entity.User;
-import backend.travel_service.entity.Media;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "memories")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Memory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-	@JoinColumn(name = "user_id", nullable = false) 
-    private User user; // FK to User in User Service
+    @Column(name = "user_id", nullable = false)
+    private Long userId; // FK to User in User Service
 
     @Column(nullable = false)
     private String captionText; 
@@ -27,55 +30,17 @@ public class Memory {
     @JoinColumn(name = "location_id", nullable = false) // FK to Location
     private Location location;
 
-    @OneToMany(mappedBy = "memory", cascade = CascadeType.ALL)
-    private List<Media> mediaLinks; // List of associated media links
+    @ElementCollection
+    @CollectionTable(name = "memory_media", joinColumns = @JoinColumn(name = "memory_id"))
+    @Column(name = "media_id")
+    private List<Long> mediaIds; // List of associated media IDs
 
-   	@PrePersist
-	protected void onCreate() {
-		this.createdAt = LocalDateTime.now();
-	}
+    // alternative for json array
+    // @Column(name = "media_ids", columnDefinition = "TEXT")
+    // private String mediaIdsJson; // JSON array string of media IDs
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getCaptionText() {
-        return this.captionText;
-    }
-
-    public void setCaptionText(String captionText) {
-        this.captionText = captionText;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public Location getLocation() {
-        return this.location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public List<Media> getMediaLinks() {
-        return this.mediaLinks;
-    }
-
-    public void setMediaLinks(List<Media> mediaLinks) {
-        this.mediaLinks = mediaLinks;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }
