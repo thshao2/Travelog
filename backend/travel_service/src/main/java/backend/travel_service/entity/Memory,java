@@ -26,9 +26,7 @@ public class Memory {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt; 
 
-    @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false) // FK to Location
-    private Location location;
+    private Long locationId; // FK to Location
 
     @ElementCollection
     @CollectionTable(name = "memory_media", joinColumns = @JoinColumn(name = "memory_id"))
