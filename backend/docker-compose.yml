@@ -4,13 +4,13 @@ services:
   auth-service-db:
     container_name: auth-service-db
     image: postgres:alpine
-    # ports:
-    #   - 5432:5432
     environment:
       POSTGRES_USER: auth_db_user
       POSTGRES_PASSWORD: auth_db_password
     volumes:
       - ./auth_service/sql/account.sql:/docker-entrypoint-initdb.d/account.sql
+    networks:
+      - auth
 
   auth-service:
     image: maven:latest
@@ -30,10 +30,48 @@ services:
       SPRING_DATASOURCE_USERNAME: auth_db_user
       SPRING_DATASOURCE_PASSWORD: auth_db_password
     command: mvn spring-boot:run
+    networks:
+      - auth
 
-  # networks:
-  #   default:
-  #     driver: bridge
+  travel-service-db:
+    container_name: travel-service-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: travel_db_user
+      POSTGRES_PASSWORD: travel_db_password
+    volumes:
+      - ./travel_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./travel_service/sql/location.sql:/docker-entrypoint-initdb.d/location.sql
+    networks:
+      - travel
+
+  travel-service:
+    image: maven:latest
+    volumes: 
+      - ./travel_service/src:/backend/travel_service/src          
+      - ./travel_service/target:/backend/travel_service/target  
+      - ./travel_service/.mvn:/backend/travel_service/.mvn
+      - ./travel_service/pom.xml:/backend/travel_service/pom.xml
+
+    working_dir: /backend/travel_service
+    ports:
+      - "8081:8080"
+    depends_on:
+      - travel-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://travel-service-db:5432/travel_db
+      SPRING_DATASOURCE_USERNAME: travel_db_user
+      SPRING_DATASOURCE_PASSWORD: travel_db_password
+    command: mvn spring-boot:run
+    networks:
+      - travel
+
+
+networks:
+  auth:
+    driver: bridge
+  travel:
+    driver: bridge
 
   # postgres:
   #   container_name: trvelogdata

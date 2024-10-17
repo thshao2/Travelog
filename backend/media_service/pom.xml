@@ -70,20 +70,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Dependency on auth_service -->
-        <dependency>
-            <groupId>travelog_backend</groupId>
-            <artifactId>auth_service</artifactId>
-            <version>${project.version}</version> <!-- Use the same version as your parent -->
-        </dependency>
-
-        <!-- Dependency on user_service -->
-        <dependency>
-            <groupId>travelog_backend</groupId>
-            <artifactId>user_service</artifactId>
-            <version>${project.version}</version> <!-- Use the same version as your parent -->
-        </dependency>
     </dependencies>
 
     <build>

@@ -1,23 +1,4 @@
+// https://docs.expo.dev/guides/using-eslint/
 module.exports = {
-  extends: [
-    "universe",
-    "universe/native",
-    "universe/web",
-    "universe/shared/typescript-analysis",
-  ],
-  overrides: [
-    {
-      files: ["*.ts", "*.tsx", "*.d.ts"],
-      parserOptions: {
-        project: "TravelogUI2/tsconfig.json",
-      },
-    },
-  ],
-  plugins: ["react-hooks"],
-  rules: {
-    "import/order": "off",
-  },
-  env: {
-    node: true,
-  },
+  extends: 'expo',
 };

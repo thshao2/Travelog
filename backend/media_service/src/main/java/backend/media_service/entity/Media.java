@@ -1,43 +1,37 @@
-package backend.travel_service.entity;
+package backend.media_service.entity;
 
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "pins")
+@Table(name = "media")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pin {
+public class Media {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "location_id", nullable = false)
-    private Long locationId; // FK to Location
+    @Column(nullable = false)
+    private String mediaUrl; // URL or S3 path to the media file
 
-    @Column(name = "memory_id", nullable = false)
-    private Long memoryId; // FK to Memory
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MediaType mediaType; // PHOTO, VIDEO
 
     @Column(nullable = false)
-    private Long userId; // FK to User in User Service
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
+    private LocalDateTime uploadedAt;
 }
