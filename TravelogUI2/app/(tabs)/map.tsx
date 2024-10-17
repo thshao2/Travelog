@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import './App.css';
+import './Map.css';
 
 const INITIAL_CENTER = [
   -122.0626,
@@ -65,7 +65,7 @@ function Map() {
 
 
 
-export default function something() {
+export default function map() {
   return (
     <Map />
   )
