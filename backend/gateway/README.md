@@ -1,0 +1,1 @@
+This is the API gateway for the application. It'll handle routing to different microservices, along with authenticating the jwt tokens
