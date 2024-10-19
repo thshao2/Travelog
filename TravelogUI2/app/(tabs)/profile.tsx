@@ -66,9 +66,7 @@ export default function ProfilePage() {
       <View style={styles.bioContainer}>
         <Text style={styles.bioTitle}>Bio</Text>
           <View style={styles.row}>
-            <div style={styles.bioText}>
-                This is a short bio.
-            </div>
+            <Text style={styles.bioText}>This is a short bio.</Text>
             <MaterialIcons
               name="edit"
               size={24}

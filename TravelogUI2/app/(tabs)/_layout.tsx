@@ -8,6 +8,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { View, TextInput, Image, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import applyGlobalPolyfills from "../decoder";
+applyGlobalPolyfills()
+
 // Custom header component
 function CustomHeader() {
   const navigation = useNavigation();
