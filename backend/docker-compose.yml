@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: auth_db_user
       POSTGRES_PASSWORD: auth_db_password
     volumes:
-      - ./auth_service/sql/account.sql:/docker-entrypoint-initdb.d/account.sql
+      - ./auth_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
     networks:
       - auth
 
@@ -24,7 +24,7 @@ services:
 
     working_dir: /backend/auth_service
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - auth-service-db
     environment:
@@ -34,7 +34,7 @@ services:
     command: mvn spring-boot:run
     networks:
       - auth
-      - gateway
+      # - gateway
 
   travel-service-db:
     container_name: travel-service-db
@@ -57,7 +57,7 @@ services:
       - ./travel_service/pom.xml:/backend/travel_service/pom.xml
     working_dir: /backend/travel_service
     ports:
-      - "8081:8080"
+      - "8082:8080"
     depends_on:
       - travel-service-db
     environment:
@@ -67,7 +67,7 @@ services:
     command: mvn spring-boot:run
     networks:
       - travel
-      - gateway
+      # - gateway
 
   api-gateway:
     image: maven:latest
@@ -78,13 +78,13 @@ services:
       - ./gateway/pom.xml:/backend/gateway/pom.xml
     working_dir: /backend/travel_service
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - travel-service
       - auth-service
     command: mvn spring-boot:run
-    networks:
-      - gateway
+    # networks:
+      # - gateway
 
 
 

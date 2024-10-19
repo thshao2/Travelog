@@ -1,1 +1,1 @@
-INSERT INTO users (email, username, password) VALUES ('travelog@google.com', 'travelog', 'travelog');
+-- NO LONGER USED - LOOK INTO main/java/backend/auth_service/DataInitializer.java for initializing dummy data
