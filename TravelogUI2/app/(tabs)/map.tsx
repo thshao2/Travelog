@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl, { Map as MapboxMap } from 'mapbox-gl';
+import { Text } from 'react-native'
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -56,17 +57,15 @@ function Map() {
   return (
     <>
       <div className="sidebar">
-        Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)}
+        <Text>Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)}</Text>
       </div>
       <button className='reset-button' onClick={handleButtonClick}>
-        Reset
+        <Text>Reset</Text>
       </button>
       <div id='map-container' ref={mapContainerRef} />
     </>
   )
 }
-
-
 
 export default function map() {
   return (

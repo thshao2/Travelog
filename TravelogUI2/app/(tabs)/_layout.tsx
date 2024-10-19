@@ -5,8 +5,11 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Ionicons } from "@expo/vector-icons";  // Import Ionicons for icons
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { View, TextInput, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TextInput, Image, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+import applyGlobalPolyfills from "../decoder";
+applyGlobalPolyfills()
 
 // Custom header component
 function CustomHeader() {
@@ -14,10 +17,12 @@ function CustomHeader() {
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate('map')}>
-        {/* <Ionicons name="menu" size={24} color="black" /> */}
-        Travelog
-      </TouchableOpacity>
+      <Pressable onPress={() => navigation.navigate('map')}>
+        <Image
+          source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
+          style={styles.profilePic}
+        />
+      </Pressable>
 
       <TextInput
         style={styles.searchBar}
@@ -25,12 +30,12 @@ function CustomHeader() {
         placeholderTextColor="#999"
       />
 
-      <TouchableOpacity onPress={() =>navigation.navigate('profile')}>
+      <Pressable onPress={() =>navigation.navigate('profile')}>
         <Image
           source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
           style={styles.profilePic}
         />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
