@@ -203,7 +203,7 @@ function Map() {
           <Pressable style={styles.menuButton} onPress={openJournalModal}>
             <Text style={styles.menuButtonText}>Add Journal</Text>
           </Pressable>
-          <Pressable style={styles.menuButton} onPress={() => setSelectedPin(null)}>
+          <Pressable style={styles.menuButton} onPress={() => setSelectedPin({marker: null, position: null})}>
             <Text style={styles.menuButtonText}>Close</Text>
           </Pressable>
         </View>
