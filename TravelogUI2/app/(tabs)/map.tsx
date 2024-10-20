@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
-import { Platform, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { Platform, Text, TouchableOpacity, StyleSheet, View } from 'react-native'
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -22,6 +22,11 @@ function Map() {
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
+
+  const [selectedPin, setSelectedPin] = useState<{ marker: mapboxgl.Marker | null, position: { top: number, left: number } | null }>({
+    marker: null,
+    position: null,
+  });
 
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
@@ -69,11 +74,84 @@ function Map() {
         .setLngLat([lng, lat])
         .addTo(mapRef.current);
 
+      // Add click event listener to the marker
+      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker));
+
       // Store the marker
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
 
       // Exit pin drop mode after adding the marker
       setAddingPin(false);
+    }
+  };
+
+  // const handlePinClick = (marker: mapboxgl.Marker) => {
+  //   const lngLat = marker.getLngLat();
+  //   const point = mapRef.current?.project([lngLat.lng, lngLat.lat]);
+  
+  //   if (point) {
+  //     setSelectedPin({
+  //       marker,
+  //       position: {
+  //         top: point.y,
+  //         left: point.x,
+  //       },
+  //     });
+  //   }
+  // };
+
+  const handlePinClick = (marker: mapboxgl.Marker) => {
+    const lngLat = marker.getLngLat();
+    const point = mapRef.current?.project([lngLat.lng, lngLat.lat]); // Get pixel position of the marker
+    const mapContainerBounds = mapContainerRef.current?.getBoundingClientRect(); // Get map container dimensions
+  
+    if (point && mapContainerBounds) {
+      let top = point.y - 20;
+      let left = point.x + 10;
+  
+      // Check if popup goes off the right side of the screen
+      if (left + 200 > mapContainerBounds.width) { // 200 is an estimated popup width
+        left = point.x - 220; // Adjust to the left
+      }
+  
+      // Check if popup goes off the bottom of the screen
+      if (top + 100 > mapContainerBounds.height) { // 100 is an estimated popup height
+        top = point.y - 130; // Adjust upward
+      }
+  
+      setSelectedPin({
+        marker,
+        position: {
+          top: top,
+          left: left,
+        },
+      });
+  
+      // Update popup position when the map moves
+      mapRef.current?.on('move', () => {
+        const updatedPoint = mapRef.current?.project([lngLat.lng, lngLat.lat]);
+  
+        if (updatedPoint) {
+          let updatedTop = updatedPoint.y - 20;
+          let updatedLeft = updatedPoint.x + 10;
+  
+          if (updatedLeft + 200 > mapContainerBounds.width) {
+            updatedLeft = updatedPoint.x - 210;
+          }
+  
+          if (updatedTop + 100 > mapContainerBounds.height) {
+            updatedTop = updatedPoint.y - 120;
+          }
+  
+          setSelectedPin((prevPin) => ({
+            ...prevPin,
+            position: {
+              top: updatedTop,
+              left: updatedLeft,
+            },
+          }));
+        }
+      });
     }
   };
 
@@ -87,6 +165,10 @@ function Map() {
     };
   }, [addingPin]);
 
+
+  const handleAddJournal = () => {
+    console.log("add journal")
+  };
 
   return (
     <>
@@ -103,6 +185,25 @@ function Map() {
         <Text>Reset</Text>
       </button>
       <div id='map-container' ref={mapContainerRef} />
+
+      {selectedPin?.marker && selectedPin.position && (
+        <View
+          style={[
+            styles.popupMenu,
+            { top: selectedPin.position.top, left: selectedPin.position.left },
+          ]}
+        >
+          <Text style={styles.popupText}>
+            Coordinates: {selectedPin.marker.getLngLat().lng.toFixed(4)}, {selectedPin.marker.getLngLat().lat.toFixed(4)}
+          </Text>
+          <TouchableOpacity style={styles.menuButton} onPress={handleAddJournal}>
+            <Text style={styles.menuButtonText}>Add Journal</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuButton} onPress={() => setSelectedPin(null)}>
+            <Text style={styles.menuButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Plus button for dropping a pin */}
       <TouchableOpacity style={styles.plusButton} onPress={handlePinDropMode}>
@@ -152,6 +253,36 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  popupMenu: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1, // Ensure it's on top of other components
+  },
+  popupText: {
+    marginBottom: 10,
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  menuButton: {
+    backgroundColor: 'blue',
+    padding: 8,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  menuButtonText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 
