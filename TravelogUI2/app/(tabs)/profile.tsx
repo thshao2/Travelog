@@ -1,8 +1,11 @@
 import React from "react";
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons'; 
+import { useNavigation } from "@react-navigation/native";
 
 export default function ProfilePage() {
+  const navigation = useNavigation();
+
   const editProfilePic = () => {
     console.log("Edit Profile Pic");
   };
@@ -19,9 +22,8 @@ export default function ProfilePage() {
     console.log("Edit Bio");
   };
 
-
   const logout = () => {
-    console.log("Logout");
+    navigation.navigate('login');
   };
 
   return (
