@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
-import { Platform, Text, TouchableOpacity, StyleSheet, View } from 'react-native'
+import { Platform, Text, Pressable, StyleSheet, View, Modal, TextInput, Button } from 'react-native'
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -27,6 +27,24 @@ function Map() {
     marker: null,
     position: null,
   });
+
+  // State for managing the modal and form data
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [journalTitle, setJournalTitle] = useState('');
+  const [journalCategory, setJournalCategory] = useState('');
+  const [journalDate, setJournalDate] = useState('');
+  const [journalBody, setJournalBody] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Category field is mandatory to submit the form (for categorize pins and create list)
+  // All pins will be auto put in "all" list by default
+  useEffect(() => {
+    if (journalCategory) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [journalCategory]);
 
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
@@ -85,21 +103,6 @@ function Map() {
     }
   };
 
-  // const handlePinClick = (marker: mapboxgl.Marker) => {
-  //   const lngLat = marker.getLngLat();
-  //   const point = mapRef.current?.project([lngLat.lng, lngLat.lat]);
-  
-  //   if (point) {
-  //     setSelectedPin({
-  //       marker,
-  //       position: {
-  //         top: point.y,
-  //         left: point.x,
-  //       },
-  //     });
-  //   }
-  // };
-
   const handlePinClick = (marker: mapboxgl.Marker) => {
     const lngLat = marker.getLngLat();
     const point = mapRef.current?.project([lngLat.lng, lngLat.lat]); // Get pixel position of the marker
@@ -111,12 +114,12 @@ function Map() {
   
       // Check if popup goes off the right side of the screen
       if (left + 200 > mapContainerBounds.width) { // 200 is an estimated popup width
-        left = point.x - 220; // Adjust to the left
+        left = point.x - 130; // Adjust to the left
       }
   
       // Check if popup goes off the bottom of the screen
       if (top + 100 > mapContainerBounds.height) { // 100 is an estimated popup height
-        top = point.y - 130; // Adjust upward
+        top = point.y - 120; // Adjust upward
       }
   
       setSelectedPin({
@@ -136,7 +139,7 @@ function Map() {
           let updatedLeft = updatedPoint.x + 10;
   
           if (updatedLeft + 200 > mapContainerBounds.width) {
-            updatedLeft = updatedPoint.x - 210;
+            updatedLeft = updatedPoint.x - 130;
           }
   
           if (updatedTop + 100 > mapContainerBounds.height) {
@@ -166,8 +169,12 @@ function Map() {
   }, [addingPin]);
 
 
-  const handleAddJournal = () => {
-    console.log("add journal")
+  const openJournalModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const closeJournalModal = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -193,22 +200,77 @@ function Map() {
             { top: selectedPin.position.top, left: selectedPin.position.left },
           ]}
         >
-          <Text style={styles.popupText}>
-            Coordinates: {selectedPin.marker.getLngLat().lng.toFixed(4)}, {selectedPin.marker.getLngLat().lat.toFixed(4)}
-          </Text>
-          <TouchableOpacity style={styles.menuButton} onPress={handleAddJournal}>
+          <Pressable style={styles.menuButton} onPress={openJournalModal}>
             <Text style={styles.menuButtonText}>Add Journal</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuButton} onPress={() => setSelectedPin(null)}>
+          </Pressable>
+          <Pressable style={styles.menuButton} onPress={() => setSelectedPin(null)}>
             <Text style={styles.menuButtonText}>Close</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       )}
 
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeJournalModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>New Journal</Text>
+            
+            {/* Title input */}
+            <TextInput
+              style={styles.input}
+              placeholder="Title"
+              value={journalTitle}
+              onChangeText={setJournalTitle}
+            />
+
+            {/* Category input */}
+            <TextInput
+              style={styles.input}
+              placeholder="Category (Required)"
+              value={journalCategory}
+              onChangeText={setJournalCategory}
+            />
+
+            {/* Date input */}
+            <TextInput
+              style={styles.input}
+              placeholder="Date"
+              value={journalDate}
+              onChangeText={setJournalDate}
+            />
+
+            {/* Journal body input */}
+            <TextInput
+              style={[styles.input, styles.journalInput]}
+              placeholder="Write your journal here..."
+              value={journalBody}
+              onChangeText={setJournalBody}
+              multiline={true}
+            />
+
+            {/* Submit and cancel buttons */}
+            <View style={styles.buttonContainer}>
+              <Button title="Submit" onPress={() => {
+                // Handle submission logic here
+                console.log("Submitting: ", journalTitle, journalCategory, journalDate, journalBody);
+                closeJournalModal(); // Close modal after submission
+              }}
+                disabled={!isFormValid}
+               />
+              <Button title="Cancel" onPress={closeJournalModal} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Plus button for dropping a pin */}
-      <TouchableOpacity style={styles.plusButton} onPress={handlePinDropMode}>
+      <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
         <Text style={styles.plusButtonText}>+</Text>
-      </TouchableOpacity>
+      </Pressable>
     </>
   )
 }
@@ -283,6 +345,49 @@ const styles = StyleSheet.create({
   menuButtonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)', // Dim background
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
+  journalInput: {
+    height: 100,
+    verticalAlign: 'top',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
 });
 
