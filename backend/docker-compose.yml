@@ -23,13 +23,43 @@ services:
       - ./auth_service/pom.xml:/backend/auth_service/pom.xml
     working_dir: /backend/auth_service
     ports:
-      - "8081:8080"
+      - "3011:3010"
     depends_on:
       - auth-service-db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://auth-service-db:5432/auth_db
       SPRING_DATASOURCE_USERNAME: auth_db_user
       SPRING_DATASOURCE_PASSWORD: auth_db_password
+    command: mvn spring-boot:run
+    networks:
+      - backend
+  user-service-db:
+    container_name: user-service-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: user_db_user
+      POSTGRES_PASSWORD: user_db_password
+    volumes:
+      - ./user_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
+    networks:
+      - backend
+
+  user-service:
+    image: maven:latest
+    volumes: 
+      - ./user_service/src:/backend/user_service/src          
+      - ./user_service/target:/backend/user_service/target  
+      - ./user_service/.mvn:/backend/user_service/.mvn
+      - ./user_service/pom.xml:/backend/user_service/pom.xml
+    working_dir: /backend/user_service
+    ports:
+      - "3012:3010"
+    depends_on:
+      - user-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/user_db
+      SPRING_DATASOURCE_USERNAME: user_db_user
+      SPRING_DATASOURCE_PASSWORD: user_db_password
     command: mvn spring-boot:run
     networks:
       - backend
@@ -56,7 +86,7 @@ services:
       - ./travel_service/pom.xml:/backend/travel_service/pom.xml
     working_dir: /backend/travel_service
     ports:
-      - "8082:8080"
+      - "3013:3010"
     depends_on:
       - travel-service-db
     environment:
@@ -67,35 +97,6 @@ services:
     networks:
       - backend
       
-  user-service-db:
-    container_name: user-service-db
-    image: postgres:alpine
-    environment:
-      POSTGRES_USER: user_db_user
-      POSTGRES_PASSWORD: user_db_password
-    volumes:
-      - ./user_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
-    networks:
-      - backend
-  user-service:
-    image: maven:latest
-    volumes: 
-      - ./user_service/src:/backend/user_service/src          
-      - ./user_service/target:/backend/user_service/target  
-      - ./user_service/.mvn:/backend/user_service/.mvn
-      - ./user_service/pom.xml:/backend/user_service/pom.xml
-    working_dir: /backend/user_service
-    ports:
-      - "8083:8080"
-    depends_on:
-      - user-service-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/user_db
-      SPRING_DATASOURCE_USERNAME: user_db_user
-      SPRING_DATASOURCE_PASSWORD: user_db_password
-    command: mvn spring-boot:run
-    networks:
-      - backend
 
   api-gateway:
     image: maven:latest
