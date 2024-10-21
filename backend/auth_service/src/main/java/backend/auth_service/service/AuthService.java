@@ -59,8 +59,8 @@ public class AuthService {
     return Optional.empty();
   }
 
-  // Validate JWT Token to get User ID.
-  public Long validateToken(String token) {
-    return jwtService.validateToken(token);
-  }
+  // // Validate JWT Token to get User ID.
+  // public Long validateToken(String token) {
+  //   return jwtService.validateToken(token);
+  // }
 }
