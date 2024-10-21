@@ -47,7 +47,7 @@ services:
       - backend
 
   travel-service:
-    container-name: travel-service
+    container_name: travel-service
     image: maven:latest
     volumes: 
       - ./travel_service/src:/backend/travel_service/src          
