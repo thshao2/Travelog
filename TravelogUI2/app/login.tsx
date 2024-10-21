@@ -38,7 +38,7 @@ const LoginScreen = () => {
     console.log("Submitting form: ", email, password)
     try {
       // Make a GET request to /auth endpoint via the API Gateway
-      let response = await fetch('http://localhost:8081/auth', {
+      let response = await fetch('http://localhost:8080/auth', {
           method: 'GET',
           // headers: {
           //   'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const LoginScreen = () => {
           console.log("I AM HERE")
           const data = await response.text();
           console.log("API Response: ", data);
-          navigation.navigate('(tabs)');
+          navigation.navigate('map');
       } else {
           console.error("Failed to fetch from auth-service. Status: ", response.status);
       }

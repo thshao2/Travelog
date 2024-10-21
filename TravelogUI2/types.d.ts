@@ -7,6 +7,8 @@ declare global {
       profile: undefined;
       index: undefined;
       explore: undefined;
+      login: undefined;
+      signup: undefined;
     }
   }
 }
