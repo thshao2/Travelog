@@ -66,6 +66,36 @@ services:
     command: mvn spring-boot:run
     networks:
       - backend
+      
+  user-service-db:
+    container_name: user-service-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: user_db_user
+      POSTGRES_PASSWORD: user_db_password
+    volumes:
+      - ./user_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
+    networks:
+      - backend
+  user-service:
+    image: maven:latest
+    volumes: 
+      - ./user_service/src:/backend/user_service/src          
+      - ./user_service/target:/backend/user_service/target  
+      - ./user_service/.mvn:/backend/user_service/.mvn
+      - ./user_service/pom.xml:/backend/user_service/pom.xml
+    working_dir: /backend/user_service
+    ports:
+      - "8083:8080"
+    depends_on:
+      - user-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/user_db
+      SPRING_DATASOURCE_USERNAME: user_db_user
+      SPRING_DATASOURCE_PASSWORD: user_db_password
+    command: mvn spring-boot:run
+    networks:
+      - backend
 
   api-gateway:
     image: maven:latest

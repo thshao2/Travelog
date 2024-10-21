@@ -1,0 +1,3 @@
+CREATE DATABASE user_db;
+\c user_db
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
