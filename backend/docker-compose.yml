@@ -11,7 +11,7 @@ services:
     volumes:
       - ./auth_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
     networks:
-      - microservices-network
+      - backend
 
   auth-service:
     image: maven:latest
@@ -31,7 +31,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: auth_db_password
     command: mvn spring-boot:run
     networks:
-      - microservices-network
+      - backend
 
   travel-service-db:
     container_name: travel-service-db
@@ -43,7 +43,7 @@ services:
       - ./travel_service/sql/database.sql:/docker-entrypoint-initdb.d/database.sql
       - ./travel_service/sql/location.sql:/docker-entrypoint-initdb.d/location.sql
     networks:
-      - microservices-network
+      - backend
 
   travel-service:
     image: maven:latest
@@ -63,7 +63,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: travel_db_password
     command: mvn spring-boot:run
     networks:
-      - microservices-network
+      - backend
 
   api-gateway:
     image: maven:latest
@@ -80,4 +80,8 @@ services:
       - auth-service
     command: mvn spring-boot:run
     networks:
-      - microservices-network
+      - backend
+
+networks:
+  backend:
+    driver: bridge
