@@ -64,7 +64,7 @@ services:
     command: mvn spring-boot:run
     networks:
       - backend
-
+      
   user-service-db:
     container_name: user-service-db
     image: postgres:alpine
@@ -94,7 +94,7 @@ services:
     command: mvn spring-boot:run
     networks:
       - backend
-      
+
   api-gateway:
     image: maven:latest
     volumes:
