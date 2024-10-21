@@ -1,0 +1,13 @@
+{
+    "name": "travelog-app",
+    "version": "1.0.0",
+    "scripts": {
+      "frontend": "cd TravelogUI2 && npm run start",
+      "frontend-web": "cd TravelogUI2 && npm run web",
+      "frontend-ios": "cd TravelogUI2 && npm run ios",
+      "frontend-android": "cd TravelogUI2 && npm run web",
+      "lint": "expo lint",
+      "lint:fix": "eslint . --fix"
+    },
+    "private": true
+  }
