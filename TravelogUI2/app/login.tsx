@@ -34,9 +34,30 @@ const LoginScreen = () => {
 
   // Handle login button press
   // NEED TO CALL MICROSERVICES FUNCTION TO VALITDATE USER INPUTS
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log("Submitting form: ", email, password)
-    navigation.navigate('(tabs)');
+    try {
+      // Make a GET request to /auth endpoint via the API Gateway
+      let response = await fetch('http://localhost:8081/auth', {
+          method: 'GET',
+          // headers: {
+          //   'Content-Type': 'application/json',
+          // },
+      });
+      // response = await response.json();
+      console.log(response)
+      if (response.ok) {
+          console.log("I AM HERE")
+          const data = await response.text();
+          console.log("API Response: ", data);
+          navigation.navigate('(tabs)');
+      } else {
+          console.error("Failed to fetch from auth-service. Status: ", response.status);
+      }
+  } catch (error) {
+      console.log("THERE WAS AN ERROR")
+      console.error("Error calling auth-service: ", error);
+  }
   };
 
   return (

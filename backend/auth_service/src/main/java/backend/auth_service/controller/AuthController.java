@@ -3,6 +3,7 @@ package backend.auth_service.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,10 @@ import backend.auth_service.dto.LogInResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.InvalidCredentialsException;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+
+@CrossOrigin(origins = "http://localhost:8082")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -40,5 +45,11 @@ public class AuthController {
             // Handle other exceptions
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<String> getAuth() {
+        System.out.println("GET /auth endpoint hit");
+        return ResponseEntity.ok("Auth Service is running");
     }
 }

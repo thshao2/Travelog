@@ -14,6 +14,7 @@ services:
       - backend
 
   auth-service:
+    container_name: auth-service
     image: maven:latest
     volumes: 
       - ./auth_service/src:/backend/auth_service/src          
@@ -46,6 +47,7 @@ services:
       - backend
 
   travel-service:
+    container-name: travel-service
     image: maven:latest
     volumes: 
       - ./travel_service/src:/backend/travel_service/src          
