@@ -1,25 +1,65 @@
-import React from "react";
-import { Text, View, StyleSheet, Image, Pressable } from "react-native";
+import React, { useState } from "react";
+import { Text, View, StyleSheet, Image, Pressable, TextInput, Alert } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfilePage() {
   const navigation = useNavigation();
 
-  const editProfilePic = () => {
-    console.log("Edit Profile Pic");
+  const [isEditing, setIsEditing] = useState(false);
+  const [profilePic, setProfilePic] = useState('assets/images/default-pfp.png');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [bio, setBio] = useState('');
+
+  const toggleEditing = () => {
+    if (isEditing) {
+      // Call API to update values in the database
+      updateProfile({ name, email, password, bio, profilePic });
+    }
+    setIsEditing(!isEditing);
   };
 
-  const editName = () => {
-    console.log("Edit Name");
+  const updateProfile = async (profileData) => {
+    // Mock API call to update profile in the database
+    try {
+      const response = await fetch('https://api.example.com/updateProfile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+      const data = await response.json();
+      console.log('Profile updated successfully:', data);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
-  const editPassword = () => {
-    console.log("Edit Password");
-  };
+  const pickImage = async () => {
+    // Request permission to access media library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-  const editBio = () => {
-    console.log("Edit Bio");
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    // Launch image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0]; // Access the uri from the first asset
+      setProfilePic(uri);
+    }
   };
 
   const logout = () => {
@@ -29,54 +69,86 @@ export default function ProfilePage() {
   return (
     <View style={styles.container}>
       <View style={styles.profileRow}>
-        <Pressable onPress={editProfilePic}>
+      {isEditing ? (
+          <Pressable onPress={pickImage}>
+            <Image
+              source={{ uri: profilePic }} // Replace with actual profile image URL
+              style={styles.profilePic}
+            />
+          </Pressable>
+        ) : (
           <Image
-            source={{ uri: 'https://via.placeholder.com/80' }} // Replace with actual profile image URL
+            source={{ uri: profilePic }} // Replace with actual profile image URL
             style={styles.profilePic}
           />
-        </Pressable>
+        )}
 
         <View style={styles.profileDetails}>
           <View style={styles.row}>
-            <Text style={styles.name}>Name</Text>
+            {isEditing ? (
+              <TextInput
+                style={styles.input}
+                placeholder="Name"
+                value={name}
+                onChangeText={setName}
+              />
+            ) : (
+              <Text style={styles.name}>{name || 'Name'}</Text>
+            )}
             <MaterialIcons
               name="edit"
               size={24}
               color="black"
-              onPress={editName}
+              onPress={toggleEditing}
               style={styles.editIcon}
             />
           </View>
 
           <View style={styles.row}>
-            <Text style={styles.email}>Email: user@example.com</Text>
+            {isEditing ? (
+              <TextInput
+                style={styles.input}
+                placeholder="user@example.com"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+              />
+            ) : (
+              <Text style={styles.email}>Email: {email || 'user@example.com'}</Text>
+            )}
           </View>
 
           <View style={styles.row}>
-            <Text style={styles.password}>Password: ********</Text>
-            <MaterialIcons
-              name="edit"
-              size={24}
-              color="black"
-              onPress={editPassword}
-              style={styles.editIcon}
-            />
+            {isEditing ? (
+              <TextInput
+                style={styles.input}
+                placeholder="********"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            ) : (
+              <Text style={styles.password}>Password: {password || '********'}</Text>
+            )}
           </View>
         </View>
       </View>
 
       <View style={styles.bioContainer}>
         <Text style={styles.bioTitle}>Bio</Text>
-          <View style={styles.row}>
-            <Text style={styles.bioText}>This is a short bio.</Text>
-            <MaterialIcons
-              name="edit"
-              size={24}
-              color="black"
-              onPress={editBio}
-              style={styles.editIcon}
+        <View style={styles.row}>
+          {isEditing ? (
+            <TextInput
+              style={styles.input}
+              placeholder="This is a short bio."
+              value={bio}
+              onChangeText={setBio}
+              multiline
             />
-          </View>
+          ) : (
+            <Text style={styles.bioText}>{bio || 'This is a short bio.'}</Text>
+          )}
+        </View>
       </View>
 
       <View style={styles.spacer} />
@@ -161,5 +233,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  input: {
+    flex: 1,
+    fontSize: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    padding: 5,
   },
 });
