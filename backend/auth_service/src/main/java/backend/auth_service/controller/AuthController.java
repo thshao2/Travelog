@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import backend.auth_service.service.AuthService;
 import backend.auth_service.service.JwtService;
 import io.jsonwebtoken.JwtException;
-import backend.auth_service.dto.LogInResponse;
-import backend.auth_service.dto.TokenRequest;
+import backend.auth_service.dto.Token;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.InvalidCredentialsException;
@@ -44,7 +43,7 @@ public class AuthController {
         try {
             // Attempt to generate a JWT token based on the credentials
             String token = authService.logIn(user);
-            return ResponseEntity.ok(new LogInResponse(token));
+            return ResponseEntity.ok(new Token(token));
         } catch (InvalidCredentialsException e) {
             // Handle invalid credentials exception
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -55,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/validate-token")
-    public ResponseEntity<Object> validateToken(@RequestBody TokenRequest tokenReq) {
+    public ResponseEntity<Object> validateToken(@RequestBody Token tokenReq) {
         System.out.println("Inside validate-token");
         String token = tokenReq.getToken();
         try {

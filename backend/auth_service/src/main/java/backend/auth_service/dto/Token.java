@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenRequest {
+public class Token{
   private String token;
 }
+
