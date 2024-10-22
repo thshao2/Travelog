@@ -50,7 +50,7 @@ const LoginScreen = () => {
           console.log("I AM HERE")
           const data = await response.text();
           console.log("API Response: ", data);
-          navigation.navigate('map');
+          navigation.navigate('(tabs)');
       } else {
           console.error("Failed to fetch from auth-service. Status: ", response.status);
       }
