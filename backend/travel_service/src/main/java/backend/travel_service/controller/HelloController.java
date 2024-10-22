@@ -20,10 +20,21 @@ public class HelloController {
     }
 
     @GetMapping("/location-db-test")
-    public String testConnection() {
+    public String locTestConnection() {
         try {
             // Execute a simple query to test the connection
             List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM location LIMIT 1");
+            return "Connection successful! Retrieved data: " + result.toString();
+        } catch (Exception e) {
+            return "Connection failed: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/memory-db-test")
+    public String memTestConnection() {
+        try {
+            // Execute a simple query to test the connection
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM memories LIMIT 1");
             return "Connection successful! Retrieved data: " + result.toString();
         } catch (Exception e) {
             return "Connection failed: " + e.getMessage();
