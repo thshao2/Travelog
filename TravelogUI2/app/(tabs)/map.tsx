@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
-import { Platform, Text, Pressable, StyleSheet, View, Modal, TextInput, Button } from 'react-native'
-import { DatePickerInput } from 'react-native-paper-dates';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Platform, Text, Pressable, StyleSheet } from 'react-native'
+import JournalModal from '../journalModal';
+import PopupMenu from '../popupMenu';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -24,29 +24,14 @@ function Map() {
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
 
+  // Managing seleted pin for pop up menu
   const [selectedPin, setSelectedPin] = useState<{ marker: mapboxgl.Marker | null, position: { top: number, left: number } | null }>({
     marker: null,
     position: null,
   });
 
-  // State for managing the modal and form data
+  // Managing modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [journalTitle, setJournalTitle] = useState('');
-  const [journalCategory, setJournalCategory] = useState('');
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
-  const [journalBody, setJournalBody] = useState('');
-  const [isFormValid, setIsFormValid] = useState(false);
-
-  // Category field is mandatory to submit the form (for categorize pins and create list)
-  // All pins will be auto put in "all" list by default
-  useEffect(() => {
-    if (journalCategory && fromDate) {
-      setIsFormValid(true);
-    } else {
-      setIsFormValid(false);
-    }
-  }, [journalCategory, fromDate]);
 
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
@@ -184,98 +169,17 @@ function Map() {
       <div id='map-container' ref={mapContainerRef} />
 
       {selectedPin?.marker && selectedPin.position && (
-        <View
-          style={[
-            styles.popupMenu,
-            { top: selectedPin.position.top, left: selectedPin.position.left },
-          ]}
-        >
-          <Pressable onPress={() => setSelectedPin({marker: null, position: null})} style={styles.closeButton}>
-            <MaterialIcons name="close" size={18} color="black" />
-          </Pressable>
-          <Pressable style={styles.menuButton} onPress={() => setIsModalVisible(true)}>
-            <Text style={styles.menuButtonText}>Add Journal</Text>
-          </Pressable>
-        </View>
+        <PopupMenu
+          selectedPin={selectedPin}
+          onClose={() => setSelectedPin({ marker: null, position: null })}
+          onAddJournal={() => setIsModalVisible(true)}
+        />
       )}
 
-      <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>New Journal</Text>
-            
-            {/* Title input */}
-            <TextInput
-              style={styles.input}
-              placeholder="Title"
-              value={journalTitle}
-              onChangeText={setJournalTitle}
-            />
-
-            {/* Category input */}
-            <TextInput
-              style={styles.input}
-              placeholder="Category (Required)"
-              value={journalCategory}
-              onChangeText={setJournalCategory}
-            />
-
-            {/* From Date input */}
-            <DatePickerInput
-              locale="en"
-              label="From Date"
-              value={fromDate}
-              onChange={(d:any) => setFromDate(d)}
-              inputMode="start"
-              mode="outlined"
-              style={styles.datePicker}
-            />
-
-            {/* To Date input */}
-            <DatePickerInput
-              locale="en"
-              label="To Date"
-              value={toDate}
-              onChange={(d:any) => setToDate(d)}
-              inputMode="start"
-              mode="outlined"
-              style={styles.datePicker}
-            />
-
-            {/* Journal body input */}
-            <TextInput
-              style={[styles.input, styles.journalInput]}
-              placeholder="Write your journal here..."
-              value={journalBody}
-              onChangeText={setJournalBody}
-              multiline={true}
-            />
-
-            {/* Submit and cancel buttons */}
-            <View style={styles.buttonContainer}>
-              <Button title="Submit" onPress={() => {
-                // Handle submission logic here
-                console.log("Submitting: ", journalTitle, journalCategory, fromDate, toDate, journalBody);
-                // Reset all input fields
-                setJournalTitle('');
-                setJournalCategory('');
-                setFromDate(new Date());
-                setToDate(new Date());
-                setJournalBody('');
-                setIsModalVisible(false)
-              }}
-                disabled={!isFormValid}
-               />
-              <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <JournalModal
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+      />
 
       {/* Plus button for dropping a pin */}
       <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
