@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
 import { Platform, Text, Pressable, StyleSheet, View, Modal, TextInput, Button } from 'react-native'
+import { DatePickerInput } from 'react-native-paper-dates';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -13,7 +15,6 @@ const INITIAL_CENTER: [number, number] = [
 const INITIAL_ZOOM = 18.12
 
 function Map() {
-
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
 
@@ -32,19 +33,20 @@ function Map() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [journalTitle, setJournalTitle] = useState('');
   const [journalCategory, setJournalCategory] = useState('');
-  const [journalDate, setJournalDate] = useState('');
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
   const [journalBody, setJournalBody] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Category field is mandatory to submit the form (for categorize pins and create list)
   // All pins will be auto put in "all" list by default
   useEffect(() => {
-    if (journalCategory) {
+    if (journalCategory && fromDate) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
     }
-  }, [journalCategory]);
+  }, [journalCategory, fromDate]);
 
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
@@ -58,9 +60,6 @@ function Map() {
       // get the current center coordinates and zoom level from the map
       const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 }
       const mapZoom = mapRef.current ? mapRef.current.getZoom() : 18.12
-      // console.log(mapRef.current?.getCenter());
-      // console.log(mapRef.current?.getZoom());
-
 
       // update state
       setCenter([mapCenter.lng, mapCenter.lat])
@@ -113,13 +112,13 @@ function Map() {
       let left = point.x + 10;
   
       // Check if popup goes off the right side of the screen
-      if (left + 200 > mapContainerBounds.width) { // 200 is an estimated popup width
-        left = point.x - 130; // Adjust to the left
+      if (left + 200 > mapContainerBounds.width) { 
+        left = point.x - 130;
       }
   
       // Check if popup goes off the bottom of the screen
-      if (top + 100 > mapContainerBounds.height) { // 100 is an estimated popup height
-        top = point.y - 120; // Adjust upward
+      if (top + 100 > mapContainerBounds.height) {
+        top = point.y - 120;
       }
   
       setSelectedPin({
@@ -168,15 +167,6 @@ function Map() {
     };
   }, [addingPin]);
 
-
-  const openJournalModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeJournalModal = () => {
-    setIsModalVisible(false);
-  };
-
   return (
     <>
       {Platform.OS === 'web' ? (
@@ -200,11 +190,11 @@ function Map() {
             { top: selectedPin.position.top, left: selectedPin.position.left },
           ]}
         >
-          <Pressable style={styles.menuButton} onPress={openJournalModal}>
-            <Text style={styles.menuButtonText}>Add Journal</Text>
+          <Pressable onPress={() => setSelectedPin({marker: null, position: null})} style={styles.closeButton}>
+            <MaterialIcons name="close" size={18} color="black" />
           </Pressable>
-          <Pressable style={styles.menuButton} onPress={() => setSelectedPin({marker: null, position: null})}>
-            <Text style={styles.menuButtonText}>Close</Text>
+          <Pressable style={styles.menuButton} onPress={() => setIsModalVisible(true)}>
+            <Text style={styles.menuButtonText}>Add Journal</Text>
           </Pressable>
         </View>
       )}
@@ -213,7 +203,7 @@ function Map() {
         visible={isModalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={closeJournalModal}
+        onRequestClose={() => setIsModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -235,12 +225,26 @@ function Map() {
               onChangeText={setJournalCategory}
             />
 
-            {/* Date input */}
-            <TextInput
-              style={styles.input}
-              placeholder="Date"
-              value={journalDate}
-              onChangeText={setJournalDate}
+            {/* From Date input */}
+            <DatePickerInput
+              locale="en"
+              label="From Date"
+              value={fromDate}
+              onChange={(d:any) => setFromDate(d)}
+              inputMode="start"
+              mode="outlined"
+              style={styles.datePicker}
+            />
+
+            {/* To Date input */}
+            <DatePickerInput
+              locale="en"
+              label="To Date"
+              value={toDate}
+              onChange={(d:any) => setToDate(d)}
+              inputMode="start"
+              mode="outlined"
+              style={styles.datePicker}
             />
 
             {/* Journal body input */}
@@ -256,12 +260,18 @@ function Map() {
             <View style={styles.buttonContainer}>
               <Button title="Submit" onPress={() => {
                 // Handle submission logic here
-                console.log("Submitting: ", journalTitle, journalCategory, journalDate, journalBody);
-                closeJournalModal(); // Close modal after submission
+                console.log("Submitting: ", journalTitle, journalCategory, fromDate, toDate, journalBody);
+                // Reset all input fields
+                setJournalTitle('');
+                setJournalCategory('');
+                setFromDate(new Date());
+                setToDate(new Date());
+                setJournalBody('');
+                setIsModalVisible(false)
               }}
                 disabled={!isFormValid}
                />
-              <Button title="Cancel" onPress={closeJournalModal} />
+              <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
             </View>
           </View>
         </View>
@@ -337,7 +347,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   menuButton: {
-    backgroundColor: 'blue',
+    backgroundColor: '#007aff',
     padding: 8,
     borderRadius: 5,
     marginBottom: 5,
@@ -345,6 +355,10 @@ const styles = StyleSheet.create({
   menuButtonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 5,
   },
   modalContainer: {
     flex: 1,
@@ -383,6 +397,9 @@ const styles = StyleSheet.create({
   journalInput: {
     height: 100,
     verticalAlign: 'top',
+  },
+  datePicker: {
+    marginBottom: 12,
   },
   buttonContainer: {
     flexDirection: 'row',
