@@ -1,6 +1,6 @@
 # Notes about Schema Generation
 - Hibernate automatically generates the postgres schema (and creates the table) based on the JPA schema in our Java package.
-- Thus, in our sql files, we just need to create the database
+- Thus, in our sql files under `sql/`, we just need to create the database
 
 # Inserting Dummy Data - No Password Encryption
 - NOTE: This method cannot be used for password encryption since the way we encrypt it is with Java's PasswordEncoder, which we cannot achieve through SQL queries. This method still works for all other data though (travels, memories, etc)
