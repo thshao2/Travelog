@@ -2,6 +2,26 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const storeToken = async (token: string) => {
+  if (Platform.OS === 'web') {
+    localStorage.setItem('token', token);
+  } else {
+    await AsyncStorage.setItem('token', token);
+  }
+};
+
+const getToken = async () => {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem('token');
+  } else {
+    return await AsyncStorage.getItem('token');
+  }
+};
+
+
 const LoginScreen = () => {
   const navigation = useNavigation();
 
@@ -32,6 +52,8 @@ const LoginScreen = () => {
     }, [])
   );
 
+  
+
   // Handle login button press
   // NEED TO CALL MICROSERVICES FUNCTION TO VALITDATE USER INPUTS
   const handleLogin = async () => {
@@ -49,8 +71,10 @@ const LoginScreen = () => {
       console.log(response)
       if (response.ok) {
           console.log("I AM HERE")
-          const data = await response.text();
+          const data = await response.json();
+          await storeToken(data.token);
           console.log("API Response: ", data);
+          console.log(typeof(data));
           navigation.navigate('(tabs)');
       } else {
           console.error("Failed to fetch from auth-service. Status: ", response.status);
