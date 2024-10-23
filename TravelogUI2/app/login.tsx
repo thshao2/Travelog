@@ -37,12 +37,13 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     console.log("Submitting form: ", email, password)
     try {
-      // Make a GET request to /auth endpoint via the API Gateway
-      let response = await fetch('http://localhost:8080/auth', {
-          method: 'GET',
-          // headers: {
-          //   'Content-Type': 'application/json',
-          // },
+      // Make a POST request to /auth/login endpoint via the API Gateway
+      let response = await fetch('http://localhost:8080/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({username: 'WHY', email: email, password: password}),
+          headers: {
+            'Content-Type': 'application/json',
+          },
       });
       // response = await response.json();
       console.log(response)

@@ -40,12 +40,13 @@ public class AuthService {
 
   // Validate username and password.
   private Optional<Long> validateLoginCredentials(User userCredential) {
+    System.out.println(userCredential);
     // Gather username and password from the request.
-    String inputUsername = userCredential.getUsername();
+    String inputEmail = userCredential.getEmail();
     String inputPassword = userCredential.getPassword();
 
     // Fetch user based on username
-    Optional<User> userEntry = repository.findByUsername(inputUsername);
+    Optional<User> userEntry = repository.findByEmail(inputEmail);
     // User exists - now verify their password.
     if (userEntry.isPresent()) {
       User user = userEntry.get();
