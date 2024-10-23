@@ -39,18 +39,18 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> logIn(@RequestBody User user) {
         System.out.println("Inside login");
-        return ResponseEntity.ok("Auth Service is running with login");
-        // try {
-        //     // Attempt to generate a JWT token based on the credentials
-        //     String token = authService.logIn(user);
-        //     return ResponseEntity.ok(new Token(token));
-        // } catch (InvalidCredentialsException e) {
-        //     // Handle invalid credentials exception
-        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        // } catch (Exception e) {
-        //     // Handle other exceptions
-        //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
-        // }
+        // return ResponseEntity.ok("Auth Service is running with login");
+        try {
+            // Attempt to generate a JWT token based on the credentials
+            String token = authService.logIn(user);
+            return ResponseEntity.ok(new Token(token));
+        } catch (InvalidCredentialsException e) {
+            // Handle invalid credentials exception
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        } catch (Exception e) {
+            // Handle other exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
     }
 
     @PostMapping("/validate-token")
