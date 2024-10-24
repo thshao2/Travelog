@@ -23,6 +23,8 @@ Since it needs to be ran using mvn, we'll need to run it within our docker conta
   - This gives you a list of all the docker containers currently running - either take the container ID or the container name of the folder you want to lint
 2. `docker exec -it <container id or name> mvn spotless:apply`
   - This will automatically lint all of your files
+  - For CI, since we are just checking if the files are linted without applying the changes, the command changes to 
+    `docker exec it <container id or name> mvn spotless:check`
 
 # General Concepts of Java
 ## Important Terminology
