@@ -15,7 +15,14 @@ The backend will be built using Java Spring.
 - **src/test/**: Testing directory
 - **.mvn**: Wrapper files that allow you to build the project without needing to install Maven globally on your machine.
 
-
+# Linting Instructions
+We will be using `spotless` as the tool for linting. Inside pom.xml under plugin, there's configurations for spotless.
+Since it needs to be ran using mvn, we'll need to run it within our docker container.
+## Steps
+1. `docker ps`
+  - This gives you a list of all the docker containers currently running - either take the container ID or the container name of the folder you want to lint
+2. `docker exec -it <container id or name> mvn spotless:apply`
+  - This will automatically lint all of your files
 
 # General Concepts of Java
 ## Important Terminology
