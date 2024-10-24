@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate; // for POST request to user-service
+
 
 @Configuration
 @EnableWebSecurity
@@ -31,5 +33,10 @@ public class AuthConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Bean // added
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
   }
 }

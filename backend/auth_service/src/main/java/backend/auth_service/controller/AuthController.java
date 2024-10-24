@@ -20,6 +20,8 @@ import backend.auth_service.exception.InvalidCredentialsException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 
+
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -31,9 +33,39 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
-    // @PostMapping("/signUp")
-    // public String signUp(@RequestBody User user) {
-    //     return authService.saveUser(user);
+    @PostMapping("/signup") // handles post reqs to /auth/signup
+    public ResponseEntity<String> signup(@RequestBody User user) {
+      System.out.println("POST /auth/signup hit");
+        try {
+            // save in auth db
+            authService.saveUser(user);
+            // populate dto for sending to user db
+            // SetUserProfile userProfile = new SetUserProfile();
+            // userProfile.setUserId(user.getId());
+            // userProfile.setBio(null);
+            // userProfile.setAvatarMediaId(null);
+            // userProfile.setJointedAt(LocalDate.now());
+            
+            // sendUserProfileToUserService(userProfile);
+            // System.out.println("here");
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while registering the user");
+        }
+    }
+
+    // private void sendUserProfileToUserService(SetUserProfile userProfile) {
+    //   RestTemplate restTemplate = new RestTemplate();
+    //   try {
+    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:8080/user/createProfile", userProfile, Void.class);
+    //       if (response.getStatusCode() != HttpStatus.OK) {
+    //           // Handle error appropriately
+    //           System.err.println("Failed to send user profile to user service: " + response.getStatusCode());
+    //       }
+    //   } catch (Exception e) {
+    //       // Handle connection errors, etc.
+    //       System.err.println("Error sending user profile to user service: " + e.getMessage());
+    //   }
     // }
 
     @PostMapping("/login")

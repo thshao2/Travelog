@@ -38,8 +38,33 @@ const SignUpPage = () => {
 
   // Handle sign-up button press
   // NEED TO CALL MICROSERVICES FUNCTION TO ADD USERS DATA TO DB
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     console.log("submitting form: ", username, email, password)
+    try {
+      // Make a POST request to /auth/login endpoint via the API Gateway
+      let response = await fetch('http://localhost:8080/auth/signup', {
+          method: 'POST',
+          body: JSON.stringify({username: username, email: email, password: password}),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      });
+      // response = await response.json();
+      console.log(response)
+      if (response.ok) {
+          console.log("I AM HERE")
+          const data = await response.text();
+          // await storeToken(data.token);
+          console.log("API Response: ", data);
+          console.log(typeof(data));
+          navigation.navigate('(tabs)');
+      } else {
+          console.error("Failed to fetch from auth-service. Status: ", response.status);
+      }
+  } catch (error) {
+      console.log("THERE WAS AN ERROR IN SIGNUP")
+      console.error("Error calling auth-service: ", error);
+  }
     navigation.navigate('(tabs)');
   };
 

@@ -1,6 +1,7 @@
 package backend.auth_service.service;
 
 import backend.auth_service.entity.User;
+import backend.auth_service.exception.DuplicateCredentialsException;
 import backend.auth_service.exception.InvalidCredentialsException;
 import backend.auth_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,28 @@ public class AuthService {
   @Autowired
   private JwtService jwtService;
 
-  // Saves user into the repository (used for signup).
-  // public String saveUser(User userCredential) {
-  //   // Take raw password and encode it.
-  //   userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
-  //   repository.save(userCredential);
-  //   return "Added user to the system";
+
+  public String saveUser(User userCredential) {
+    // check for duplicate email:
+    if (checkDuplicateEmails(userCredential.getEmail())) {
+      throw new DuplicateCredentialsException("Email is already in use");
+    }
+    // check for duplicate username:
+    // if (checkDuplicateUsernames(userCredential.getUsername())) {
+    //   throw new DuplicateCredentialsException("Username is already in use");
+    // }
+    // Take raw password and encode it.
+    userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
+    repository.save(userCredential);
+    return "Added user to the system";
+  }
+  // checking for duplicate email addresses:
+  private boolean checkDuplicateEmails(String userEmail) {
+    return repository.findByEmail(userEmail).isPresent();
+  }
+  // checking for duplicate usernames:
+  // private boolean checkDuplicateUsernames(String username) {
+  //   return repository.findByUsername(username).isPresent();
   // }
 
   // Log in by verifying credentials & issuing a jwt.
