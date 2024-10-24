@@ -9,6 +9,9 @@
       "frontend-android": "cd TravelogUI2 && npm run web",
       "backend": "cd backend && docker compose up -d --build",
       "stop-backend": "cd backend && docker compose down",
+      "installs": "npm install && cd TravelogUI2 && npm install",
+      "build-frontend": "cd TravelogUI2 && npm run build",
+      "serve-frontend": "cd TravelogUI2 && npm run serve",
       "lint": "expo lint",
       "lint:fix": "eslint . --fix"
     },
