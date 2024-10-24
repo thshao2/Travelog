@@ -190,29 +190,29 @@ function Map() {
 }
 
 const styles = StyleSheet.create({
-  sidebar: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 5,
-    zIndex: 1, // Ensure the sidebar stays above the map
-  },
-  resetButton: {
-    position: 'absolute',
-    top: 50,
-    left: 10,
-    backgroundColor: '#007aff',
-    padding: 10,
-    borderRadius: 5,
-    zIndex: 1,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  // sidebar: {
+  //   position: 'absolute',
+  //   top: 10,
+  //   left: 10,
+  //   backgroundColor: 'white',
+  //   padding: 10,
+  //   borderRadius: 5,
+  //   zIndex: 1, // Ensure the sidebar stays above the map
+  // },
+  // resetButton: {
+  //   position: 'absolute',
+  //   top: 50,
+  //   left: 10,
+  //   backgroundColor: '#007aff',
+  //   padding: 10,
+  //   borderRadius: 5,
+  //   zIndex: 1,
+  // },
+  // buttonText: {
+  //   color: 'white',
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  // },
   plusButton: {
     position: 'absolute',
     bottom: 20,
@@ -229,86 +229,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  popupMenu: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 1, // Ensure it's on top of other components
-  },
-  popupText: {
-    marginBottom: 10,
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  menuButton: {
-    backgroundColor: '#007aff',
-    padding: 8,
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  menuButtonText: {
-    color: 'white',
-    textAlign: 'center',
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    marginBottom: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)', // Dim background
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  journalInput: {
-    height: 100,
-    verticalAlign: 'top',
-  },
-  datePicker: {
-    marginBottom: 12,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
   },
 });
 
