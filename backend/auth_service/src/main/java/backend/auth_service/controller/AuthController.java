@@ -16,6 +16,8 @@ import backend.auth_service.dto.Token;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.InvalidCredentialsException;
+import backend.auth_service.exception.DuplicateCredentialsException;
+
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -49,6 +51,8 @@ public class AuthController {
             // sendUserProfileToUserService(userProfile);
             // System.out.println("here");
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (DuplicateCredentialsException e) {
+          return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email is already registered with us");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while registering the user");
         }

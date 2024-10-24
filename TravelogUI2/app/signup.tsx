@@ -61,11 +61,10 @@ const SignUpPage = () => {
       } else {
           console.error("Failed to fetch from auth-service. Status: ", response.status);
       }
-  } catch (error) {
-      console.log("THERE WAS AN ERROR IN SIGNUP")
-      console.error("Error calling auth-service: ", error);
-  }
-    navigation.navigate('(tabs)');
+    } catch (error) {
+        console.log("THERE WAS AN ERROR IN SIGNUP")
+        console.error("Error calling auth-service: ", error);
+    }
   };
 
   return (
