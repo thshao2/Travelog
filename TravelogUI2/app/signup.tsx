@@ -11,6 +11,8 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
 
+  const [duplicateEmail, setDuplicateEmail] = useState<boolean>(false);
+
   // Function to validate email format
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,13 +55,18 @@ const SignUpPage = () => {
       console.log(response)
       if (response.ok) {
           console.log("I AM HERE")
+          setDuplicateEmail(false);
           const data = await response.text();
           // await storeToken(data.token);
           console.log("API Response: ", data);
           console.log(typeof(data));
           navigation.navigate('(tabs)');
+
+      } else if (response.status === 409) {
+        setDuplicateEmail(true);
       } else {
           console.error("Failed to fetch from auth-service. Status: ", response.status);
+          setDuplicateEmail(false);
       }
     } catch (error) {
         console.log("THERE WAS AN ERROR IN SIGNUP")
@@ -90,6 +97,9 @@ const SignUpPage = () => {
       />
       {!validateEmail(email) && email !== '' && (
         <Text style={styles.errorText}>Please enter a valid email address.</Text>
+      )}
+      {duplicateEmail && (
+        <Text style={styles.errorText}>Email address has already been taken!</Text>
       )}
 
       {/* Password Input */}
