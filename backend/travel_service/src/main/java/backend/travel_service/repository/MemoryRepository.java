@@ -4,6 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import backend.travel_service.entity.Memory;
 
-public interface MemoryRepository extends JpaRepository<Memory, Long> {
+import java.util.List;
 
+public interface MemoryRepository extends JpaRepository<Memory, Long> {
+    List<Memory> findByUserId(Long userId);
+    List<Memory> findByLocationId(Long locationId);
+    List<Memory> findByUserIdAndLocationId(Long userId, Long locationId);
 }

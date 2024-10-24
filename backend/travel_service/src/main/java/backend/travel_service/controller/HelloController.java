@@ -23,7 +23,7 @@ public class HelloController {
     public String locTestConnection() {
         try {
             // Execute a simple query to test the connection
-            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM location LIMIT 1");
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM location");
             return "Connection successful! Retrieved data: " + result.toString();
         } catch (Exception e) {
             return "Connection failed: " + e.getMessage();
@@ -34,7 +34,7 @@ public class HelloController {
     public String memTestConnection() {
         try {
             // Execute a simple query to test the connection
-            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM memories LIMIT 1");
+            List<Map<String, Object>> result = jdbcTemplate.queryForList("SELECT * FROM memories");
             return "Connection successful! Retrieved data: " + result.toString();
         } catch (Exception e) {
             return "Connection failed: " + e.getMessage();
