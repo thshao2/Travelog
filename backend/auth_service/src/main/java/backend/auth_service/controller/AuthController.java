@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.auth_service.service.AuthService;
@@ -89,10 +90,23 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/validate-token")
-    public ResponseEntity<Object> validateToken(@RequestBody Token tokenReq) {
+    // @PostMapping("/validate-token")
+    // public ResponseEntity<Object> validateToken(@RequestBody Token tokenReq) {
+    //     System.out.println("Inside validate-token");
+    //     String token = tokenReq.getToken();
+    //     try {
+    //         Long userId = jwtService.validateToken(token);
+    //         return ResponseEntity.ok(new ValidateTokenResponse(userId));
+    //     } catch (JwtException e) { // JWT decoding or validation failure
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+    //     } catch (Exception e) { // Handle other exceptions
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+    //     }
+    // }
+    
+    @GetMapping("/validate-token")
+    public ResponseEntity<Object> validateToken(@RequestParam String token) {
         System.out.println("Inside validate-token");
-        String token = tokenReq.getToken();
         try {
             Long userId = jwtService.validateToken(token);
             return ResponseEntity.ok(new ValidateTokenResponse(userId));
