@@ -1,7 +1,10 @@
 // config.ts
-const ENV = process.env.NODE_ENV;
 
-const config = {
+type Environment = "development" | "production"
+
+const ENV = (process.env.NODE_ENV as Environment) || "development";
+
+const config: Record<Environment, { API_URL: string }>  = {
   development: {
     API_URL: "http://localhost:8080",
   },
