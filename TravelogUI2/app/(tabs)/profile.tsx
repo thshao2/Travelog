@@ -4,6 +4,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 
+type Profile = {
+  name: string,
+  email: string,
+  password: string,
+  bio: string,
+  profilePic: string,
+}
+
 export default function ProfilePage() {
   const navigation = useNavigation();
 
@@ -22,7 +30,7 @@ export default function ProfilePage() {
     setIsEditing(!isEditing);
   };
 
-  const updateProfile = async (profileData) => {
+  const updateProfile = async (profileData: Profile) => {
     // Mock API call to update profile in the database
     try {
       const response = await fetch('https://api.example.com/updateProfile', {

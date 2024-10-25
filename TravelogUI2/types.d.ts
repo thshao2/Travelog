@@ -9,6 +9,7 @@ declare global {
       explore: undefined;
       login: undefined;
       signup: undefined;
+      "(tabs)": undefined;
     }
   }
 }
