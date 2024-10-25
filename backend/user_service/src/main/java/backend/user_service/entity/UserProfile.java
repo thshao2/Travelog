@@ -26,6 +26,12 @@ public class UserProfile {
     @Column(name = "user_id", nullable = false)
     private Long userId; // FK to User in Auth service
 
+    @Column(unique = true)
+    private String email;
+
+    @Column(unique = false)
+    private String username;
+
     @Column(nullable = true, length = 500)
     private String bio;
 
