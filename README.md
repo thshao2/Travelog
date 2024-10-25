@@ -2,8 +2,8 @@
 
 Production URLs:
 
-- http://13.57.3.68
-- http://ec2-13-57-3-68.us-west-1.compute.amazonaws.com/
+- http://18.144.165.97
+- http://ec2-18-144-165-97.us-west-1.compute.amazonaws.com/
 
 To start the entire web application, run
 
