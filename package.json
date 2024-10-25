@@ -13,7 +13,9 @@
         "stop-backend": "cd backend && docker compose down",
         "installs": "npm install && cd TravelogUI2 && npm install",
         "build-frontend": "cd TravelogUI2 && npm run build",
+        "build-frontend-prod": "cd TravelogUI2 && source .env.production && npm run build",
         "serve-frontend": "cd TravelogUI2 && npm run serve",
+        "serve-frontend-prod": "cd TravelogUI2 && source .env.production && npm run serve",
         "lint": "expo lint",
         "lint:fix": "eslint . --fix"
     },
