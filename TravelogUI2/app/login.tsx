@@ -5,6 +5,11 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
+
+// Use API_URL in your API calls
+
+
 const storeToken = async (token: string) => {
   if (Platform.OS === 'web') {
     localStorage.setItem('token', token);
@@ -58,9 +63,10 @@ const LoginScreen = () => {
   // NEED TO CALL MICROSERVICES FUNCTION TO VALITDATE USER INPUTS
   const handleLogin = async () => {
     console.log("Submitting form: ", email, password)
+    console.log(process.env.API_URL_DEV);
     try {
       // Make a POST request to /auth/login endpoint via the API Gateway
-      let response = await fetch('http://localhost:8080/auth/login', {
+      let response = await fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           body: JSON.stringify({username: 'WHY', email: email, password: password}),
           headers: {
