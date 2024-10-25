@@ -15,15 +15,15 @@ public class MemoryController {
     @Autowired
     private MemoryService memoryService;
 
+    @Autowired
+    public MemoryController(MemoryService memoryService) {
+        this.memoryService = memoryService;
+    }
+
     @GetMapping
     public ResponseEntity<String> getMemory() {
         System.out.println("GET /memory endpoint hit");
         return ResponseEntity.ok("Memory Service is running");
-    }
-
-    @Autowired
-    public MemoryController(MemoryService memoryService) {
-        this.memoryService = memoryService;
     }
 
     @GetMapping("/user/{userId}")
@@ -32,15 +32,15 @@ public class MemoryController {
         return ResponseEntity.ok(memories);
     }
 
-    @GetMapping("/location/{locationId}")
-    public ResponseEntity<List<Memory>> getMemoriesByLocationId(@PathVariable Long locationId) {
-        List<Memory> memories = memoryService.getMemoriesByLocationId(locationId);
+    @GetMapping("/pin/{pinId}")
+    public ResponseEntity<List<Memory>> getMemoriesByPinId(@PathVariable Long pinId) {
+        List<Memory> memories = memoryService.getMemoriesByPinId(pinId);
         return ResponseEntity.ok(memories);
     }
 
-    @GetMapping("/user/{userId}/location/{locationId}")
-    public ResponseEntity<List<Memory>> getMemoriesByUserIdAndLocationId(@PathVariable Long userId, @PathVariable Long locationId) {
-        List<Memory> memories = memoryService.getMemoriesByUserIdAndLocationId(userId, locationId);
+    @GetMapping("/user/{userId}/pin/{pinId}")
+    public ResponseEntity<List<Memory>> getMemoriesByUserIdAndPinId(@PathVariable Long userId, @PathVariable Long pinId) {
+        List<Memory> memories = memoryService.getMemoriesByUserIdAndPinId(userId, pinId);
         return ResponseEntity.ok(memories);
     }
 
@@ -48,5 +48,11 @@ public class MemoryController {
     public ResponseEntity<Memory> postMemory(@RequestBody Memory memory) {
         Memory savedMemory = memoryService.postMemory(memory);
         return ResponseEntity.ok(savedMemory);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMemory(@PathVariable Long id) {
+        memoryService.deleteMemoryById(id);
+        return ResponseEntity.ok("Memory with ID " + id + " has been deleted / does not exist.");
     }
 }
