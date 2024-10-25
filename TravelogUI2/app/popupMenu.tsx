@@ -3,7 +3,21 @@ import { View, Text, Pressable, FlatList, Alert, StyleSheet } from 'react-native
 import { MaterialIcons } from '@expo/vector-icons';
 import JournalDetailModal from './journalDetail';
 
-const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
+import { Journal } from './journalDetail';
+
+interface PopupMenuProps {
+  selectedPin: {
+    marker: mapboxgl.Marker | null;
+    position: {
+        top: number;
+        left: number;
+    } | null;
+  },
+  onClose: () => void,
+  onAddJournal: () => void,
+}
+
+const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal }: PopupMenuProps) => {
   // Hardcoded memory data for testing
   const hardcodedMemories = [
     {
@@ -23,9 +37,9 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
 
 
   const [isDetailVisible, setIsDetailVisible] = useState(false);
-  const [selectedJournal, setSelectedJournal] = useState(null);
+  const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
 
-  const openJournalModal = (journal) => {
+  const openJournalModal = (journal: Journal) => {
     setSelectedJournal(journal);
     setIsDetailVisible(true);
   };
@@ -35,13 +49,13 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
     setIsDetailVisible(false);
   };
 
-  const handleDeleteJournal = (journalId) => {
+  const handleDeleteJournal = (journalId: string) => {
     // Handle journal deletion
     console.log(`Deleting journal with id: ${journalId}`);
     setIsDetailVisible(false);
   };
 
-  const handleEditJournal = (updatedJournal) => {
+  const handleEditJournal = (updatedJournal: Journal) => {
     // Handle journal edit
     console.log('Editing journal:', updatedJournal);
     setIsDetailVisible(false);
@@ -51,7 +65,7 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
     <View
       style={[
         styles.popupMenu,
-        { top: selectedPin.position.top, left: selectedPin.position.left },
+        { top: selectedPin.position?.top, left: selectedPin.position?.left },
       ]}
     >
       <Pressable onPress={onClose} style={styles.closeButton}>
@@ -59,13 +73,16 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
       </Pressable>
 
       {/* Display the list of previous journal entries (memories) */}
+      {/* What are the point of memories??? Why are we callling openJournalModal on a memory type???*/}
       {memories.length > 0 ? (
         <FlatList
             data={memories}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
             <View>
-              <Pressable style={styles.journalButton} onPress={() => openJournalModal(item)}>
+              <Pressable style={styles.journalButton} onPress={() => openJournalModal(
+                {title: item.title, category: item.category, initDate: new Date(item.initDate), 
+                endDate: new Date(item.endDate), body: "", captionText: item.captionText})}>
                 <Text style={styles.journalButtonText}>
                   {item.title}
                 </Text>

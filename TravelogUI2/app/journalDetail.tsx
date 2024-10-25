@@ -4,7 +4,7 @@ import { DatePickerInput } from 'react-native-paper-dates';
 import { GestureResponderEvent } from 'react-native';
 
 
-type Journal = {
+export type Journal = {
   title: string,
   category: string,
   initDate: Date,
@@ -13,12 +13,12 @@ type Journal = {
   captionText: string,
 }
 
-interface JournalDetailProps {
+export interface JournalDetailProps {
   isDetailVisible: boolean,
   setIsDetailVisible: (state: boolean) => void,
   journal: Journal,
   onClose: () => void,
-  onDelete: (event: GestureResponderEvent) => void,
+  onDelete: (journal: string) => void,
   onEdit: (updatedJournal: Journal) => void,
 }
 
@@ -121,7 +121,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
               <View style={styles.buttonContainer}>
                 <Button title="Edit" onPress={handleEditToggle} />
-                <Button title="Delete" onPress={onDelete} />
+                <Button title="Delete" onPress={() => onDelete(journal.title)} />
                 <Button title="Close" onPress={onClose} />
               </View>
             </>

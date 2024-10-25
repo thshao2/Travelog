@@ -3,7 +3,12 @@ import { useEffect, useState } from 'react';
 import { View, TextInput, Button, Modal, Text, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 
-function JournalModal({isModalVisible, setIsModalVisible}){
+interface JournalModalProps {
+  isModalVisible: boolean,
+  setIsModalVisible: (state: boolean) => void,
+}
+
+function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
     // State for managing the modal and form data
     // const [isModalVisible, setIsModalVisible] = useState(false);
     const [journalTitle, setJournalTitle] = useState('');
