@@ -5,9 +5,12 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
+import config from './config';
 
-// Use API_URL in your API calls
+const {API_URL} = config;
+
+// const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
+
 
 
 const storeToken = async (token: string) => {
@@ -63,7 +66,7 @@ const LoginScreen = () => {
   // NEED TO CALL MICROSERVICES FUNCTION TO VALITDATE USER INPUTS
   const handleLogin = async () => {
     console.log("Submitting form: ", email, password)
-    console.log(process.env.API_URL_DEV);
+    console.log(API_URL);
     try {
       // Make a POST request to /auth/login endpoint via the API Gateway
       let response = await fetch(`${API_URL}/auth/login`, {
