@@ -20,13 +20,22 @@ public class Memory {
     @Column(name = "user_id", nullable = false)
     private Long userId; // FK to User in User Service
 
+    @Column(name = "pin_id", nullable = false)
+    private Long pinId; // FK to Pin
+
+    @Column(nullable = false)
+    private String category;
+
     @Column(nullable = false)
     private String captionText; 
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; 
+    private LocalDateTime initDate; 
 
-    private Long locationId; // FK to Location
+     @Column(nullable = false, updatable = false)
+    private LocalDateTime endDate; 
+
+    // private Long locationId; // FK to Location
 
     @ElementCollection
     @CollectionTable(name = "memory_media", joinColumns = @JoinColumn(name = "memory_id"))
@@ -37,8 +46,9 @@ public class Memory {
     // @Column(name = "media_ids", columnDefinition = "TEXT")
     // private String mediaIdsJson; // JSON array string of media IDs
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+    // @PrePersist
+    // protected void onCreate() {
+    //     this.initDate = LocalDateTime.now();
+    //     this.endDate = LocalDateTime.now();
+    // }
 }

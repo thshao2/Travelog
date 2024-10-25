@@ -26,10 +26,10 @@ public class Pin {
     @Column(name = "location_id", nullable = false)
     private Long locationId; // FK to Location
 
-    @Column(name = "memory_id", nullable = false)
-    private Long memoryId; // FK to Memory
+    // @Column(name = "memory_id", nullable = false)
+    // private Long memoryId; // FK to Memory
 
-    @Column(nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId; // FK to User in User Service
 
     @Column(nullable = false)
