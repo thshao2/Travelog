@@ -24,6 +24,9 @@ public class Memory {
     private Long pinId; // FK to Pin
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String category;
 
     @Column(nullable = false)

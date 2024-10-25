@@ -10,27 +10,41 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
       id: 1,
       userId: 1,
       title: "UCSC",
+      category: "Favorite",
       captionText: "My journal at UCSC",
-      createdAt: "2024-10-01T10:00:00", // ISO format
-      locationId: 100,
+      initDate: "2024-10-01T10:00:00", // ISO format
+      endDate: "2024-10-01T10:00:00", // ISO format
+      pinId: 100,
     },
   ];
 
-  // const [memories, setMemories] = useState(hardcodedMemories);
-  const [memories, setMemories] = useState('');
+  const [memories, setMemories] = useState(hardcodedMemories);
+  // const [memories, setMemories] = useState('');
 
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState(null);
 
   const openJournalModal = (journal) => {
-    setSelectedJournal(journal);  // Set the journal that was clicked
-    setIsModalVisible(true);      // Open the modal
+    setSelectedJournal(journal);
+    setIsDetailVisible(true);
   };
 
   const closeJournalModal = () => {
-    setSelectedJournal(null);     // Clear the selected journal
-    setIsModalVisible(false);     // Close the modal
+    setSelectedJournal(null);
+    setIsDetailVisible(false);
+  };
+
+  const handleDeleteJournal = (journalId) => {
+    // Handle journal deletion
+    console.log(`Deleting journal with id: ${journalId}`);
+    setIsDetailVisible(false);
+  };
+
+  const handleEditJournal = (updatedJournal) => {
+    // Handle journal edit
+    console.log('Editing journal:', updatedJournal);
+    setIsDetailVisible(false);
   };
 
   return (
@@ -66,12 +80,12 @@ const PopupMenu = ({ selectedPin, onClose, onAddJournal }) => {
       {/* Journal Detail Modal */}
       {selectedJournal && (
         <JournalDetailModal
-          isVisible={isModalVisible}
-          setIsVisible={setIsModalVisible}
+          isDetailVisible={isDetailVisible}
+          setIsDetailVisible={setIsDetailVisible}
           journal={selectedJournal}
           onClose={closeJournalModal}
-          onDelete={()=>console.log("delete")}
-          onEdit={()=>console.log("edit")}
+          onDelete={handleDeleteJournal}
+          onEdit={handleEditJournal}
         />
       )}
 
