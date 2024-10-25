@@ -8,6 +8,8 @@
       "frontend-ios": "cd TravelogUI2 && npm run ios",
       "frontend-android": "cd TravelogUI2 && npm run web",
       "backend": "cd backend && docker compose up -d --build",
+      "backend-prod": "cd backend && sudo docker compose up -d --build",
+      "stop-backend-prod": "cd backend && sudo docker compose down",
       "stop-backend": "cd backend && docker compose down",
       "installs": "npm install && cd TravelogUI2 && npm install",
       "build-frontend": "cd TravelogUI2 && npm run build",
