@@ -1,8 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Modal, Text, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
+import { GestureResponderEvent } from 'react-native';
 
-function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }) {
+
+type Journal = {
+  title: string,
+  category: string,
+  initDate: Date,
+  endDate: Date,
+  body: string,
+  captionText: string,
+}
+
+interface JournalDetailProps {
+  isDetailVisible: boolean,
+  setIsDetailVisible: (state: boolean) => void,
+  journal: Journal,
+  onClose: () => void,
+  onDelete: (event: GestureResponderEvent) => void,
+  onEdit: (updatedJournal: Journal) => void,
+}
+
+function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
@@ -94,8 +114,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
             <>
               <Text style={styles.modalTitle}>{journal.title}</Text>
               <Text style={styles.label}>Category: {journal.category}</Text>
-              <Text style={styles.label}>From: {journal.initDate}</Text>
-              <Text style={styles.label}>To: {journal.endDate}</Text>
+              <Text style={styles.label}>From: {journal.initDate.toLocaleTimeString()}</Text>
+              <Text style={styles.label}>To: {journal.endDate.toLocaleTimeString()}</Text>
               <Text style={styles.label}>Details:</Text>
               <Text style={styles.journalBody}>{journal.captionText}</Text>
 
