@@ -9,7 +9,7 @@ const config: Record<Environment, { API_URL: string }>  = {
     API_URL: "http://localhost:8080",
   },
   production: {
-    API_URL: "http://18.144.165.97",
+    API_URL: "http://18.144.165.97:8080",
   },
 };
 
