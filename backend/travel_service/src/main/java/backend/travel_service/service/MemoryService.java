@@ -2,6 +2,7 @@ package backend.travel_service.service;
 
 import backend.travel_service.entity.Memory;
 import backend.travel_service.repository.MemoryRepository;
+// import backend.travel_service.dto.MemoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,4 +38,16 @@ public class MemoryService {
             System.out.println("Memory with ID " + memoryId + " does not exist.");
         }
     }
+
+    // public void updateMemory(Long memoryId, MemoryDto memoryDto) {
+    //     Memory memory = memoryRepository.findById(memoryId)
+    //         .orElseThrow(() -> new RuntimeException("Memory not found"));
+    //     memory.setTitle(memoryDto.getTitle());
+    //     memory.setCategory(memoryDto.getCategory());
+    //     memory.setLoc(memoryDto.getLoc());
+    //     memory.setCaptionText(memoryDto.getCaptionText());
+    //     memory.setInitDate(memoryDto.getInitDate());
+    //     memory.setEndDate(memoryDto.getEndDate());
+    //     memoryRepository.save(memory);
+    // }
 }

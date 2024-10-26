@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, FlatList, Alert, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import JournalDetailModal from './journalDetail';
 
-import { Journal } from './journalDetail';
+export type Journal = {
+  id: number;  
+  userId: number;
+  pinId: number;
+  title: string;
+  category: string;
+  loc: string;
+  captionText: string;
+  initDate: Date;
+  endDate: Date;
+}
 
 interface PopupMenuProps {
   selectedPin: {
@@ -18,42 +28,111 @@ interface PopupMenuProps {
 }
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal }: PopupMenuProps) => {
-  // Hardcoded memory data for testing
-  const hardcodedMemories = [
-    {
-      id: 1,
-      userId: 1,
-      title: "UCSC",
-      category: "Favorite",
-      captionText: "My journal at UCSC",
-      initDate: "2024-10-01T10:00:00", // ISO format
-      endDate: "2024-10-01T10:00:00", // ISO format
-      pinId: 100,
-    },
-  ];
-
-  const [memories, setMemories] = useState(hardcodedMemories);
-  // const [memories, setMemories] = useState('');
-
-
+  const [memories, setMemories] = useState<Journal[]>([]);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const openJournalModal = (journal: Journal) => {
+  const token = localStorage.getItem('token');
+
+  const fetchMemories = async (userId: number, pinId: number): Promise<Journal[]> => {
+    const response = await fetch(`http://localhost:8080/travel/memory/user/${userId}/pin/${pinId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return await response.json();
+  };
+
+  useEffect(() => {
+    const fetchMemoriesData = async () => {
+      setLoading(true);
+      setError(null); // Reset error state
+
+      try {
+        // const memoriesData = await fetchMemories(userId, selectedPin.pinId);
+        const memoriesData = await fetchMemories(1, 9999); // hardcoded!
+        setMemories(memoriesData);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch memories.');
+      } 
+      finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemoriesData();
+  }, []);
+// }, [userId, selectedPin.pinId]); // Fetch when userId or pinId changes && memoriesData change (?)
+
+  const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
     setIsDetailVisible(true);
   };
 
-  const closeJournalModal = () => {
+  const closeJournalDetail = () => {
     setSelectedJournal(null);
     setIsDetailVisible(false);
   };
 
-  const handleDeleteJournal = (journalId: string) => {
-    // Handle journal deletion
-    console.log(`Deleting journal with id: ${journalId}`);
-    setIsDetailVisible(false);
+  // Function to delete a memory by ID
+  const deleteMemory = async (journalId: number) => {
+    const response = await fetch(`http://localhost:8080/travel/memory/${journalId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to delete memory.');
+    }
+    
+    return await response.text(); 
   };
+
+  const handleDeleteJournal = async (journalId: number) => {
+    setIsDetailVisible(false);
+    try {
+      const message = await deleteMemory(journalId);
+      console.log(message);
+      setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId)); // remove deleted journal from list
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete memory.');
+    }
+  };
+
+  // const handleEditJournal = async (updatedJournal: Journal) => {
+  //   const response = await fetch(`http://localhost:8080/travel/memory/${updatedJournal.id}`, {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${token}`
+  //     },
+  //     body: JSON.stringify(updatedJournal)
+  //   });
+  
+  //   if (!response.ok) {
+  //     throw new Error('Failed to edit memory.');
+  //   }
+  
+  //   const updatedMemory = await response.json();
+  //   // Update state to reflect the changes if necessary
+  //   setMemories((prevMemories) => 
+  //     prevMemories.map(memory => 
+  //       memory.id === updatedMemory.id ? updatedMemory : memory
+  //     )
+  //   );
+  // };
 
   const handleEditJournal = (updatedJournal: Journal) => {
     // Handle journal edit
@@ -74,18 +153,34 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 
       {/* Display the list of previous journal entries (memories) */}
       {/* What are the point of memories??? Why are we callling openJournalModal on a memory type???*/}
-      {memories.length > 0 ? (
+      {/* Loading and Error Handling */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : memories.length > 0 ? (
         <FlatList
-            data={memories}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
+          data={memories}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
             <View>
-              <Pressable style={styles.journalButton} onPress={() => openJournalModal(
-                {title: item.title, category: item.category, initDate: new Date(item.initDate), 
-                endDate: new Date(item.endDate), body: "", captionText: item.captionText})}>
-                <Text style={styles.journalButtonText}>
-                  {item.title}
-                </Text>
+              <Pressable
+                style={styles.journalButton}
+                onPress={() =>
+                  openJournalDetail({
+                    id: item.id,
+                    userId: item.userId,
+                    pinId: item.pinId,
+                    title: item.title,
+                    category: item.category,
+                    loc: item.loc,
+                    initDate: new Date(item.initDate),
+                    endDate: new Date(item.endDate),
+                    captionText: item.captionText,
+                  })
+                }
+              >
+                <Text style={styles.journalButtonText}>{item.title}</Text>
               </Pressable>
             </View>
           )}
@@ -100,7 +195,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
           isDetailVisible={isDetailVisible}
           setIsDetailVisible={setIsDetailVisible}
           journal={selectedJournal}
-          onClose={closeJournalModal}
+          onClose={closeJournalDetail}
           onDelete={handleDeleteJournal}
           onEdit={handleEditJournal}
         />
@@ -152,13 +247,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
   },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
   journalButtonText: {
     textAlign: 'center',
   },
   journalButton: {
-    backgroundColor: 'transparent', // No filled background
-    borderColor: '#000000', // Outline color
-    borderWidth: 1, // Width of the outline
+    backgroundColor: 'transparent',
+    borderColor: '#000000',
+    borderWidth: 1,
     padding: 8,
     borderRadius: 5,
     marginBottom: 5,

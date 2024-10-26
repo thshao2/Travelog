@@ -13,11 +13,14 @@ const {API_URL} = config;
 
 
 
+// const storeToken = async (token: string, userId: string | null) => {
 const storeToken = async (token: string) => {
   if (Platform.OS === 'web') {
     localStorage.setItem('token', token);
+    // localStorage.setItem('userId', userId? userId : 'default userID');
   } else {
     await AsyncStorage.setItem('token', token);
+    // await AsyncStorage.setItem('userId', userId? userId : 'default userID');
   }
 };
 
@@ -29,6 +32,13 @@ const getToken = async () => {
   }
 };
 
+const getUserId = async () => {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem('userId');
+  } else {
+    return await AsyncStorage.getItem('userId');
+  }
+};
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -82,6 +92,8 @@ const LoginScreen = () => {
           console.log("I AM HERE")
           const data = await response.json();
           await storeToken(data.token);
+          // try to get X-user-ID but give me null
+          // await storeToken(data.token, response.headers.get('X-User-Id'));
           console.log("API Response: ", data);
           console.log(typeof(data));
           navigation.navigate('(tabs)');

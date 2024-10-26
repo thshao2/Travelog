@@ -2,23 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Modal, Text, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { GestureResponderEvent } from 'react-native';
-
-
-export type Journal = {
-  title: string,
-  category: string,
-  initDate: Date,
-  endDate: Date,
-  body: string,
-  captionText: string,
-}
+import { Journal } from './popupMenu';
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
   setIsDetailVisible: (state: boolean) => void,
   journal: Journal,
   onClose: () => void,
-  onDelete: (journal: string) => void,
+  onDelete: (journalId: number) => void,
   onEdit: (updatedJournal: Journal) => void,
 }
 
@@ -26,17 +17,19 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
+  const [editedJournalLocation, setEditedJournalLocation] = useState(journal.loc);
   const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
   const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
-  const [editedJournalBody, setEditedJournalBody] = useState(journal.body);
+  const [editedJournalBody, setEditedJournalBody] = useState(journal.captionText);
 
   useEffect(() => {
     if (journal) {
       setEditedJournalTitle(journal.title);
       setEditedJournalCategory(journal.category);
+      setEditedJournalLocation(journal.loc)
       setEditedInitDate(new Date(journal.initDate));
       setEditedEndDate(new Date(journal.endDate));
-      setEditedJournalBody(journal.body);
+      setEditedJournalBody(journal.captionText);
     }
   }, [journal]);
 
@@ -49,9 +42,10 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       ...journal,
       title: editedJournalTitle,
       category: editedJournalCategory,
+      loc: editedJournalLocation,
       initDate: editedInitDate,
       endDate: editedEndDate,
-      body: editedJournalBody,
+      captionText: editedJournalBody,
     });
     setIsEditMode(false);
   };
@@ -74,30 +68,41 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 value={editedJournalTitle}
                 onChangeText={setEditedJournalTitle}
               />
+
               <TextInput
                 style={styles.input}
                 placeholder="Category (Required)"
                 value={editedJournalCategory}
                 onChangeText={setEditedJournalCategory}
               />
+
+              <TextInput
+                style={styles.input}
+                placeholder="Location"
+                value={editedJournalLocation}
+                onChangeText={setEditedJournalLocation}
+                />
+
               <DatePickerInput
                 locale="en"
-                label="From Date"
+                label="Start Date"
                 value={editedInitDate}
                 onChange={(d: any) => setEditedInitDate(d)}
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
               />
+
               <DatePickerInput
                 locale="en"
-                label="To Date"
+                label="Emd Date"
                 value={editedEndDate}
                 onChange={(d: any) => setEditedEndDate(d)}
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
               />
+
               <TextInput
                 style={[styles.input]}
                 placeholder="Write your journal here..."
@@ -105,6 +110,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 onChangeText={setEditedJournalBody}
                 multiline={true}
               />
+
               <View style={styles.buttonContainer}>
                 <Button title="Save" onPress={handleEditSubmit} />
                 <Button title="Cancel" onPress={() => setIsEditMode(false)} />
@@ -114,14 +120,15 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
             <>
               <Text style={styles.modalTitle}>{journal.title}</Text>
               <Text style={styles.label}>Category: {journal.category}</Text>
-              <Text style={styles.label}>From: {journal.initDate.toLocaleTimeString()}</Text>
-              <Text style={styles.label}>To: {journal.endDate.toLocaleTimeString()}</Text>
-              <Text style={styles.label}>Details:</Text>
+              <Text style={styles.label}>Location: {journal.loc}</Text>
+              <Text style={styles.label}>Start Date: {journal.initDate.toLocaleDateString()}</Text>
+              <Text style={styles.label}>End Date: {journal.endDate.toLocaleDateString()}</Text>
+              <Text style={styles.label}>Journal:</Text>
               <Text style={styles.journalBody}>{journal.captionText}</Text>
 
               <View style={styles.buttonContainer}>
                 <Button title="Edit" onPress={handleEditToggle} />
-                <Button title="Delete" onPress={() => onDelete(journal.title)} />
+                <Button title="Delete" onPress={() => onDelete(journal.id)} />
                 <Button title="Close" onPress={onClose} />
               </View>
             </>

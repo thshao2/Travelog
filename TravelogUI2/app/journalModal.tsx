@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { View, TextInput, Button, Modal, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Modal, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 
 interface JournalModalProps {
@@ -13,28 +13,65 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
     // const [isModalVisible, setIsModalVisible] = useState(false);
     const [journalTitle, setJournalTitle] = useState('');
     const [journalCategory, setJournalCategory] = useState('');
-    const [fromDate, setFromDate] = useState(new Date());
-    const [toDate, setToDate] = useState(new Date());
+    const [journalLocation, setJournalLocation] = useState('');
+    const [initDate, setInitDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
     const [journalBody, setJournalBody] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
-      if (journalCategory && fromDate) {
+      if (journalCategory && initDate) {
         setIsFormValid(true);
       } else {
         setIsFormValid(false);
       }
-    }, [journalCategory, fromDate]);
+    }, [journalCategory, initDate]);
 
-    const handleSubmit = () => {
-      // Handle form submission here
-      console.log("Submitting journal...", journalTitle, journalCategory, fromDate, toDate, journalBody);
-      setIsModalVisible(false);
-      setJournalTitle('');
-      setJournalCategory('');
-      setFromDate(new Date());
-      setToDate(new Date());
-      setJournalBody('');
+    const handleSubmit = async () => {
+      const token = localStorage.getItem('token');
+      console.log("current token", token)
+      const userId = localStorage.getItem('userId');
+      console.log("current userId", userId)
+      console.log("Submitting journal...", journalTitle, journalLocation, journalCategory, initDate, endDate, journalBody);
+      
+      try {
+        const memoryData = {
+          userId: 1,  // Replace with actual user ID
+          pinId: 9999,  // Replace with actual pin ID
+          title: journalTitle,
+          category: journalCategory,
+          loc: journalLocation,
+          captionText: journalBody,
+          initDate: initDate.toISOString(),
+          endDate: endDate.toISOString(),
+          mediaIds: [1, 2, 3],  // Replace with actual media IDs
+        };
+        let response = await fetch(`http://localhost:8080/travel/memory`, {
+            method: 'POST',
+            body: JSON.stringify(memoryData),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+        });
+        // response = await response.json();
+        console.log(response)
+        if (response.ok) {
+            const data = await response.json();
+            console.log("API Response: ", data);
+            // Reset the journal form
+            setJournalTitle('');
+            setJournalCategory('');
+            setJournalLocation('');
+            setInitDate(new Date());
+            setEndDate(new Date());
+            setJournalBody('');
+        } else {
+            console.error("Failed to fetch from travel-service. Status: ", response.status);
+        }
+    } catch (error) {
+        console.error("Error calling travel-service: ", error);
+    }
     };
 
 return (
@@ -45,9 +82,7 @@ return (
     onRequestClose={() => setIsModalVisible(false)}
   >
     <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>New Journal</Text>
-        
+      <View style={styles.modalContent}>        
         {/* Title input */}
         <TextInput
           style={styles.input}
@@ -64,23 +99,32 @@ return (
           onChangeText={setJournalCategory}
         />
 
-        {/* From Date input */}
+        {/* Location input */}
+        {/* Default to the closest place (user will be able to modify if they want) */}
+        <TextInput
+          style={styles.input}
+          placeholder="Location"
+          value={journalLocation}
+          onChangeText={setJournalLocation}
+        />
+
+        {/* Start Date input (default: current date) */}
         <DatePickerInput
           locale="en"
-          label="From Date"
-          value={fromDate}
-          onChange={(d: any) => setFromDate(d)}
+          label="Start Date"
+          value={initDate}
+          onChange={(d: any) => setInitDate(d)}
           inputMode="start"
           mode="outlined"
           style={styles.datePicker}
         />
 
-        {/* To Date input */}
+        {/* End Date input (default: current date) */}
         <DatePickerInput
           locale="en"
-          label="To Date"
-          value={toDate}
-          onChange={(d: any) => setToDate(d)}
+          label="End Date"
+          value={endDate}
+          onChange={(d: any) => setEndDate(d)}
           inputMode="start"
           mode="outlined"
           style={styles.datePicker}
@@ -113,7 +157,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)', // Dim background
+      backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modalContent: {
       width: '80%',

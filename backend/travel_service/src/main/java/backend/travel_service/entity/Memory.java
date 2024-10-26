@@ -30,6 +30,9 @@ public class Memory {
     private String category;
 
     @Column(nullable = false)
+    private String loc;
+
+    @Column(nullable = false)
     private String captionText; 
 
     @Column(nullable = false, updatable = false)

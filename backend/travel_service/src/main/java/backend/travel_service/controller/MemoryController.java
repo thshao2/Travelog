@@ -2,6 +2,7 @@ package backend.travel_service;
 
 import backend.travel_service.entity.Memory;
 import backend.travel_service.service.MemoryService;
+// import backend.travel_service.dto.MemoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,4 +56,10 @@ public class MemoryController {
         memoryService.deleteMemoryById(id);
         return ResponseEntity.ok("Memory with ID " + id + " has been deleted / does not exist.");
     }
+
+    // @PutMapping("/{id}")
+    // public ResponseEntity<String> editMemory(@PathVariable Long id, @RequestBody MemoryDto memoryDto) {
+    //     memoryService.updateMemory(id, memoryDto);
+    //     return ResponseEntity.ok("Memory updated successfully.");
+    // }
 }
