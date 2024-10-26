@@ -1,16 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Image, Pressable, TextInput, Alert } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons'; 
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
+import config from '../config';
+import { getToken } from "../utils/util";
 
-type Profile = {
-  name: string,
-  email: string,
-  password: string,
-  bio: string,
-  profilePic: string,
-}
+const {API_URL} = config;
 
 export default function ProfilePage() {
   const navigation = useNavigation();
@@ -22,33 +18,72 @@ export default function ProfilePage() {
   const [password, setPassword] = useState('');
   const [bio, setBio] = useState('');
 
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = await getToken(); // Use the getToken function
+        const response = await fetch(`${API_URL}/user/profile`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Set the fetched user data as default values in the state
+          setName(data.username);
+          setEmail(data.email);
+          setBio(data.bio);
+          setProfilePic(data.profilePic || 'assets/images/default-pfp.png');
+        } else {
+          console.error('Error fetching profile:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []); // Empty dependency array means this useEffect runs once when the component mounts
+
   const toggleEditing = () => {
     if (isEditing) {
       // Call API to update values in the database
-      updateProfile({ name, email, password, bio, profilePic });
+      updateProfile();
     }
     setIsEditing(!isEditing);
   };
 
-  const updateProfile = async (profileData: Profile) => {
-    // Mock API call to update profile in the database
+  const updateProfile = async () => {
     try {
-      const response = await fetch('https://api.example.com/updateProfile', {
-        method: 'POST',
+      const response = await fetch(`${API_URL}/user/update`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(profileData),
+        body: JSON.stringify({
+          username: name,
+          email,
+          password,
+          bio,
+        }),
       });
-      const data = await response.json();
-      console.log('Profile updated successfully:', data);
+
+      if (response.ok) {
+        console.log('Profile updated successfully');
+      } else {
+        console.error('Error updating profile:', response.statusText);
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
     }
   };
 
   const pickImage = async () => {
-    // Request permission to access media library
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -56,7 +91,6 @@ export default function ProfilePage() {
       return;
     }
 
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -65,7 +99,7 @@ export default function ProfilePage() {
     });
 
     if (!result.canceled) {
-      const { uri } = result.assets[0]; // Access the uri from the first asset
+      const { uri } = result.assets[0];
       setProfilePic(uri);
     }
   };
@@ -77,16 +111,16 @@ export default function ProfilePage() {
   return (
     <View style={styles.container}>
       <View style={styles.profileRow}>
-      {isEditing ? (
+        {isEditing ? (
           <Pressable onPress={pickImage}>
             <Image
-              source={{ uri: profilePic }} // Replace with actual profile image URL
+              source={{ uri: profilePic }}
               style={styles.profilePic}
             />
           </Pressable>
         ) : (
           <Image
-            source={{ uri: profilePic }} // Replace with actual profile image URL
+            source={{ uri: profilePic }}
             style={styles.profilePic}
           />
         )}

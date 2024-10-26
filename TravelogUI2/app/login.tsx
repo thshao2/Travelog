@@ -24,6 +24,7 @@ const storeToken = async (token: string) => {
   }
 };
 
+// use getToken in utils.ts
 const getToken = async () => {
   if (Platform.OS === 'web') {
     return localStorage.getItem('token');
