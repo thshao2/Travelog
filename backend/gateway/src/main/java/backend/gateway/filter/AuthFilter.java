@@ -54,11 +54,14 @@ public class AuthFilter implements GlobalFilter, Ordered {
         String token = authHeaderSplit[1];
 
         // Verify JWT Token by Calling Auth Service
+        System.out.println("Validating token: " + token);
         ValidateTokenResponse response;
         try {
             response = restTemplate.getForObject(
                     "http://auth-service:3010/auth/validate-token?token=" + token, ValidateTokenResponse.class);
+            System.out.println("Token validation response: " + response);
         } catch (HttpClientErrorException e) {
+            System.out.println("Error validating token: " + e.getMessage());
             // Handle client error response (4xx)
             return handleError(
                     exchange,
