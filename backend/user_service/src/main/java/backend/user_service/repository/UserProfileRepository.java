@@ -6,5 +6,5 @@ import backend.user_service.entity.UserProfile;
 
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
-    public UserProfile findByUserId(Long userId);
+    public UserProfile findByuserId(Long userId);
 }
