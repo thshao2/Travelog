@@ -114,11 +114,18 @@ public class AuthController {
 
     @GetMapping("/user")
     public ResponseEntity<Object> getUser(@RequestParam Long userId) {
-        System.out.println("GET /auth/user endpoint hit");
+        System.out.println("GET /auth/user endpoint hit with userId: " + userId);
         try {
             Optional<User> user = userRepository.findById(userId);
-            return ResponseEntity.ok(user);
+            if (user.isPresent()) {
+                System.out.println("User found: " + user.get());
+                return ResponseEntity.ok(user.get());
+            } else {
+                System.out.println("User not found with userId: " + userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
         } catch (Exception e) {
+            System.err.println("An error occurred while fetching the user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching the user");
         }
     }
