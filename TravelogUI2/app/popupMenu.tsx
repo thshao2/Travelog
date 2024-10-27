@@ -41,7 +41,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     setError(null);
     
     try {
-      // const response = await fetch(`http://localhost:8080/travel/memory/user/${userId}/pin/${pinId}`, {  
       const response = await fetch(`http://localhost:8080/travel/memory/${pinId}`, {
         method: 'GET',
         headers: {

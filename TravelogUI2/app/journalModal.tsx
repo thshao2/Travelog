@@ -32,43 +32,42 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
       console.log("Submitting journal...", journalTitle, journalLocation, journalCategory, initDate, endDate, journalBody);
       
       try {
-        const memoryData = {
-          userId: 1,  // Replace with actual user ID
-          pinId: 9999,  // Replace with actual pin ID
-          title: journalTitle,
-          category: journalCategory,
-          loc: journalLocation,
-          captionText: journalBody,
-          initDate: initDate.toISOString(),
-          endDate: endDate.toISOString(),
-          mediaIds: [1, 2, 3],  // Replace with actual media IDs
-        };
-        let response = await fetch(`http://localhost:8080/travel/memory`, {
-            method: 'POST',
-            body: JSON.stringify(memoryData),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-        });
-        // response = await response.json();
-        console.log(response)
-        if (response.ok) {
-            const data = await response.json();
-            console.log("API Response: ", data);
-            // Reset the journal form
-            setJournalTitle('');
-            setJournalCategory('');
-            setJournalLocation('');
-            setInitDate(new Date());
-            setEndDate(new Date());
-            setJournalBody('');
-        } else {
-            console.error("Failed to fetch from travel-service. Status: ", response.status);
-        }
-    } catch (error) {
-        console.error("Error calling travel-service: ", error);
-    }
+          const memoryData = {
+              pinId: 9999,  // Replace with actual pin ID
+              title: journalTitle,
+              category: journalCategory,
+              loc: journalLocation,
+              captionText: journalBody,
+              initDate: initDate,
+              endDate: endDate,
+              mediaIds: [1, 2, 3],  // Replace with actual media IDs
+          };
+          
+          let response = await fetch(`http://localhost:8080/travel/memory`, {
+              method: 'POST',
+              body: JSON.stringify(memoryData),
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+              },
+          });
+  
+          if (response.ok) {
+              const data = await response.json();
+              console.log("API Response: ", data);
+              // Reset the journal form
+              setJournalTitle('');
+              setJournalCategory('');
+              setJournalLocation('');
+              setInitDate(new Date());
+              setEndDate(new Date());
+              setJournalBody('');
+          } else {
+              console.error("Failed to fetch from travel-service. Status: ", response.status);
+          }
+      } catch (error) {
+          console.error("Error calling travel-service: ", error);
+      }
     };
 
 return (

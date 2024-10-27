@@ -41,12 +41,6 @@ public class MemoryController {
         return ResponseEntity.ok(memories);
     }
 
-    // @GetMapping("/user/{userId}/pin/{pinId}")
-    // public ResponseEntity<List<Memory>> getMemoriesByUserIdAndPinId(@PathVariable Long userId, @PathVariable Long pinId) {
-    //     List<Memory> memories = memoryService.getMemoriesByUserIdAndPinId(userId, pinId);
-    //     return ResponseEntity.ok(memories);
-    // }
-
     @GetMapping("/{pinId}")
     public ResponseEntity<List<Memory>> getMemoriesByUserIdAndPinId(
             @RequestHeader("X-User-Id") Long userId, 
@@ -56,23 +50,14 @@ public class MemoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Memory> postMemory(@RequestBody Memory memory) {
+    public ResponseEntity<Memory> postMemory(
+            @RequestBody Memory memory,
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        memory.setUserId(userId);
         Memory savedMemory = memoryService.postMemory(memory);
         return ResponseEntity.ok(savedMemory);
     }
-
-    // @PostMapping
-    // public ResponseEntity<Memory> postMemory(
-    //         @RequestBody Memory memory,
-    //         @RequestHeader("X-User-Id") Long userId // Retrieve user ID from the header
-    // ) {
-    //     // Set the user ID in the Memory entity
-    //     memory.setUserId(userId);
-        
-    //     // Save memory with user ID
-    //     Memory savedMemory = memoryService.postMemory(memory);
-    //     return ResponseEntity.ok(savedMemory);
-    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMemory(@PathVariable Long id) {
