@@ -77,12 +77,15 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
         // Attach UserId to header (if relavant)
         // If userId is present, attach it to the request header
-        if (userId != null) {
-            exchange.getResponse().getHeaders().add("X-User-Id", String.valueOf(userId));
-        } else {
+        if (userId == null) {
             return handleError(exchange, "Unauthorized - token validation failed");
-        }
-        return chain.filter(exchange);
+        } 
+        ServerHttpRequest updatedRequest = exchange.getRequest()
+                .mutate()
+                .header("X-User-Id", Long.toString(userId))
+                .build();
+        ServerWebExchange mutatedExchange = exchange.mutate().request(updatedRequest).build();
+        return chain.filter(mutatedExchange);
     }
 
     /**
