@@ -27,6 +27,63 @@ public class AuthFilter implements GlobalFilter, Ordered {
     @Autowired
     private RestTemplate restTemplate;
 
+    // @Override
+    // public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    //     // Get request object
+    //     ServerHttpRequest request = exchange.getRequest();
+
+    //     // Get request path and return immediate if path should be unauthenticated
+    //     String path = request.getPath().toString();
+    //     if (authConfig.getExcludedPaths().contains(path)) {
+    //         System.out.println(path + " should not be authenticated - skipping filter.");
+    //         return chain.filter(exchange);
+    //     }
+
+    //     // Get Authorization header & sanity check
+    //     String authorizationHeader = request.getHeaders().getFirst("Authorization");
+    //     System.out.println("Authorization header is: " + authorizationHeader);
+    //     if (authorizationHeader == null) {
+    //         return handleError(exchange, "Unauthorized - no authorization header provided");
+    //     }
+
+    //     // Extract JWT Token from Header & More Error Checking
+    //     String[] authHeaderSplit = authorizationHeader.split("[ ]");
+    //     if (authHeaderSplit.length != 2 || !authHeaderSplit[0].equals("Bearer")) {
+    //         return handleError(exchange, "Unauthorized - incorrect format for auth header");
+    //     }
+    //     String token = authHeaderSplit[1];
+
+    //     // Verify JWT Token by Calling Auth Service
+    //     ValidateTokenResponse response;
+    //     try {
+    //         response = restTemplate.getForObject(
+    //                 "http://auth-service:3010/auth/validate-token?token=" + token, ValidateTokenResponse.class);
+    //     } catch (HttpClientErrorException e) {
+    //         // Handle client error response (4xx)
+    //         return handleError(exchange, e.getResponseBodyAsString(), HttpStatus.valueOf(e.getStatusCode().value()));
+    //     } catch (Exception e) {
+    //         // Handle other exceptions
+    //         return handleError(exchange, "Error validating token: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    //     }
+
+    //     // Extract userId from response
+    //     Long userId = response != null ? response.getUserId() : null;
+
+    //     // Attach UserId to the request headers (if relevant)
+    //     if (userId != null) {
+    //         ServerHttpRequest mutatedRequest = request.mutate()
+    //                 .header("X-User-Id", String.valueOf(userId))
+    //                 .build();
+    //         // Update the exchange with the new request
+    //         exchange = exchange.mutate().request(mutatedRequest).build();
+    //         System.out.println("X-User-Id attached to request: " + userId);
+    //     } else {
+    //         return handleError(exchange, "Unauthorized - token validation failed");
+    //     }
+
+    //     return chain.filter(exchange);
+    // }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // Get request object
@@ -74,11 +131,23 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
         // Attach UserId to header (if relavant)
         // If userId is present, attach it to the request header
+        // if (userId != null) {
+        //     exchange.getResponse().getHeaders().add("X-User-Id", String.valueOf(userId));
+        //     System.out.println("X-User-Id attached to request: " + userId);
+        // } else {
+        //     return handleError(exchange, "Unauthorized - token validation failed");
+        // }
+
         if (userId != null) {
-            exchange.getResponse().getHeaders().add("X-User-Id", String.valueOf(userId));
+            ServerHttpRequest mutatedRequest = request.mutate()
+                    .header("X-User-Id", String.valueOf(userId))
+                    .build();
+            exchange = exchange.mutate().request(mutatedRequest).build();
+            System.out.println("X-User-Id attached to request: " + userId);
         } else {
             return handleError(exchange, "Unauthorized - token validation failed");
         }
+
         return chain.filter(exchange);
     }
 

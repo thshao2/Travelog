@@ -29,9 +29,6 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
 
     const handleSubmit = async () => {
       const token = localStorage.getItem('token');
-      console.log("current token", token)
-      const userId = localStorage.getItem('userId');
-      console.log("current userId", userId)
       console.log("Submitting journal...", journalTitle, journalLocation, journalCategory, initDate, endDate, journalBody);
       
       try {
