@@ -31,14 +31,14 @@ export default function ProfilePage() {
             'Authorization': `Bearer ${token}`,
           },
         });
-
+        console.log(response);
         if (response.ok) {
           const data = await response.json();
           // Set the fetched user data as default values in the state
           setName(data.username);
           setEmail(data.email);
           setBio(data.bio);
-          setProfilePic(data.profilePic || 'assets/images/default-pfp.png');
+          setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
         } else {
           console.error('Error fetching profile:', response.statusText);
         }
