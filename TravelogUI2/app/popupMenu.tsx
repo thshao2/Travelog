@@ -36,39 +36,34 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 
   const token = localStorage.getItem('token');
 
-  const fetchMemories = async (userId: number, pinId: number): Promise<Journal[]> => {
-    const response = await fetch(`http://localhost:8080/travel/memory/user/${userId}/pin/${pinId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+  const fetchMemoriesData = async (pinId: number): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`http://localhost:8080/travel/memory/${pinId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+      
+      const memoriesData: Journal[] = await response.json();
+      setMemories(memoriesData);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch memories.');
+    } finally {
+      setLoading(false);
     }
-    return await response.json();
   };
 
   useEffect(() => {
-    const fetchMemoriesData = async () => {
-      setLoading(true);
-      setError(null); // Reset error state
-
-      try {
-        // const memoriesData = await fetchMemories(userId, selectedPin.pinId);
-        const memoriesData = await fetchMemories(1, 9999); // hardcoded!
-        setMemories(memoriesData);
-      } catch (err) {
-        console.error(err);
-        setError('Failed to fetch memories.');
-      } 
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMemoriesData();
+    fetchMemoriesData(9999); // hard coded
   }, []);
 // }, [userId, selectedPin.pinId]); // Fetch when userId or pinId changes && memoriesData change (?)
 
@@ -83,61 +78,50 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // Function to delete a memory by ID
-  const deleteMemory = async (journalId: number) => {
-    const response = await fetch(`http://localhost:8080/travel/memory/${journalId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to delete memory.');
-    }
-    
-    return await response.text(); 
-  };
-
   const handleDeleteJournal = async (journalId: number) => {
     setIsDetailVisible(false);
+    
     try {
-      const message = await deleteMemory(journalId);
+      const response = await fetch(`http://localhost:8080/travel/memory/${journalId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete memory.');
+      }
+  
+      const message = await response.text();
       console.log(message);
-      setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId)); // remove deleted journal from list
+  
+      // Update the memories state to remove the deleted journal
+      setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
     } catch (err) {
       console.error(err);
       setError('Failed to delete memory.');
     }
   };
 
-  // const handleEditJournal = async (updatedJournal: Journal) => {
-  //   const response = await fetch(`http://localhost:8080/travel/memory/${updatedJournal.id}`, {
-  //     method: 'PUT',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${token}`
-  //     },
-  //     body: JSON.stringify(updatedJournal)
-  //   });
-  
-  //   if (!response.ok) {
-  //     throw new Error('Failed to edit memory.');
-  //   }
-  
-  //   const updatedMemory = await response.json();
-  //   // Update state to reflect the changes if necessary
-  //   setMemories((prevMemories) => 
-  //     prevMemories.map(memory => 
-  //       memory.id === updatedMemory.id ? updatedMemory : memory
-  //     )
-  //   );
-  // };
-
-  const handleEditJournal = (updatedJournal: Journal) => {
-    // Handle journal edit
-    console.log('Editing journal:', updatedJournal);
+  // Function to edit a memory by ID
+  const handleEditJournal = async (updatedJournal: Journal) => {
     setIsDetailVisible(false);
+
+    const response = await fetch(`http://localhost:8080/travel/memory/${updatedJournal.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updatedJournal)
+    });
+  
+    if (!response.ok) {
+      throw new Error('Failed to edit memory.');
+    }
+    fetchMemoriesData(9999); 
   };
 
   return (
