@@ -1,7 +1,8 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { View, TextInput, Button, Modal, StyleSheet } from 'react-native';
+import { Text, View, TextInput, Button, Modal, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
+import { Picker } from '@react-native-picker/picker';
 
 interface JournalModalProps {
   isModalVisible: boolean,
@@ -14,22 +15,23 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
     const [journalTitle, setJournalTitle] = useState('');
     const [journalCategory, setJournalCategory] = useState('');
     const [journalLocation, setJournalLocation] = useState('');
+    const [condition, setCondition] = useState('Visited');
     const [initDate, setInitDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [journalBody, setJournalBody] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
-      if (journalCategory && initDate) {
+      if (initDate) {
         setIsFormValid(true);
       } else {
         setIsFormValid(false);
       }
-    }, [journalCategory, initDate]);
+    }, [initDate]);
 
     const handleSubmit = async () => {
       const token = localStorage.getItem('token');
-      console.log("Submitting journal...", journalTitle, journalLocation, journalCategory, initDate, endDate, journalBody);
+      console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, journalBody);
       
       try {
           const memoryData = {
@@ -37,6 +39,7 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
               title: journalTitle,
               category: journalCategory,
               loc: journalLocation,
+              condition: condition,
               captionText: journalBody,
               initDate: initDate,
               endDate: endDate,
@@ -59,6 +62,7 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
               setJournalTitle('');
               setJournalCategory('');
               setJournalLocation('');
+              setCondition('Visited');
               setInitDate(new Date());
               setEndDate(new Date());
               setJournalBody('');
@@ -72,127 +76,197 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
 
 return (
   <Modal
-    visible={isModalVisible}
-    animationType="slide"
-    transparent={true}
-    onRequestClose={() => setIsModalVisible(false)}
-  >
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>        
-        {/* Title input */}
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={journalTitle}
-          onChangeText={setJournalTitle}
-        />
+      visible={isModalVisible}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setIsModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}> 
+          <Text style={styles.modalTitle}>New Journal</Text>
 
-        {/* Category input */}
-        <TextInput
-          style={styles.input}
-          placeholder="Category (Required)"
-          value={journalCategory}
-          onChangeText={setJournalCategory}
-        />
+          {/* Title input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Title</Text>
+                <TextInput
+            style={styles.input}
+            placeholder="Enter title..."
+            value={journalTitle}
+            onChangeText={setJournalTitle}
+          />
+          </View>
 
-        {/* Location input */}
-        {/* Default to the closest place (user will be able to modify if they want) */}
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={journalLocation}
-          onChangeText={setJournalLocation}
-        />
+          {/* Category input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Category</Text>
+                <TextInput
+            style={styles.input}
+            placeholder="Enter category..."
+            value={journalCategory}
+            onChangeText={setJournalCategory}
+          />
+          </View>
 
-        {/* Start Date input (default: current date) */}
-        <DatePickerInput
-          locale="en"
-          label="Start Date"
-          value={initDate}
-          onChange={(d: any) => setInitDate(d)}
-          inputMode="start"
-          mode="outlined"
-          style={styles.datePicker}
-        />
+          {/* Location input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Location</Text>
+                <TextInput
+            style={styles.input}
+            placeholder="Enter location..."
+            value={journalLocation}
+            onChangeText={setJournalLocation}
+          />
+          </View>
 
-        {/* End Date input (default: current date) */}
-        <DatePickerInput
-          locale="en"
-          label="End Date"
-          value={endDate}
-          onChange={(d: any) => setEndDate(d)}
-          inputMode="start"
-          mode="outlined"
-          style={styles.datePicker}
-        />
+          {/* Status dropdown */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Status</Text>
+                <View style={styles.dropdownContainer}>
+                    <Picker
+                        selectedValue={condition}
+                        onValueChange={(itemValue: any) => setCondition(itemValue)}
+                        style={styles.dropdown}
+                    >
+                        <Picker.Item label="Visited" value="Visited" />
+                        <Picker.Item label="Planned" value="Planned" />
+                    </Picker>
+                </View>
+          </View>
 
-        {/* Journal body input */}
-        <TextInput
-          style={[styles.input, styles.journalInput]}
-          placeholder="Write your journal here..."
-          value={journalBody}
-          onChangeText={setJournalBody}
-          multiline={true}
-        />
+          {/* Start Date input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Start Date</Text>
+                <DatePickerInput
+            locale="en"
+            label="Enter start date..."
+            value={initDate}
+            onChange={(d: any) => setInitDate(d)}
+            inputMode="start"
+            mode="outlined"
+            style={styles.datePicker}
+          />
+          </View>
+          
+          
+          {/* End Date input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>End Date</Text>
+                <DatePickerInput
+            locale="en"
+            label="Enter end date..."
+            value={endDate}
+            onChange={(d: any) => setEndDate(d)}
+            inputMode="start"
+            mode="outlined"
+            style={styles.datePicker}
+          />
+          </View>
+          
 
-        {/* Submit and cancel buttons */}
-        <View style={styles.buttonContainer}>
-          <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid} />
-          <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
+          {/* Journal body input */}
+          <View style={styles.inputContainer}>
+                <Text style={styles.label}>Journal</Text>
+                <TextInput
+            style={[styles.input, styles.journalInput]}
+            placeholder="Write your journal here..."
+            value={journalBody}
+            onChangeText={setJournalBody}
+            multiline={true}
+          />
+          </View>
+          
+
+          {/* Submit and cancel buttons */}
+          <View style={styles.buttonContainer}>
+            <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid} color="#4CAF50" />
+            <Button title="Cancel" onPress={() => setIsModalVisible(false)} color="#f44336" />
+          </View>
         </View>
       </View>
-    </View>
-  </Modal>
+    </Modal>
 )};
 
 export default JournalModal;
 
-
 const styles = StyleSheet.create({
-    modalContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalContent: {
-      width: '80%',
-      backgroundColor: 'white',
-      borderRadius: 10,
-      padding: 20,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 10,
-    },
-    input: {
-      width: '100%',
-      borderWidth: 1,
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  modalContent: {
+    marginTop: 20,
+    width: '85%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 10,
+  },
+  // input: {
+  //   height: 40,
+  //   borderColor: '#ddd',
+  //   borderWidth: 1,
+  //   borderRadius: 8,
+  //   paddingHorizontal: 10,
+  //   marginBottom: 10,
+  //   fontSize: 16,
+  //   color: '#333',
+  // },
+  datePicker: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  journalInput: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    height: 100,
+    fontSize: 16,
+    textAlignVertical: 'top',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center align vertically
+    marginBottom: 15,
+  },
+  label: {
+      width: 100,
+      marginRight: 10, // Space between label and input
+      fontSize: 16, // Size of the label text
+      color: '#333', // Color of the label text
+  },
+  input: {
+      flex: 1, // Take the remaining space
+      height: 40,
       borderColor: '#ccc',
-      padding: 10,
-      borderRadius: 5,
-      marginBottom: 10,
-    },
-    errorText: {
-      color: 'red',
-      marginBottom: 10,
-    },
-    journalInput: {
-      height: 100,
-      verticalAlign: 'top',
-    },
-    datePicker: {
-      marginBottom: 12,
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
-  });
+      borderWidth: 1,
+      borderRadius: 4,
+      padding: 10, // Padding inside the input
+      fontSize: 16,
+  },
+  dropdownContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  dropdown: {
+      height: 40,
+      width: '100%',
+  },
+});

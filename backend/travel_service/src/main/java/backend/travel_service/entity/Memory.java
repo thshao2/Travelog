@@ -27,20 +27,23 @@ public class Memory {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String category;
 
     @Column(nullable = false)
     private String loc;
 
     @Column(nullable = false)
-    private String captionText;
+    private String condition;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime initDate;
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String captionText; 
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime endDate;
+    @Column(nullable = false)
+    private LocalDateTime initDate; 
+
+     @Column(nullable = false)
+    private LocalDateTime endDate; 
 
     // private Long locationId; // FK to Location
 

@@ -45,6 +45,7 @@ public class MemoryService {
         memory.setTitle(memoryDto.getTitle());
         memory.setCategory(memoryDto.getCategory());
         memory.setLoc(memoryDto.getLoc());
+        memory.setCondition(memoryDto.getCondition()); // Ensure this line is present
         memory.setCaptionText(memoryDto.getCaptionText());
         memory.setInitDate(memoryDto.getInitDate());
         memory.setEndDate(memoryDto.getEndDate());

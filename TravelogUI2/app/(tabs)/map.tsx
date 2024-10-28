@@ -97,13 +97,13 @@ function Map() {
       let left = point.x + 10;
   
       // Check if popup goes off the right side of the screen
-      if (left + 200 > mapContainerBounds.width) { 
-        left = point.x - 130;
+      if (left + 250 > mapContainerBounds.width) { 
+        left = point.x - 250;
       }
   
       // Check if popup goes off the bottom of the screen
-      if (top + 100 > mapContainerBounds.height) {
-        top = point.y - 120;
+      if (top + 180 > mapContainerBounds.height) {
+        top = point.y - 200;
       }
   
       setSelectedPin({
@@ -122,12 +122,12 @@ function Map() {
           let updatedTop = updatedPoint.y - 20;
           let updatedLeft = updatedPoint.x + 10;
   
-          if (updatedLeft + 200 > mapContainerBounds.width) {
-            updatedLeft = updatedPoint.x - 130;
+          if (updatedLeft + 250 > mapContainerBounds.width) {
+            updatedLeft = updatedPoint.x - 250;
           }
   
-          if (updatedTop + 100 > mapContainerBounds.height) {
-            updatedTop = updatedPoint.y - 120;
+          if (updatedTop + 180 > mapContainerBounds.height) {
+            updatedTop = updatedPoint.y - 200;
           }
   
           setSelectedPin((prevPin) => ({
