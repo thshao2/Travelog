@@ -111,11 +111,14 @@ public class AuthFilter implements GlobalFilter, Ordered {
         String token = authHeaderSplit[1];
 
         // Verify JWT Token by Calling Auth Service
+        System.out.println("Validating token: " + token);
         ValidateTokenResponse response;
         try {
             response = restTemplate.getForObject(
                     "http://auth-service:3010/auth/validate-token?token=" + token, ValidateTokenResponse.class);
+            System.out.println("Token validation response: " + response);
         } catch (HttpClientErrorException e) {
+            System.out.println("Error validating token: " + e.getMessage());
             // Handle client error response (4xx)
             return handleError(
                     exchange,
@@ -131,24 +134,15 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
         // Attach UserId to header (if relavant)
         // If userId is present, attach it to the request header
-        // if (userId != null) {
-        //     exchange.getResponse().getHeaders().add("X-User-Id", String.valueOf(userId));
-        //     System.out.println("X-User-Id attached to request: " + userId);
-        // } else {
-        //     return handleError(exchange, "Unauthorized - token validation failed");
-        // }
-
-        if (userId != null) {
-            ServerHttpRequest mutatedRequest = request.mutate()
-                    .header("X-User-Id", String.valueOf(userId))
-                    .build();
-            exchange = exchange.mutate().request(mutatedRequest).build();
-            System.out.println("X-User-Id attached to request: " + userId);
-        } else {
+        if (userId == null) {
             return handleError(exchange, "Unauthorized - token validation failed");
-        }
-
-        return chain.filter(exchange);
+        } 
+        ServerHttpRequest updatedRequest = exchange.getRequest()
+                .mutate()
+                .header("X-User-Id", Long.toString(userId))
+                .build();
+        ServerWebExchange mutatedExchange = exchange.mutate().request(updatedRequest).build();
+        return chain.filter(mutatedExchange);
     }
 
     /**

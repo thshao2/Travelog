@@ -1,5 +1,7 @@
 package backend.auth_service.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import backend.auth_service.service.AuthService;
-import backend.auth_service.service.JwtService;
-import io.jsonwebtoken.JwtException;
 import backend.auth_service.dto.Token;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
-import backend.auth_service.exception.InvalidCredentialsException;
 import backend.auth_service.exception.DuplicateCredentialsException;
-
-
-import org.springframework.web.bind.annotation.CrossOrigin;
+import backend.auth_service.exception.InvalidCredentialsException;
+import backend.auth_service.repository.UserRepository;
+import backend.auth_service.service.AuthService;
+import backend.auth_service.service.JwtService;
+import io.jsonwebtoken.JwtException;
 
 
 
@@ -35,6 +35,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/signup") // handles post reqs to /auth/signup
     public ResponseEntity<String> signup(@RequestBody User user) {
@@ -107,5 +110,23 @@ public class AuthController {
     public ResponseEntity<String> getAuth() {
         System.out.println("GET /auth endpoint hit");
         return ResponseEntity.ok("Auth Service is running");
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<Object> getUser(@RequestParam Long userId) {
+        System.out.println("GET /auth/user endpoint hit with userId: " + userId);
+        try {
+            Optional<User> user = userRepository.findById(userId);
+            if (user.isPresent()) {
+                System.out.println("User found: " + user.get());
+                return ResponseEntity.ok(user.get());
+            } else {
+                System.out.println("User not found with userId: " + userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while fetching the user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching the user");
+        }
     }
 }

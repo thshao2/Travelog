@@ -16,8 +16,9 @@ export default function ProfilePage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [reEnterPassword, setReEnterPassword] = useState('');
   const [bio, setBio] = useState('');
-
+  const [passwordError, setPasswordError] = useState('');
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -31,14 +32,14 @@ export default function ProfilePage() {
             'Authorization': `Bearer ${token}`,
           },
         });
-
+        console.log(response);
         if (response.ok) {
           const data = await response.json();
           // Set the fetched user data as default values in the state
           setName(data.username);
           setEmail(data.email);
           setBio(data.bio);
-          setProfilePic(data.profilePic || 'assets/images/default-pfp.png');
+          setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
         } else {
           console.error('Error fetching profile:', response.statusText);
         }
@@ -52,6 +53,10 @@ export default function ProfilePage() {
 
   const toggleEditing = () => {
     if (isEditing) {
+      if (password && password !== reEnterPassword) {
+        setPasswordError("Passwords do not match");
+        return;
+      }
       // Call API to update values in the database
       updateProfile();
     }
@@ -59,22 +64,29 @@ export default function ProfilePage() {
   };
 
   const updateProfile = async () => {
+
+    const updateData: { username: string; email: string; bio: string; password?: string } = {
+      username: name,
+      email,
+      bio,
+    };
+
+    if (password) {
+      updateData.password = password;
+    }
+
     try {
       const response = await fetch(`${API_URL}/user/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username: name,
-          email,
-          password,
-          bio,
-        }),
+        body: JSON.stringify(updateData),
       });
 
       if (response.ok) {
         console.log('Profile updated successfully');
+        setPasswordError(''); // Clear the error if the update is successful
       } else {
         console.error('Error updating profile:', response.statusText);
       }
@@ -162,15 +174,29 @@ export default function ProfilePage() {
 
           <View style={styles.row}>
             {isEditing ? (
-              <TextInput
-                style={styles.input}
-                placeholder="********"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="********"
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setPasswordError('');
+                  }}
+                  secureTextEntry
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Re-enter Password"
+                  onChangeText={(text) => {
+                    setReEnterPassword(text);
+                    setPasswordError('');
+                  }}
+                  secureTextEntry
+                />
+                {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+              </>
             ) : (
-              <Text style={styles.password}>Password: {password || '********'}</Text>
+              <Text style={styles.password}>Password: ********</Text>
             )}
           </View>
         </View>
@@ -282,5 +308,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     padding: 5,
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 5,
   },
 });
