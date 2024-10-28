@@ -43,7 +43,7 @@ export default function ProfilePage() {
           setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
         } else {
           console.error('Error fetching profile:', response.statusText);
-          // navigation.navigate('login');
+          navigation.navigate('login');
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
