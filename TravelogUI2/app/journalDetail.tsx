@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Modal, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { GestureResponderEvent } from 'react-native';
 import { Journal } from './popupMenu';
+import { Picker } from '@react-native-picker/picker';
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
@@ -18,6 +20,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
   const [editedJournalLocation, setEditedJournalLocation] = useState(journal.loc);
+  const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
   const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
   const [editedJournalBody, setEditedJournalBody] = useState(journal.captionText);
@@ -27,6 +30,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       setEditedJournalTitle(journal.title);
       setEditedJournalCategory(journal.category);
       setEditedJournalLocation(journal.loc)
+      setEditedJournalCondition(journal.condition)
       setEditedInitDate(new Date(journal.initDate));
       setEditedEndDate(new Date(journal.endDate));
       setEditedJournalBody(journal.captionText);
@@ -43,10 +47,12 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       title: editedJournalTitle,
       category: editedJournalCategory,
       loc: editedJournalLocation,
+      condition: editedJournalCondition, 
       initDate: editedInitDate,
       endDate: editedEndDate,
       captionText: editedJournalBody,
     });
+
     setIsEditMode(false);
   };
 
@@ -59,77 +65,117 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.modalTitle}>{isEditMode ? "Edit Journal" : journal.title}</Text>
+            <View style={styles.iconContainer}>
+              <MaterialIcons name="edit" size={24} color="black" onPress={handleEditToggle} />
+              <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id)} />
+              <MaterialIcons name="close" size={24} color="black" onPress={onClose} />
+            </View>
+          </View>
+
           {isEditMode ? (
             <>
-              <Text style={styles.modalTitle}>Edit Journal</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Title"
-                value={editedJournalTitle}
-                onChangeText={setEditedJournalTitle}
-              />
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Title</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Enter title..."
+                    value={editedJournalTitle}
+                    onChangeText={setEditedJournalTitle}
+                />
+              </View>
 
-              <TextInput
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Category</Text>
+                <TextInput
                 style={styles.input}
-                placeholder="Category (Required)"
+                placeholder="Enter category...y"
                 value={editedJournalCategory}
                 onChangeText={setEditedJournalCategory}
               />
+              </View>
 
-              <TextInput
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Location</Text>
+                <TextInput
                 style={styles.input}
-                placeholder="Location"
+                placeholder="Enter location..."
                 value={editedJournalLocation}
                 onChangeText={setEditedJournalLocation}
-                />
+              />
+              </View>
 
-              <DatePickerInput
+              {/* Status dropdown */}
+              <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Status</Text>
+                    <View style={styles.dropdownContainer}>
+                        <Picker
+                            selectedValue={editedJournalCondition}
+                            onValueChange={setEditedJournalCondition}
+                            // onValueChange={(itemValue: any) => setEditedJournalCondition(itemValue)}
+                            style={styles.dropdown}
+                        >
+                            <Picker.Item label="Visited" value="Visited" />
+                            <Picker.Item label="Planned" value="Planned" />
+                        </Picker>
+                    </View>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Start Date</Text>
+                <DatePickerInput
                 locale="en"
-                label="Start Date"
+                label="Enter start date..."
                 value={editedInitDate}
                 onChange={(d: any) => setEditedInitDate(d)}
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
               />
+              </View>
 
-              <DatePickerInput
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>End Date</Text>
+                <DatePickerInput
                 locale="en"
-                label="Emd Date"
+                label="Enter end date..."
                 value={editedEndDate}
                 onChange={(d: any) => setEditedEndDate(d)}
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
               />
+              </View>
 
-              <TextInput
-                style={[styles.input]}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Journal</Text>
+                <TextInput
+                style={[styles.input, styles.textArea]}
                 placeholder="Write your journal here..."
                 value={editedJournalBody}
                 onChangeText={setEditedJournalBody}
                 multiline={true}
               />
-
+              </View>
+              
               <View style={styles.buttonContainer}>
-                <Button title="Save" onPress={handleEditSubmit} />
-                <Button title="Cancel" onPress={() => setIsEditMode(false)} />
+                <Button title="Save" onPress={handleEditSubmit} color="#4CAF50" />
+                <Button title="Cancel" onPress={() => setIsEditMode(false)} color="#f44336" />
               </View>
             </>
           ) : (
             <>
-              <Text style={styles.modalTitle}>{journal.title}</Text>
-              <Text style={styles.label}>Category: {journal.category}</Text>
-              <Text style={styles.label}>Location: {journal.loc}</Text>
-              <Text style={styles.label}>Start Date: {journal.initDate.toLocaleDateString()}</Text>
-              <Text style={styles.label}>End Date: {journal.endDate.toLocaleDateString()}</Text>
-              <Text style={styles.label}>Journal:</Text>
-              <Text style={styles.journalBody}>{journal.captionText}</Text>
-
-              <View style={styles.buttonContainer}>
-                <Button title="Edit" onPress={handleEditToggle} />
-                <Button title="Delete" onPress={() => onDelete(journal.id)} />
-                <Button title="Close" onPress={onClose} />
+              <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
+              <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
+              <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
+              <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
+              <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
+                  
+              <View style={styles.blogContainer}>
+                <ScrollView>
+                  <Text style={styles.journalBody}>{journal.captionText}</Text>
+                </ScrollView>
               </View>
             </>
           )}
@@ -137,56 +183,149 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       </View>
     </Modal>
   );
-}
+};
 
 export default JournalDetailModal;
 
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
+    width: '85%',
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    elevation: 10,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#333',
   },
-  input: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
-  datePicker: {
-    marginBottom: 12,
-  },
-  label: {
+  detailLabel: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: 'bold',
     marginVertical: 5,
+    color: '#555',
   },
-  journalBody: {
-    fontSize: 14,
-    marginVertical: 10,
+  detailText: {
+    fontWeight: 'normal',
+    color: '#444',
+  },
+  // input: {
+  //   height: 40,
+  //   borderColor: '#ddd',
+  //   borderWidth: 1,
+  //   borderRadius: 8,
+  //   paddingHorizontal: 10,
+  //   marginBottom: 10,
+  //   fontSize: 16,
+  //   color: '#333',
+  // },
+  datePicker: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  textArea: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    height: 100,
+    fontSize: 16,
+    textAlignVertical: 'top',
+    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: 20,
+  },
+  // journalBody: {
+  //   fontSize: 16,
+  //   lineHeight: 24,
+  //   color: '#444',
+  //   marginTop: 10,
+  // },
+  blogContainer: {
+    padding: 16,
+    backgroundColor: '#f9f9f9', // Light background color for a clean look
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2, // Add some elevation for Android
+    marginTop: 16,
+    marginBottom: 16, // Space between blog entries
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8, // Space below the title
+  },
+  // label: {
+  //   fontSize: 16,
+  //   fontWeight: '600', // Slightly bold to differentiate labels
+  //   marginVertical: 5, // Space between labels
+  // },
+  inputContainer: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center align vertically
+    marginBottom: 15,
+  },
+  label: {
+      width: 100,
+      marginRight: 10, // Space between label and input
+      fontSize: 16, // Size of the label text
+      color: '#333', // Color of the label text
+  },
+  input: {
+      flex: 1, // Take the remaining space
+      height: 40,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      borderRadius: 4,
+      padding: 10, // Padding inside the input
+      fontSize: 16,
+  },
+  text: {
+    fontSize: 16,
+    color: '#333', // Dark text color for readability
+    marginBottom: 8
+  },
+  journalBody: {
+    fontSize: 16,
+    marginTop: 8, // Space above journal body
+    color: '#555', // Slightly lighter color for journal body
+    maxHeight: 200, // Optional: Set a max height if needed
+  },
+  dropdownContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  dropdown: {
+      height: 40,
+      width: '100%',
   },
 });

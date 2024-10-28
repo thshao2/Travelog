@@ -10,6 +10,7 @@ export type Journal = {
   title: string;
   category: string;
   loc: string;
+  condition: string,
   captionText: string;
   initDate: Date;
   endDate: Date;
@@ -131,6 +132,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         { top: selectedPin.position?.top, left: selectedPin.position?.left },
       ]}
     >
+      <Text style={styles.popupTitle}>Memories</Text>
       <Pressable onPress={onClose} style={styles.closeButton}>
         <MaterialIcons name="close" size={18} color="black" />
       </Pressable>
@@ -157,6 +159,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
                     pinId: item.pinId,
                     title: item.title,
                     category: item.category,
+                    condition: item.condition,
                     loc: item.loc,
                     initDate: new Date(item.initDate),
                     endDate: new Date(item.endDate),
@@ -194,68 +197,126 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 };
 
 export default PopupMenu;
-
 const styles = StyleSheet.create({
   popupMenu: {
     position: 'absolute',
+    width: 250,
     backgroundColor: 'white',
-    padding: 10,
     borderRadius: 10,
+    padding: 15,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
     elevation: 5,
-    zIndex: 1,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+  },
+  popupTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+  },
+  journalButton: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  journalButtonText: {
+    fontSize: 16,
+  },
+  noMemoriesText: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+    color: '#888',
+    marginVertical: 10,
   },
   menuButton: {
-    backgroundColor: '#007aff',
-    padding: 8,
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 5,
-    marginBottom: 5,
+    marginTop: 15,
   },
   menuButtonText: {
     color: 'white',
     textAlign: 'center',
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    marginBottom: 5,
-  },
-  noMemoriesText: {
-    color: 'gray',
-    textAlign: 'center',
-    marginTop: 5,
-    marginBottom: 10,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  journalButtonText: {
-    textAlign: 'center',
-  },
-  journalButton: {
-    backgroundColor: 'transparent',
-    borderColor: '#000000',
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 5,
-    marginBottom: 5,
-  },
-  detailSection: {
-    backgroundColor: '#f9f9f9',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  detailText: {
-    fontSize: 14,
+    fontWeight: '600',
   },
 });
+
+// const styles = StyleSheet.create({
+//   popupMenu: {
+//     position: 'absolute',
+//     backgroundColor: 'white',
+//     padding: 10,
+//     borderRadius: 10,
+//     shadowColor: '#000',
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//     zIndex: 1,
+//   },
+//   menuButton: {
+//     backgroundColor: '#007aff',
+//     padding: 8,
+//     borderRadius: 5,
+//     marginBottom: 5,
+//   },
+//   menuButtonText: {
+//     color: 'white',
+//     textAlign: 'center',
+//   },
+//   closeButton: {
+//     alignSelf: 'flex-end',
+//     marginBottom: 5,
+//   },
+//   noMemoriesText: {
+//     color: 'gray',
+//     textAlign: 'center',
+//     marginTop: 5,
+//     marginBottom: 10,
+//   },
+//   errorText: {
+//     color: 'red',
+//     marginBottom: 10,
+//   },
+//   journalButtonText: {
+//     textAlign: 'center',
+//   },
+//   journalButton: {
+//     backgroundColor: 'transparent',
+//     borderColor: '#000000',
+//     borderWidth: 1,
+//     padding: 8,
+//     borderRadius: 5,
+//     marginBottom: 5,
+//   },
+//   detailSection: {
+//     backgroundColor: '#f9f9f9',
+//     padding: 10,
+//     borderRadius: 5,
+//     marginTop: 5,
+//   },
+//   detailText: {
+//     fontSize: 14,
+//   },
+// });
 
 // import React from 'react';
 // import { View, Pressable, Text, StyleSheet } from 'react-native';

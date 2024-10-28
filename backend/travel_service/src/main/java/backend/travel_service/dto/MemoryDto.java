@@ -15,6 +15,7 @@ public class MemoryDto {
     private String title;
     private String category;
     private String loc;
+    private String condition;
     private String captionText;
     private LocalDateTime initDate;
     private LocalDateTime endDate;
