@@ -51,38 +51,6 @@ export default function ProfilePage() {
     fetchProfile();
   }, []); // Empty dependency array means this useEffect runs once when the component mounts
 
-
-  // Fetch user profile on component mount
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = await getToken(); // Use the getToken function
-        const response = await fetch(`${API_URL}/user/profile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Set the fetched user data as default values in the state
-          setName(data.username);
-          setEmail(data.email);
-          setBio(data.bio);
-          setProfilePic(data.profilePic || 'assets/images/default-pfp.png');
-        } else {
-          console.error('Error fetching profile:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    fetchProfile();
-  }, []); // Empty dependency array means this useEffect runs once when the component mounts
-
   const toggleEditing = () => {
     if (isEditing) {
       if (password && password !== reEnterPassword) {
@@ -118,6 +86,7 @@ export default function ProfilePage() {
 
       if (response.ok) {
         console.log('Profile updated successfully');
+        setPasswordError(''); // Clear the error if the update is successful
       } else {
         console.error('Error updating profile:', response.statusText);
       }
