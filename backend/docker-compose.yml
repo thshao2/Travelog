@@ -46,6 +46,7 @@ services:
 
   user-service:
     image: maven:latest
+    container_name: user-service
     volumes: 
       - ./user_service/src:/backend/user_service/src          
       - ./user_service/target:/backend/user_service/target  

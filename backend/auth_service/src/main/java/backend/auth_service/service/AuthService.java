@@ -62,15 +62,20 @@ public class AuthService {
     String inputEmail = userCredential.getEmail();
     String inputPassword = userCredential.getPassword();
 
-    // Fetch user based on username
+    // Fetch user based on email
     Optional<User> userEntry = repository.findByEmail(inputEmail);
+    System.out.println("userEntry " + userEntry);
     // User exists - now verify their password.
     if (userEntry.isPresent()) {
+      System.out.println("userEntry is present");
       User user = userEntry.get();
       String expectedHashedPassword = user.getPassword();
 
       // Password matches - return user ID.
+      System.out.println("inputPassword: " + inputPassword);
+      System.out.println("expectedHashedPassword: " + expectedHashedPassword);
       if (passwordEncoder.matches(inputPassword, expectedHashedPassword)) {
+        System.out.println("password matches");
         return Optional.of(user.getId());
       }
     }
