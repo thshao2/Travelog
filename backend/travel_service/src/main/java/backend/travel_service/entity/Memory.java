@@ -1,11 +1,12 @@
 package backend.travel_service.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "memories")
@@ -33,13 +34,13 @@ public class Memory {
     private String loc;
 
     @Column(nullable = false)
-    private String captionText; 
+    private String captionText;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime initDate; 
+    private LocalDateTime initDate;
 
-     @Column(nullable = false, updatable = false)
-    private LocalDateTime endDate; 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime endDate;
 
     // private Long locationId; // FK to Location
 

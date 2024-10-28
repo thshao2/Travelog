@@ -1,12 +1,13 @@
 package backend.travel_service.service;
 
-import backend.travel_service.entity.Memory;
-import backend.travel_service.repository.MemoryRepository;
-import backend.travel_service.dto.MemoryDto;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import backend.travel_service.dto.MemoryDto;
+import backend.travel_service.entity.Memory;
+import backend.travel_service.repository.MemoryRepository;
 
 @Service
 public class MemoryService {
@@ -40,8 +41,7 @@ public class MemoryService {
     }
 
     public void updateMemory(Long memoryId, MemoryDto memoryDto) {
-        Memory memory = memoryRepository.findById(memoryId)
-            .orElseThrow(() -> new RuntimeException("Memory not found"));
+        Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
         memory.setTitle(memoryDto.getTitle());
         memory.setCategory(memoryDto.getCategory());
         memory.setLoc(memoryDto.getLoc());

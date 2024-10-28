@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -23,8 +25,10 @@ public class Pin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "location_id", nullable = false)
-    private Long locationId; // FK to Location
+    @OneToOne()
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    // @Column(name = "location_id", nullable = false)
+    private Location location;
 
     // @Column(name = "memory_id", nullable = false)
     // private Long memoryId; // FK to Memory
@@ -39,5 +43,4 @@ public class Pin {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
 }

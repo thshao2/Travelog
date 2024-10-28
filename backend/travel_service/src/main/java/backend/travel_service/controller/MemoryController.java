@@ -1,15 +1,15 @@
 package backend.travel_service;
 
-import backend.travel_service.entity.Memory;
-import backend.travel_service.service.MemoryService;
-import backend.travel_service.dto.MemoryDto;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.List;
-import java.util.Map;
+import backend.travel_service.dto.MemoryDto;
+import backend.travel_service.entity.Memory;
+import backend.travel_service.service.MemoryService;
 
 @RestController
 @RequestMapping("/memory")
@@ -43,17 +43,13 @@ public class MemoryController {
 
     @GetMapping("/{pinId}")
     public ResponseEntity<List<Memory>> getMemoriesByUserIdAndPinId(
-            @RequestHeader("X-User-Id") Long userId, 
-            @PathVariable Long pinId) {
+            @RequestHeader("X-User-Id") Long userId, @PathVariable Long pinId) {
         List<Memory> memories = memoryService.getMemoriesByUserIdAndPinId(userId, pinId);
         return ResponseEntity.ok(memories);
     }
 
     @PostMapping
-    public ResponseEntity<Memory> postMemory(
-            @RequestBody Memory memory,
-            @RequestHeader("X-User-Id") Long userId
-    ) {
+    public ResponseEntity<Memory> postMemory(@RequestBody Memory memory, @RequestHeader("X-User-Id") Long userId) {
         memory.setUserId(userId);
         Memory savedMemory = memoryService.postMemory(memory);
         return ResponseEntity.ok(savedMemory);
