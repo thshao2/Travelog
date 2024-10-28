@@ -25,6 +25,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const token = await getToken(); // Use the getToken function
+        console.log(token)
         const response = await fetch(`${API_URL}/user/profile`, {
           method: 'GET',
           headers: {
@@ -42,6 +43,7 @@ export default function ProfilePage() {
           setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
         } else {
           console.error('Error fetching profile:', response.statusText);
+          // navigation.navigate('login');
         }
       } catch (error) {
         console.error('Error fetching profile:', error);

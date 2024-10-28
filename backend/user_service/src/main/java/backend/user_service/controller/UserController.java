@@ -35,6 +35,7 @@ public class UserController {
 
             // Fetch the user profile using the user ID
             UserProfile userProfile = userProfileRepository.findByuserId(userId);
+            System.out.println(userProfile);
             if (userProfile == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
