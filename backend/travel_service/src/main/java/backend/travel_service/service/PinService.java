@@ -8,6 +8,8 @@ import backend.travel_service.entity.Pin;
 import backend.travel_service.repository.LocationRepository;
 import backend.travel_service.repository.PinRepository;
 
+import java.util.List;
+
 @Service
 public class PinService {
     @Autowired
@@ -31,5 +33,9 @@ public class PinService {
         System.out.println("Pin successfully saved: " + pinRepository.findByUserId(userId));
 
         return pin;
+    }
+
+    public List<Pin> getPinList(Long userId) {
+        return pinRepository.findByUserId(userId);
     }
 }

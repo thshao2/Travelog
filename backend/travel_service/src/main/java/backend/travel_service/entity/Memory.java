@@ -37,13 +37,13 @@ public class Memory {
     private String condition;
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    private String captionText; 
+    private String captionText;
 
     @Column(nullable = false)
-    private LocalDateTime initDate; 
+    private LocalDateTime initDate;
 
-     @Column(nullable = false)
-    private LocalDateTime endDate; 
+    @Column(nullable = false)
+    private LocalDateTime endDate;
 
     // private Long locationId; // FK to Location
 
