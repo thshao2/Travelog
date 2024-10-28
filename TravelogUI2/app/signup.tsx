@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, TextInput, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
+import config from './config';
+
+const {API_URL} = config;
+
 const SignUpPage = () => {
   const navigation = useNavigation();
 
@@ -44,7 +48,7 @@ const SignUpPage = () => {
     console.log("submitting form: ", username, email, password)
     try {
       // Make a POST request to /auth/login endpoint via the API Gateway
-      let response = await fetch('http://localhost:8080/auth/signup', {
+      let response = await fetch(`${API_URL}/auth/signup`, {
           method: 'POST',
           body: JSON.stringify({username: username, email: email, password: password}),
           headers: {

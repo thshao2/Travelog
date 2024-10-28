@@ -4,6 +4,10 @@ import { Text, View, TextInput, Button, Modal, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Picker } from '@react-native-picker/picker';
 
+import config from './config';
+
+const {API_URL} = config;
+
 interface JournalModalProps {
   isModalVisible: boolean,
   setIsModalVisible: (state: boolean) => void,
@@ -46,7 +50,7 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
               mediaIds: [1, 2, 3],  // Replace with actual media IDs
           };
           
-          let response = await fetch(`http://localhost:8080/travel/memory`, {
+          let response = await fetch(`${API_URL}/travel/memory`, {
               method: 'POST',
               body: JSON.stringify(memoryData),
               headers: {

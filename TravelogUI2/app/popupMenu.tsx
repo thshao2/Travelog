@@ -3,6 +3,10 @@ import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from '
 import { MaterialIcons } from '@expo/vector-icons';
 import JournalDetailModal from './journalDetail';
 
+import config from './config';
+
+const {API_URL} = config;
+
 export type Journal = {
   id: number;  
   userId: number;
@@ -42,7 +46,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     setError(null);
     
     try {
-      const response = await fetch(`http://localhost:8080/travel/memory/${pinId}`, {
+      const response = await fetch(`${API_URL}/travel/memory/${pinId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +87,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     setIsDetailVisible(false);
     
     try {
-      const response = await fetch(`http://localhost:8080/travel/memory/${journalId}`, {
+      const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +114,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   const handleEditJournal = async (updatedJournal: Journal) => {
     setIsDetailVisible(false);
 
-    const response = await fetch(`http://localhost:8080/travel/memory/${updatedJournal.id}`, {
+    const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
