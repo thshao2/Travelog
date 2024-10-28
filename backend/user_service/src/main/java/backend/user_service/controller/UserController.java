@@ -15,6 +15,7 @@ import backend.user_service.dto.UserProfileResponse;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
