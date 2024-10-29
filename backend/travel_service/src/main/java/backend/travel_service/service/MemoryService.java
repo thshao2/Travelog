@@ -27,6 +27,10 @@ public class MemoryService {
         return memoryRepository.findByUserIdAndPinId(userId, pinId);
     }
 
+    public List<Memory> getMemoriesByCategory(Long userId, String category) {
+        return memoryRepository.findByCategory(userId, category);
+    }
+
     public Memory postMemory(Memory memory) {
         return memoryRepository.save(memory);
     }
@@ -45,7 +49,7 @@ public class MemoryService {
         memory.setTitle(memoryDto.getTitle());
         memory.setCategory(memoryDto.getCategory());
         memory.setLoc(memoryDto.getLoc());
-        memory.setCondition(memoryDto.getCondition()); // Ensure this line is present
+        memory.setCondition(memoryDto.getCondition());
         memory.setCaptionText(memoryDto.getCaptionText());
         memory.setInitDate(memoryDto.getInitDate());
         memory.setEndDate(memoryDto.getEndDate());

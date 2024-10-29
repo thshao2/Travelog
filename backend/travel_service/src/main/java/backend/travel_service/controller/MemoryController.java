@@ -48,6 +48,13 @@ public class MemoryController {
         return ResponseEntity.ok(memories);
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Memory>> getMemoriesByCategory(
+            @RequestHeader("X-User-Id") Long userId, @PathVariable String category) {
+        List<Memory> memories = memoryService.getMemoriesByCategory(userId, category);
+        return ResponseEntity.ok(memories);
+    }
+
     @PostMapping
     public ResponseEntity<Memory> postMemory(@RequestBody Memory memory, @RequestHeader("X-User-Id") Long userId) {
         memory.setUserId(userId);
