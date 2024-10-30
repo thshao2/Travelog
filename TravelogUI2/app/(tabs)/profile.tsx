@@ -5,11 +5,14 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 import config from '../config';
 import { getToken, removeToken } from "../utils/util";
+import { useLoginContext } from "../context/LoginContext";
 
 const {API_URL} = config;
 
 export default function ProfilePage() {
   const navigation = useNavigation();
+
+  const loginContext = useLoginContext();
 
   const [isEditing, setIsEditing] = useState(false);
   const [profilePic, setProfilePic] = useState('assets/images/default-pfp.png');
@@ -20,9 +23,8 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (token: string) => {
     try {
-      const token = await getToken(); // Use the getToken function
       console.log(token)
       const response = await fetch(`${API_URL}/user/profile`, {
         method: 'GET',
@@ -50,8 +52,8 @@ export default function ProfilePage() {
 
   // Fetch user profile on component mount
   useEffect(() => {
-    fetchProfile();
-  }, []); // Empty dependency array means this useEffect runs once when the component mounts
+    fetchProfile(loginContext.accessToken);
+  }, [loginContext.accessToken]);
 
   const toggleEditing = () => {
     if (isEditing) {
@@ -121,6 +123,8 @@ export default function ProfilePage() {
   const logout = async () => {
     await removeToken();
     console.log(await getToken());
+    loginContext.setEmail('');
+    loginContext.setAccessToken('');
     navigation.navigate('login');
   };
 

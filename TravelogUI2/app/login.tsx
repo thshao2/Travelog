@@ -7,39 +7,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import config from './config';
 
+import { storeToken } from './utils/util';
+import { useLoginContext } from './context/LoginContext';
+
 const {API_URL} = config;
 
 // const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
 
-
-
-// const storeToken = async (token: string, userId: string | null) => {
-const storeToken = async (token: string) => {
-  if (Platform.OS === 'web') {
-    localStorage.setItem('token', token);
-    // localStorage.setItem('userId', userId? userId : 'default userID');
-  } else {
-    await AsyncStorage.setItem('token', token);
-    // await AsyncStorage.setItem('userId', userId? userId : 'default userID');
-  }
-};
-
-// use getToken in utils.ts
-const getToken = async () => {
-  if (Platform.OS === 'web') {
-    return localStorage.getItem('token');
-  } else {
-    return await AsyncStorage.getItem('token');
-  }
-};
-
-const getUserId = async () => {
-  if (Platform.OS === 'web') {
-    return localStorage.getItem('userId');
-  } else {
-    return await AsyncStorage.getItem('userId');
-  }
-};
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -47,6 +21,8 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+
+  const loginContext = useLoginContext();
 
   // Function to validate email format
   const validateEmail = (email: string) => {
@@ -93,6 +69,8 @@ const LoginScreen = () => {
           console.log("I AM HERE")
           const data = await response.json();
           await storeToken(data.token);
+          loginContext.setAccessToken(data.token);
+          loginContext.setEmail(email);
           // try to get X-user-ID but give me null
           // await storeToken(data.token, response.headers.get('X-User-Id'));
           console.log("API Response: ", data);
