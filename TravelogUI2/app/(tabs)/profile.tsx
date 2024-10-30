@@ -20,36 +20,36 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
+  const fetchProfile = async () => {
+    try {
+      const token = await getToken(); // Use the getToken function
+      console.log(token)
+      const response = await fetch(`${API_URL}/user/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        // Set the fetched user data as default values in the state
+        setName(data.username);
+        setEmail(data.email);
+        setBio(data.bio);
+        setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
+      } else {
+        console.error('Error fetching profile:', response.statusText);
+        navigation.navigate('login');
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
   // Fetch user profile on component mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = await getToken(); // Use the getToken function
-        console.log(token)
-        const response = await fetch(`${API_URL}/user/profile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        console.log(response);
-        if (response.ok) {
-          const data = await response.json();
-          // Set the fetched user data as default values in the state
-          setName(data.username);
-          setEmail(data.email);
-          setBio(data.bio);
-          setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
-        } else {
-          console.error('Error fetching profile:', response.statusText);
-          navigation.navigate('login');
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
     fetchProfile();
   }, []); // Empty dependency array means this useEffect runs once when the component mounts
 
