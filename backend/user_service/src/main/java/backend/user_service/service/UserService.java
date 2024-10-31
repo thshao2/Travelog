@@ -27,4 +27,17 @@ public class UserService {
         user_repository.save(newUserProfile); // Save the user profile
         return true;
     }
+
+    public UserProfile updateUserProfile(Long userId, String newUsername, String newBio) {
+        Optional<UserProfile> userProfileOpt = user_repository.findById(userId);
+
+        if (userProfileOpt.isPresent()) {
+            UserProfile userProfile = userProfileOpt.get();
+            userProfile.setUsername(newUsername);
+            userProfile.setBio(newBio);
+            return user_repository.save(userProfile);
+        } else {
+            return null;
+        }
+    }
 }

@@ -25,9 +25,6 @@ public class UserController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${api.url}")
-    private String apiUrl;
-
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile(@RequestHeader("X-User-Id") Long userId) {
         try {
@@ -85,6 +82,18 @@ public class UserController {
         } catch (Exception e) {
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUserProfile(@RequestHeader("X-User-Id") Long userId,
+                                                    @RequestBody UserProfileUpdateRequest updateRequest) {
+        UserProfile updatedProfile = userService.updateUserProfile(userId, updateRequest.getUsername(), updateRequest.getBio());
+
+        if (updatedProfile != null) {
+            return ResponseEntity.ok("User profile updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User profile not found.");
         }
     }
 }

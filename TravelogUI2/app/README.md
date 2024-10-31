@@ -1,4 +1,4 @@
-Instructions for using Login Context
+# Instructions for using Login Context
 
 - The Context API allows us to wrap our entire application around a LoginProvider, allowing us to keep track of the user's token and email no matter where they are in the application.
 
