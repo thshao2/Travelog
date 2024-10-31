@@ -3,10 +3,14 @@ import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
 import { Platform, Text, Pressable, StyleSheet } from 'react-native'
 import JournalModal from '../journalModal';
 import PopupMenu from '../popupMenu';
+import config from '../config';
+import { useLoginContext } from "../context/LoginContext";
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import './Map.css';
+
+const {API_URL} = config;
 
 const INITIAL_CENTER: [number, number] = [
   -122.0626,
@@ -15,6 +19,8 @@ const INITIAL_CENTER: [number, number] = [
 const INITIAL_ZOOM = 18.12
 
 function Map() {
+  const loginContext = useLoginContext();
+
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
 
@@ -23,9 +29,11 @@ function Map() {
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
   const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Managing seleted pin for pop up menu
-  const [selectedPin, setSelectedPin] = useState<{ marker: mapboxgl.Marker | null, position: { top: number, left: number } | null }>({
+  const [selectedPin, setSelectedPin] = useState<{ pinId: number | null, marker: mapboxgl.Marker | null, position: { top: number, left: number } | null }>({
+    pinId: null,
     marker: null,
     position: null,
   });
@@ -49,12 +57,42 @@ function Map() {
       // update state
       setCenter([mapCenter.lng, mapCenter.lat])
       setZoom(mapZoom)
-    })
+    })      
 
     return () => {
       mapRef.current?.remove();
     }
   }, [])
+
+  const fetchPins = async (token: string) => {
+    try {
+      const response = await fetch(`${API_URL}/travel/pin`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const pins = await response.json();
+      console.log(pins);
+  
+      if (mapRef.current) {
+        pins.forEach((pin: any) => {
+          const { latitude, longitude } = pin.location;
+          
+          const newMarker = new mapboxgl.Marker({ draggable: true })
+            .setLngLat([longitude, latitude])
+            .addTo(mapRef.current);
+            newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, pin.id));
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching pins:", err);
+    }
+  };
 
   const handleButtonClick = () => {
     mapRef.current?.flyTo({
@@ -77,7 +115,7 @@ function Map() {
         .addTo(mapRef.current);
 
       // Add click event listener to the marker
-      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker));
+      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker, 123)); // need the actual pinId
 
       // Store the marker
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
@@ -87,7 +125,7 @@ function Map() {
     }
   };
 
-  const handlePinClick = (marker: mapboxgl.Marker) => {
+  const handlePinClick = (marker: mapboxgl.Marker, pinId: number) => {
     const lngLat = marker.getLngLat();
     const point = mapRef.current?.project([lngLat.lng, lngLat.lat]); // Get pixel position of the marker
     const mapContainerBounds = mapContainerRef.current?.getBoundingClientRect(); // Get map container dimensions
@@ -97,16 +135,17 @@ function Map() {
       let left = point.x + 10;
   
       // Check if popup goes off the right side of the screen
-      if (left + 200 > mapContainerBounds.width) { 
-        left = point.x - 130;
+      if (left + 250 > mapContainerBounds.width) { 
+        left = point.x - 250;
       }
   
       // Check if popup goes off the bottom of the screen
-      if (top + 100 > mapContainerBounds.height) {
-        top = point.y - 120;
+      if (top + 180 > mapContainerBounds.height) {
+        top = point.y - 200;
       }
   
       setSelectedPin({
+        pinId,
         marker,
         position: {
           top: top,
@@ -122,12 +161,12 @@ function Map() {
           let updatedTop = updatedPoint.y - 20;
           let updatedLeft = updatedPoint.x + 10;
   
-          if (updatedLeft + 200 > mapContainerBounds.width) {
-            updatedLeft = updatedPoint.x - 130;
+          if (updatedLeft + 250 > mapContainerBounds.width) {
+            updatedLeft = updatedPoint.x - 250;
           }
   
-          if (updatedTop + 100 > mapContainerBounds.height) {
-            updatedTop = updatedPoint.y - 120;
+          if (updatedTop + 180 > mapContainerBounds.height) {
+            updatedTop = updatedPoint.y - 200;
           }
   
           setSelectedPin((prevPin) => ({
@@ -141,6 +180,13 @@ function Map() {
       });
     }
   };
+
+  useEffect(()=>{
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    fetchPins(loginContext.accessToken)
+  }, [loginContext.accessToken]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -171,12 +217,13 @@ function Map() {
       {selectedPin?.marker && selectedPin.position && (
         <PopupMenu
           selectedPin={selectedPin}
-          onClose={() => setSelectedPin({ marker: null, position: null })}
+          onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
         />
       )}
 
       <JournalModal
+        selectedPin={selectedPin}
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
       />
@@ -190,29 +237,6 @@ function Map() {
 }
 
 const styles = StyleSheet.create({
-  // sidebar: {
-  //   position: 'absolute',
-  //   top: 10,
-  //   left: 10,
-  //   backgroundColor: 'white',
-  //   padding: 10,
-  //   borderRadius: 5,
-  //   zIndex: 1, // Ensure the sidebar stays above the map
-  // },
-  // resetButton: {
-  //   position: 'absolute',
-  //   top: 50,
-  //   left: 10,
-  //   backgroundColor: '#007aff',
-  //   padding: 10,
-  //   borderRadius: 5,
-  //   zIndex: 1,
-  // },
-  // buttonText: {
-  //   color: 'white',
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  // },
   plusButton: {
     position: 'absolute',
     bottom: 20,
