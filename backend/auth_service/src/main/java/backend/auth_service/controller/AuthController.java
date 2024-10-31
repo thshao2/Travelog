@@ -21,6 +21,9 @@ import backend.auth_service.repository.UserRepository;
 import backend.auth_service.service.AuthService;
 import backend.auth_service.service.JwtService;
 import io.jsonwebtoken.JwtException;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 
@@ -129,4 +132,23 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching the user");
         }
     }
+
+    @PutMapping("/user/update")
+    public ResponseEntity<Object> updateUser(@RequestBody User user) {
+        System.out.println("PUT /auth/user/update endpoint hit with userId: " + user.getId());
+        try {
+            Optional<User> existingUser = userRepository.findById(user.getId());
+            if (existingUser.isPresent()) {
+                User updatedUser = authService.updateUser(existingUser, user);
+                System.out.println("User updated: " + updatedUser);
+                return ResponseEntity.ok(updatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while updating the user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the user");
+        }
+    }
+
 }

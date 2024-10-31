@@ -1,10 +1,13 @@
 package backend.user_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,9 +28,6 @@ public class UserController {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${api.url}")
-    private String apiUrl;
-
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile(@RequestHeader("X-User-Id") Long userId) {
         try {
@@ -45,7 +45,6 @@ public class UserController {
             // ResponseEntity<String> mediaResponse = restTemplate.getForEntity(apiUrl + "/media/profile?mediaId=" + userProfile.getAvatarMediaId(), String.class);
 
             // Fetch the user using user ID
-            System.out.println("apiUrl: " + apiUrl);
             ResponseEntity<UserDTO> response = restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
             System.out.println("User response: " + response);
 
@@ -81,6 +80,43 @@ public class UserController {
                 System.out.println("Failed to fetch user");
                 return ResponseEntity.status(response.getStatusCode()).body(null);
             }
+        } catch (Exception e) {
+            System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Boolean> updateUserProfile(@RequestHeader("X-User-Id") Long userId, @RequestBody UserProfileResponse profile) {
+        try {
+            System.out.println("Updating user profile for user ID: " + userId);
+
+            // Fetch the user profile using the user ID
+            UserProfile userProfile = userProfileRepository.findByuserId(userId);
+            if (userProfile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            System.out.println("User profile: " + userProfile);
+            
+            if (profile.getBio() != null) {
+                userProfile.setBio(profile.getBio());
+                userProfileRepository.save(userProfile);
+            }
+
+            // make a put request to auth service to update the user profile for the profile username, email, and password fields
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(userId);
+            userDTO.setUsername(profile.getUsername());
+            userDTO.setEmail(profile.getEmail());
+            userDTO.setPassword(profile.getPassword());
+            ResponseEntity<UserDTO> response = restTemplate.exchange(
+                "http://auth-service:3010/auth/user/update",
+                HttpMethod.PUT,
+                new HttpEntity<>(userDTO),
+                UserDTO.class
+            );            
+            System.out.println("User response final: " + response);
+            return ResponseEntity.ok(true);
         } catch (Exception e) {
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

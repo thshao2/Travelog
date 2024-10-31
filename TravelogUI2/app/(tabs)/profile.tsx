@@ -12,12 +12,12 @@ export default function ProfilePage() {
   const navigation = useNavigation();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [profilePic, setProfilePic] = useState('assets/images/default-pfp.png');
+  const [profilePic, setProfilePic] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [reEnterPassword, setReEnterPassword] = useState('');
-  const [bio, setBio] = useState('');
+  const [bio, setBio] = useState('My Travelog bio!');
   const [passwordError, setPasswordError] = useState('');
 
   // Fetch user profile on component mount
@@ -36,9 +36,9 @@ export default function ProfilePage() {
         if (response.ok) {
           const data = await response.json();
           // Set the fetched user data as default values in the state
-          setName(data.username);
+          setName(data.username || 'Travelog User');
           setEmail(data.email);
-          setBio(data.bio);
+          setBio(data.bio || 'My Travelog bio!');
           setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
         } else {
           console.error('Error fetching profile:', response.statusText);
@@ -53,6 +53,7 @@ export default function ProfilePage() {
 
   const toggleEditing = () => {
     if (isEditing) {
+      // if (password == 'Enter new password' && )
       if (password && password !== reEnterPassword) {
         setPasswordError("Passwords do not match");
         return;
@@ -69,6 +70,7 @@ export default function ProfilePage() {
       username: name,
       email,
       bio,
+      password,
     };
 
     if (password) {
@@ -76,10 +78,12 @@ export default function ProfilePage() {
     }
 
     try {
+      const token = await getToken(); // Use the getToken function
       const response = await fetch(`${API_URL}/user/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       });
@@ -177,7 +181,7 @@ export default function ProfilePage() {
               <>
                 <TextInput
                   style={styles.input}
-                  placeholder="********"
+                  placeholder="Enter new password"
                   onChangeText={(text) => {
                     setPassword(text);
                     setPasswordError('');
@@ -186,7 +190,7 @@ export default function ProfilePage() {
                 />
                 <TextInput
                   style={styles.input}
-                  placeholder="Re-enter Password"
+                  placeholder="Re-enter password"
                   onChangeText={(text) => {
                     setReEnterPassword(text);
                     setPasswordError('');

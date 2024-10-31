@@ -1,14 +1,15 @@
 package backend.auth_service.service;
 
-import backend.auth_service.entity.User;
-import backend.auth_service.exception.DuplicateCredentialsException;
-import backend.auth_service.exception.InvalidCredentialsException;
-import backend.auth_service.repository.UserRepository;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import backend.auth_service.entity.User;
+import backend.auth_service.exception.DuplicateCredentialsException;
+import backend.auth_service.exception.InvalidCredentialsException;
+import backend.auth_service.repository.UserRepository;
 
 @Service
 public class AuthService {
@@ -86,4 +87,26 @@ public class AuthService {
   // public Long validateToken(String token) {
   //   return jwtService.validateToken(token);
   // }
+
+  public User updateUser(Optional<User> existingUser, User user) {
+    System.out.println("Updating user: " + user);
+    // update user email
+    if (user.getEmail() != null) {
+      existingUser.get().setEmail(user.getEmail());
+    }
+    System.out.println("Updated user email: " + existingUser.get().getEmail());
+    // update username
+    if (user.getUsername() != null) {
+      existingUser.get().setUsername(user.getUsername());
+    }
+    System.out.println("Updated username: " + existingUser.get().getUsername());
+
+    // if password exists, encode it then update it
+    if (user.getPassword() != null) {
+      existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
+    }
+    System.out.println("Updated password: " + existingUser.get().getPassword());
+    repository.save(user);
+    return existingUser.get();
+  }
 }
