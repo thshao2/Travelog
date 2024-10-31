@@ -5,11 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 import config from '../config';
 import { getToken } from "../utils/util";
+import { useLoginContext } from "../context/LoginContext";
 
 const {API_URL} = config;
 
 export default function ProfilePage() {
   const navigation = useNavigation();
+  const loginContext = useLoginContext();
 
   const [isEditing, setIsEditing] = useState(false);
   const [profilePic, setProfilePic] = useState('');
@@ -20,36 +22,41 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('My Travelog bio!');
   const [passwordError, setPasswordError] = useState('');
 
+  const fetchProfile = async (token: string) => {
+    try {
+      let token2;
+      if (token == '' || token == null) {
+        token2 = await getToken();
+      } else {
+        token2 = token;
+      }
+      const response = await fetch(`${API_URL}/user/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token2}`,
+        },
+      });
+      console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        // Set the fetched user data as default values in the state
+        setName(data.username || 'Travelog User');
+        setEmail(data.email);
+        setBio(data.bio || 'My Travelog bio!');
+        setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
+      } else {
+        console.error('Error fetching profile:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
   // Fetch user profile on component mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = await getToken(); // Use the getToken function
-        const response = await fetch(`${API_URL}/user/profile`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        console.log(response);
-        if (response.ok) {
-          const data = await response.json();
-          // Set the fetched user data as default values in the state
-          setName(data.username || 'Travelog User');
-          setEmail(data.email);
-          setBio(data.bio || 'My Travelog bio!');
-          setProfilePic(data.mediaUrl || 'assets/images/default-pfp.png');
-        } else {
-          console.error('Error fetching profile:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    fetchProfile();
-  }, []); // Empty dependency array means this useEffect runs once when the component mounts
+    fetchProfile(loginContext.accessToken);
+  }, [loginContext.accessToken]);
 
   const toggleEditing = () => {
     if (isEditing) {
@@ -93,6 +100,7 @@ export default function ProfilePage() {
         setPasswordError(''); // Clear the error if the update is successful
       } else {
         console.error('Error updating profile:', response.statusText);
+        await fetchProfile(loginContext.accessToken);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
