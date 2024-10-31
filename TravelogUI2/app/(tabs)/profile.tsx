@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const [profilePic, setProfilePic] = useState('assets/images/default-pfp.png');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(''); // Really?
   const [reEnterPassword, setReEnterPassword] = useState('');
   const [bio, setBio] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -55,42 +55,44 @@ export default function ProfilePage() {
     fetchProfile(loginContext.accessToken);
   }, [loginContext.accessToken]);
 
-  const toggleEditing = () => {
+  const toggleEditing = async () => {
     if (isEditing) {
       if (password && password !== reEnterPassword) {
         setPasswordError("Passwords do not match");
         return;
       }
+      console.log("EDITIED????")
       // Call API to update values in the database
-      updateProfile();
+      await updateProfile();
     }
     setIsEditing(!isEditing);
   };
 
   const updateProfile = async () => {
-
-    const updateData: { username: string; email: string; bio: string; password?: string } = {
+    console.log(`UPDATE DATA ${name}, ${bio}`)
+    const updateData: { username: string; bio: string } = {
       username: name,
-      email,
-      bio,
+      bio: bio,
     };
-
-    if (password) {
-      updateData.password = password;
-    }
 
     try {
       const response = await fetch(`${API_URL}/user/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${loginContext.accessToken}`
         },
         body: JSON.stringify(updateData),
       });
 
+      console.log(response.statusText);
+
       if (response.ok) {
+        const res = await response.text();
+        console.log(res)
         console.log('Profile updated successfully');
-        setPasswordError(''); // Clear the error if the update is successful
+        await fetchProfile(loginContext.accessToken);
+        // setPasswordError(''); // Clear the error if the update is successful
       } else {
         console.error('Error updating profile:', response.statusText);
       }

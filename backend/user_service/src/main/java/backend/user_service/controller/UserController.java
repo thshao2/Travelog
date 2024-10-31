@@ -73,9 +73,9 @@ public class UserController {
                 // Create a response DTO combining user and user profile
                 UserProfileResponse userProfileResponse = new UserProfileResponse();
                 if (userDTO != null) {
-                    userProfileResponse.setUsername(userDTO.getUsername());
                     userProfileResponse.setEmail(userDTO.getEmail());
                 }
+                userProfileResponse.setUsername(userProfile.getUsername());
                 userProfileResponse.setBio(userProfile.getBio());
                 if (mediaUrl != null) {
                     userProfileResponse.setAvatarMediaId(mediaUrl);
