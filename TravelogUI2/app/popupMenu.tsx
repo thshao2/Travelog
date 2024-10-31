@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import JournalDetailModal from './journalDetail';
+import { useLoginContext } from './context/LoginContext';
 
 import config from './config';
 
@@ -22,6 +23,7 @@ export type Journal = {
 
 interface PopupMenuProps {
   selectedPin: {
+    pinId: number | null,
     marker: mapboxgl.Marker | null;
     position: {
         top: number;
@@ -33,15 +35,16 @@ interface PopupMenuProps {
 }
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal }: PopupMenuProps) => {
+  const loginContext = useLoginContext();
+  const token = loginContext.accessToken;
+
   const [memories, setMemories] = useState<Journal[]>([]);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = localStorage.getItem('token');
-
-  const fetchMemoriesData = async (pinId: number): Promise<void> => {
+  const fetchMemoriesData = async (pinId: number | null): Promise<void> => {
     setLoading(true);
     setError(null);
     
@@ -68,9 +71,8 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   useEffect(() => {
-    fetchMemoriesData(9999); // hard coded
-  }, []);
-// }, [userId, selectedPin.pinId]); // Fetch when userId or pinId changes && memoriesData change (?)
+    fetchMemoriesData(selectedPin.pinId);
+}, [selectedPin.pinId]);
 
   const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
@@ -126,7 +128,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     if (!response.ok) {
       throw new Error('Failed to edit memory.');
     }
-    fetchMemoriesData(9999); 
+    fetchMemoriesData(selectedPin.pinId); 
   };
 
   return (
@@ -142,7 +144,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       </Pressable>
 
       {/* Display the list of previous journal entries (memories) */}
-      {/* What are the point of memories??? Why are we callling openJournalModal on a memory type???*/}
       {/* Loading and Error Handling */}
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
@@ -201,6 +202,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 };
 
 export default PopupMenu;
+
 const styles = StyleSheet.create({
   popupMenu: {
     position: 'absolute',
@@ -259,121 +261,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-// const styles = StyleSheet.create({
-//   popupMenu: {
-//     position: 'absolute',
-//     backgroundColor: 'white',
-//     padding: 10,
-//     borderRadius: 10,
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.25,
-//     shadowRadius: 4,
-//     elevation: 5,
-//     zIndex: 1,
-//   },
-//   menuButton: {
-//     backgroundColor: '#007aff',
-//     padding: 8,
-//     borderRadius: 5,
-//     marginBottom: 5,
-//   },
-//   menuButtonText: {
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-//   closeButton: {
-//     alignSelf: 'flex-end',
-//     marginBottom: 5,
-//   },
-//   noMemoriesText: {
-//     color: 'gray',
-//     textAlign: 'center',
-//     marginTop: 5,
-//     marginBottom: 10,
-//   },
-//   errorText: {
-//     color: 'red',
-//     marginBottom: 10,
-//   },
-//   journalButtonText: {
-//     textAlign: 'center',
-//   },
-//   journalButton: {
-//     backgroundColor: 'transparent',
-//     borderColor: '#000000',
-//     borderWidth: 1,
-//     padding: 8,
-//     borderRadius: 5,
-//     marginBottom: 5,
-//   },
-//   detailSection: {
-//     backgroundColor: '#f9f9f9',
-//     padding: 10,
-//     borderRadius: 5,
-//     marginTop: 5,
-//   },
-//   detailText: {
-//     fontSize: 14,
-//   },
-// });
-
-// import React from 'react';
-// import { View, Pressable, Text, StyleSheet } from 'react-native';
-// import { MaterialIcons } from '@expo/vector-icons';
-
-// function PopupMenu ({ selectedPin, onClose, onAddJournal }) {
-//   return (
-//     <View
-//       style={[
-//         styles.popupMenu,
-//         { top: selectedPin.position.top, left: selectedPin.position.left },
-//       ]}
-//     >
-//       <Pressable onPress={onClose} style={styles.closeButton}>
-//         <MaterialIcons name="close" size={18} color="black" />
-//       </Pressable>
-//       <Pressable style={styles.menuButton} onPress={onAddJournal}>
-//         <Text style={styles.menuButtonText}>Add Journal</Text>
-//       </Pressable>
-//     </View>
-//   );
-// };
-
-// export default PopupMenu;
-
-// const styles = StyleSheet.create({
-//   popupMenu: {
-//     position: 'absolute',
-//     backgroundColor: 'white',
-//     padding: 10,
-//     borderRadius: 10,
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.25,
-//     shadowRadius: 4,
-//     elevation: 5,
-//     zIndex: 1, // Ensure it's on top of other components
-//   },
-//   menuButton: {
-//     backgroundColor: '#007aff',
-//     padding: 8,
-//     borderRadius: 5,
-//     marginBottom: 5,
-//   },
-//   menuButtonText: {
-//     color: 'white',
-//     textAlign: 'center',
-//   },
-//   closeButton: {
-//     alignSelf: 'flex-end',
-//     marginBottom: 5,
-//   },
-// });
