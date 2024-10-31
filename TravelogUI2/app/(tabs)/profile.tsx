@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from 'expo-image-picker';
 import config from '../config';
-import { getToken } from "../utils/util";
+import { getToken, removeToken } from "../utils/util";
 import { useLoginContext } from "../context/LoginContext";
 
 const {API_URL} = config;
@@ -128,7 +128,10 @@ export default function ProfilePage() {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await removeToken();
+    loginContext.setEmail('');
+    loginContext.setAccessToken('');
     navigation.navigate('login');
   };
 
