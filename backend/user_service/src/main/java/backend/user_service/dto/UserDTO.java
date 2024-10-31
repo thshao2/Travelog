@@ -14,8 +14,3 @@ public class UserDTO {
     private String email;
 }
 
-@Data
-public class UserProfileUpdateRequest {
-    private String username;
-    private String bio;
-}

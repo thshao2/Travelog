@@ -7,6 +7,8 @@ import org.springframework.web.client.RestTemplate;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 

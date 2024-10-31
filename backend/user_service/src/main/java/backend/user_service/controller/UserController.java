@@ -5,19 +5,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import backend.user_service.dto.UserDTO;
 import backend.user_service.dto.UserProfileResponse;
+import backend.user_service.dto.UserProfileUpdateRequest;
 import backend.user_service.entity.UserProfile;
+import backend.user_service.service.UserService;
 import backend.user_service.repository.UserProfileRepository;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -43,7 +51,6 @@ public class UserController {
             // ResponseEntity<String> mediaResponse = restTemplate.getForEntity(apiUrl + "/media/profile?mediaId=" + userProfile.getAvatarMediaId(), String.class);
 
             // Fetch the user using user ID
-            System.out.println("apiUrl: " + apiUrl);
             ResponseEntity<UserDTO> response = restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
             System.out.println("User response: " + response);
 
