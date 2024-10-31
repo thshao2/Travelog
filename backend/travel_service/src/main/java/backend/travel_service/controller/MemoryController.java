@@ -55,6 +55,11 @@ public class MemoryController {
         return ResponseEntity.ok(memories);
     }
 
+    @GetMapping("/categories")
+    public List<String> getDistinctCategories(@RequestHeader("X-User-Id") Long userId) {
+        return memoryService.getDistinctCategories(userId);
+    }
+
     @PostMapping
     public ResponseEntity<Memory> postMemory(@RequestBody Memory memory, @RequestHeader("X-User-Id") Long userId) {
         memory.setUserId(userId);

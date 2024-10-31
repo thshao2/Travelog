@@ -31,6 +31,10 @@ public class MemoryService {
         return memoryRepository.findByCategory(userId, category);
     }
 
+    public List<String> getDistinctCategories(Long userId) {
+        return memoryRepository.findDistinctCategories(userId);
+    }
+    
     public Memory postMemory(Memory memory) {
         return memoryRepository.save(memory);
     }

@@ -15,6 +15,10 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
 
     List<Memory> findByUserIdAndPinId(Long userId, Long pinId);
 
-    @Query("SELECT m FROM Memory m WHERE LOWER(m.category) = LOWER(:category) AND m.userId = :userId")
+    // @Query("SELECT m FROM Memory m WHERE LOWER(m.category) = LOWER(:category) AND m.userId = :userId")
+    @Query("SELECT m FROM Memory m WHERE m.category = :category AND m.userId = :userId")
     List<Memory> findByCategory(Long userId, String category);
+
+    @Query("SELECT DISTINCT m.category FROM Memory m WHERE m.userId = :userId")
+    List<String> findDistinctCategories(Long userId);
 }
