@@ -3,17 +3,28 @@ import { useEffect, useState } from 'react';
 import { Text, View, TextInput, Button, Modal, StyleSheet } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Picker } from '@react-native-picker/picker';
+import { useLoginContext } from './context/LoginContext';
 
 import config from './config';
 
 const {API_URL} = config;
 
 interface JournalModalProps {
+  selectedPin: {
+    pinId: number | null,
+    marker: mapboxgl.Marker | null;
+    position: {
+        top: number;
+        left: number;
+    } | null;
+  },
   isModalVisible: boolean,
   setIsModalVisible: (state: boolean) => void,
 }
 
-function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
+function JournalModal({selectedPin, isModalVisible, setIsModalVisible}: JournalModalProps){
+    const loginContext = useLoginContext();
+    const token = loginContext.accessToken;
     // State for managing the modal and form data
     // const [isModalVisible, setIsModalVisible] = useState(false);
     const [journalTitle, setJournalTitle] = useState('');
@@ -26,20 +37,19 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
-      if (initDate) {
+      if (journalTitle && journalLocation && condition && initDate && endDate) {
         setIsFormValid(true);
       } else {
         setIsFormValid(false);
       }
-    }, [initDate]);
+    }, [journalTitle, journalLocation, condition, initDate, endDate]);
 
     const handleSubmit = async () => {
-      const token = localStorage.getItem('token');
       console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, journalBody);
       
       try {
           const memoryData = {
-              pinId: 9999,  // Replace with actual pin ID
+              pinId: selectedPin.pinId,
               title: journalTitle,
               category: journalCategory,
               loc: journalLocation,
@@ -70,6 +80,7 @@ function JournalModal({isModalVisible, setIsModalVisible}: JournalModalProps){
               setInitDate(new Date());
               setEndDate(new Date());
               setJournalBody('');
+              setIsModalVisible(false)
           } else {
               console.error("Failed to fetch from travel-service. Status: ", response.status);
           }
@@ -91,7 +102,7 @@ return (
 
           {/* Title input */}
           <View style={styles.inputContainer}>
-                <Text style={styles.label}>Title</Text>
+                <Text style={styles.label}>Title*</Text>
                 <TextInput
             style={styles.input}
             placeholder="Enter title..."
@@ -113,7 +124,7 @@ return (
 
           {/* Location input */}
           <View style={styles.inputContainer}>
-                <Text style={styles.label}>Location</Text>
+                <Text style={styles.label}>Location*</Text>
                 <TextInput
             style={styles.input}
             placeholder="Enter location..."
@@ -124,7 +135,7 @@ return (
 
           {/* Status dropdown */}
           <View style={styles.inputContainer}>
-                <Text style={styles.label}>Status</Text>
+                <Text style={styles.label}>Status*</Text>
                 <View style={styles.dropdownContainer}>
                     <Picker
                         selectedValue={condition}
@@ -139,7 +150,7 @@ return (
 
           {/* Start Date input */}
           <View style={styles.inputContainer}>
-                <Text style={styles.label}>Start Date</Text>
+                <Text style={styles.label}>Start Date*</Text>
                 <DatePickerInput
             locale="en"
             label="Enter start date..."
@@ -154,7 +165,7 @@ return (
           
           {/* End Date input */}
           <View style={styles.inputContainer}>
-                <Text style={styles.label}>End Date</Text>
+                <Text style={styles.label}>End Date*</Text>
                 <DatePickerInput
             locale="en"
             label="Enter end date..."
@@ -213,16 +224,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 10,
   },
-  // input: {
-  //   height: 40,
-  //   borderColor: '#ddd',
-  //   borderWidth: 1,
-  //   borderRadius: 8,
-  //   paddingHorizontal: 10,
-  //   marginBottom: 10,
-  //   fontSize: 16,
-  //   color: '#333',
-  // },
   datePicker: {
     width: '100%',
     marginBottom: 15,
@@ -243,23 +244,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   inputContainer: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center', // Center align vertically
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 15,
   },
   label: {
       width: 100,
-      marginRight: 10, // Space between label and input
-      fontSize: 16, // Size of the label text
-      color: '#333', // Color of the label text
+      marginRight: 10,
+      fontSize: 16,
+      color: '#333',
   },
   input: {
-      flex: 1, // Take the remaining space
+      flex: 1,
       height: 40,
       borderColor: '#ccc',
       borderWidth: 1,
       borderRadius: 4,
-      padding: 10, // Padding inside the input
+      padding: 10,
       fontSize: 16,
   },
   dropdownContainer: {

@@ -24,18 +24,15 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
   const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
   const [editedJournalBody, setEditedJournalBody] = useState(journal.captionText);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    if (journal) {
-      setEditedJournalTitle(journal.title);
-      setEditedJournalCategory(journal.category);
-      setEditedJournalLocation(journal.loc)
-      setEditedJournalCondition(journal.condition)
-      setEditedInitDate(new Date(journal.initDate));
-      setEditedEndDate(new Date(journal.endDate));
-      setEditedJournalBody(journal.captionText);
+    if (editedJournalTitle && editedJournalLocation && editedJournalCondition && editedInitDate && editedEndDate) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
     }
-  }, [journal]);
+  }, [editedJournalTitle, editedJournalLocation, editedJournalCondition, editedInitDate, editedEndDate]);
 
   const handleEditToggle = () => {
     setIsEditMode(!isEditMode);
@@ -77,7 +74,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
           {isEditMode ? (
             <>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Title</Text>
+                <Text style={styles.label}>Title*</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Enter title..."
@@ -97,7 +94,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Location</Text>
+                <Text style={styles.label}>Location*</Text>
                 <TextInput
                 style={styles.input}
                 placeholder="Enter location..."
@@ -108,12 +105,11 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
               {/* Status dropdown */}
               <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Status</Text>
+                    <Text style={styles.label}>Status*</Text>
                     <View style={styles.dropdownContainer}>
                         <Picker
                             selectedValue={editedJournalCondition}
                             onValueChange={setEditedJournalCondition}
-                            // onValueChange={(itemValue: any) => setEditedJournalCondition(itemValue)}
                             style={styles.dropdown}
                         >
                             <Picker.Item label="Visited" value="Visited" />
@@ -123,7 +119,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Start Date</Text>
+                <Text style={styles.label}>Start Date*</Text>
                 <DatePickerInput
                 locale="en"
                 label="Enter start date..."
@@ -136,7 +132,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>End Date</Text>
+                <Text style={styles.label}>End Date*</Text>
                 <DatePickerInput
                 locale="en"
                 label="Enter end date..."
@@ -160,7 +156,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               </View>
               
               <View style={styles.buttonContainer}>
-                <Button title="Save" onPress={handleEditSubmit} color="#4CAF50" />
+                <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
                 <Button title="Cancel" onPress={() => setIsEditMode(false)} color="#f44336" />
               </View>
             </>
@@ -226,16 +222,6 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     color: '#444',
   },
-  // input: {
-  //   height: 40,
-  //   borderColor: '#ddd',
-  //   borderWidth: 1,
-  //   borderRadius: 8,
-  //   paddingHorizontal: 10,
-  //   marginBottom: 10,
-  //   fontSize: 16,
-  //   color: '#333',
-  // },
   datePicker: {
     width: '100%',
     marginBottom: 15,
@@ -255,15 +241,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  // journalBody: {
-  //   fontSize: 16,
-  //   lineHeight: 24,
-  //   color: '#444',
-  //   marginTop: 10,
-  // },
   blogContainer: {
     padding: 16,
-    backgroundColor: '#f9f9f9', // Light background color for a clean look
+    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
@@ -272,50 +252,45 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2, // Add some elevation for Android
+    elevation: 2,
     marginTop: 16,
-    marginBottom: 16, // Space between blog entries
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8, // Space below the title
+    marginBottom: 8,
   },
-  // label: {
-  //   fontSize: 16,
-  //   fontWeight: '600', // Slightly bold to differentiate labels
-  //   marginVertical: 5, // Space between labels
-  // },
   inputContainer: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center', // Center align vertically
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 15,
   },
   label: {
       width: 100,
-      marginRight: 10, // Space between label and input
-      fontSize: 16, // Size of the label text
-      color: '#333', // Color of the label text
+      marginRight: 10,
+      fontSize: 16,
+      color: '#333',
   },
   input: {
-      flex: 1, // Take the remaining space
+      flex: 1,
       height: 40,
       borderColor: '#ccc',
       borderWidth: 1,
       borderRadius: 4,
-      padding: 10, // Padding inside the input
+      padding: 10,
       fontSize: 16,
   },
   text: {
     fontSize: 16,
-    color: '#333', // Dark text color for readability
+    color: '#333',
     marginBottom: 8
   },
   journalBody: {
     fontSize: 16,
-    marginTop: 8, // Space above journal body
-    color: '#555', // Slightly lighter color for journal body
-    maxHeight: 200, // Optional: Set a max height if needed
+    marginTop: 8,
+    color: '#555',
+    maxHeight: 200,
   },
   dropdownContainer: {
     flex: 1,
