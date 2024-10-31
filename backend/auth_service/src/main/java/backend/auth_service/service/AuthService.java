@@ -104,8 +104,11 @@ public class AuthService {
     // if password exists, encode it then update it
     if (user.getPassword() != null) {
       existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
     System.out.println("Updated password: " + existingUser.get().getPassword());
+    System.out.println("Updated Existing User: " + existingUser);
+    System.out.println("Updated User User: " + user);
     repository.save(user);
     return existingUser.get();
   }
