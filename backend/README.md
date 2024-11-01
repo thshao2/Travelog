@@ -18,7 +18,23 @@ The backend will be built using Java Spring.
 # Linting Instructions
 We will be using `spotless` as the tool for linting. Inside pom.xml under plugin, there's configurations for spotless.
 Since it needs to be ran using mvn, we'll need to run it within our docker container.
-## Steps
+## Instruction for Linting the Whole Backend
+### Windows Users
+- Give execution permission to `/backend/lint.cmd` if needed
+- Travel to backend directory (`cd backend`)
+- `lint.cmd`
+### Windows Users Using WSL
+- Give execution permission to `/backend/lint.sh` if needed
+  - `chmod +x <path to linting shell script>`
+- `cd backend`
+- `wsl ./lint.sh`
+### Mac Users
+Give execution permission to `/backend/lint.sh` if needed
+- `chmod +x <path to linting shell script>`
+- `cd backend`
+- `./lint.sh`
+
+## Steps for Running Lint for 1 Service
 1. `docker ps`
   - This gives you a list of all the docker containers currently running - either take the container ID or the container name of the folder you want to lint
 2. `docker exec -it <container id or name> mvn spotless:apply`
