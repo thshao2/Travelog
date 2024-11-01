@@ -1,4 +1,4 @@
-package backend.travel_service;
+package travelog_backend.travel_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
