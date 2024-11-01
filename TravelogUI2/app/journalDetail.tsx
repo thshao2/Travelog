@@ -87,7 +87,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 <Text style={styles.label}>Category</Text>
                 <TextInput
                 style={styles.input}
-                placeholder="Enter category...y"
+                placeholder="Enter category..."
                 value={editedJournalCategory}
                 onChangeText={setEditedJournalCategory}
               />
