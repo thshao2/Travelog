@@ -1,13 +1,13 @@
 package backend.user_service.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
-
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -35,7 +35,6 @@ public class UserService {
         System.out.println("USER ID: " + userId.toString());
         System.out.println("USERNAME: " + newUsername.toString());
         System.out.println("USER BIO: " + newBio.toString());
-
 
         if (userProfileOpt.isPresent()) {
             UserProfile userProfile = userProfileOpt.get();

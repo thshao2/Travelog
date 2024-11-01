@@ -41,17 +41,22 @@ public class UserController {
             System.out.println("User profile: " + userProfile);
 
             // need to do these calls but dont work for some reason
-            // ResponseEntity<UserDTO> response = restTemplate.getForEntity(apiUrl + "/auth/user?userId=" + userId, UserDTO.class);
-            // ResponseEntity<String> mediaResponse = restTemplate.getForEntity(apiUrl + "/media/profile?mediaId=" + userProfile.getAvatarMediaId(), String.class);
+            // ResponseEntity<UserDTO> response = restTemplate.getForEntity(apiUrl + "/auth/user?userId=" + userId,
+            // UserDTO.class);
+            // ResponseEntity<String> mediaResponse = restTemplate.getForEntity(apiUrl + "/media/profile?mediaId=" +
+            // userProfile.getAvatarMediaId(), String.class);
 
             // Fetch the user using user ID
-            ResponseEntity<UserDTO> response = restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
+            ResponseEntity<UserDTO> response =
+                    restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
             System.out.println("User response: " + response);
 
             String mediaUrl = null;
             if (userProfile.getAvatarMediaId() != null) {
                 // Fetch the media profile using media ID
-                ResponseEntity<String> mediaResponse = restTemplate.getForEntity("http://media-service:3010/media/profile?mediaId=" + userProfile.getAvatarMediaId(), String.class);
+                ResponseEntity<String> mediaResponse = restTemplate.getForEntity(
+                        "http://media-service:3010/media/profile?mediaId=" + userProfile.getAvatarMediaId(),
+                        String.class);
                 System.out.println("Media response: " + mediaResponse);
                 if (mediaResponse.getStatusCode().is2xxSuccessful()) {
                     mediaUrl = mediaResponse.getBody();
@@ -87,7 +92,8 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateUserProfile(@RequestHeader("X-User-Id") Long userId, @RequestBody UserProfileResponse profile) {
+    public ResponseEntity<Boolean> updateUserProfile(
+            @RequestHeader("X-User-Id") Long userId, @RequestBody UserProfileResponse profile) {
         try {
             System.out.println("Updating user profile for user ID: " + userId);
 
@@ -97,24 +103,24 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             System.out.println("User profile: " + userProfile);
-            
+
             if (profile.getBio() != null) {
                 userProfile.setBio(profile.getBio());
                 userProfileRepository.save(userProfile);
             }
 
-            // make a put request to auth service to update the user profile for the profile username, email, and password fields
+            // make a put request to auth service to update the user profile for the profile username, email, and
+            // password fields
             UserDTO userDTO = new UserDTO();
             userDTO.setId(userId);
             userDTO.setUsername(profile.getUsername());
             userDTO.setEmail(profile.getEmail());
             userDTO.setPassword(profile.getPassword());
             ResponseEntity<UserDTO> response = restTemplate.exchange(
-                "http://auth-service:3010/auth/user/update",
-                HttpMethod.PUT,
-                new HttpEntity<>(userDTO),
-                UserDTO.class
-            );            
+                    "http://auth-service:3010/auth/user/update",
+                    HttpMethod.PUT,
+                    new HttpEntity<>(userDTO),
+                    UserDTO.class);
             System.out.println("User response final: " + response);
             return ResponseEntity.ok(true);
         } catch (Exception e) {

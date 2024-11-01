@@ -1,12 +1,13 @@
 package backend.user_service;
 
-import backend.user_service.entity.UserProfile;
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import backend.user_service.repository.UserProfileRepository;
 
-import java.time.LocalDate;
+import backend.user_service.entity.UserProfile;
+import backend.user_service.repository.UserProfileRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -17,9 +18,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Define some dummy UserProfile data
-        UserProfile profile1 = new UserProfile(12456L, 1L, "travelog@gmail.com", "travelog", "Bio for Travelog", null, LocalDate.now());
-        UserProfile profile2 = new UserProfile(12345L, 2L, "molly@gmail.com", "Molly Member", "Bio for Molly", null, LocalDate.now());
-        UserProfile profile3 = new UserProfile(16546L, 3L, "anna@gmail.com", "Anna Admin", "Bio for Anna", null, LocalDate.now());
+        UserProfile profile1 = new UserProfile(
+                12456L, 1L, "travelog@gmail.com", "travelog", "Bio for Travelog", null, LocalDate.now());
+        UserProfile profile2 =
+                new UserProfile(12345L, 2L, "molly@gmail.com", "Molly Member", "Bio for Molly", null, LocalDate.now());
+        UserProfile profile3 =
+                new UserProfile(16546L, 3L, "anna@gmail.com", "Anna Admin", "Bio for Anna", null, LocalDate.now());
 
         // Insert the data only if it doesn't exist
         if (!userProfileRepository.existsByEmail(profile1.getEmail())) {

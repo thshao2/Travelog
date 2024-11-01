@@ -1,5 +1,7 @@
 package backend.travel_service.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,8 +9,6 @@ import backend.travel_service.entity.Location;
 import backend.travel_service.entity.Pin;
 import backend.travel_service.repository.LocationRepository;
 import backend.travel_service.repository.PinRepository;
-
-import java.util.List;
 
 @Service
 public class PinService {
