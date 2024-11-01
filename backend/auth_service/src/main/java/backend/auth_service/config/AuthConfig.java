@@ -7,36 +7,35 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestTemplate; // for POST request to user-service
-
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
-  // @Override
-  // protected void configure(HttpSecurity http) throws Exception{
-  //     http.cors().and().csrf().disable();
-  // }
+    // @Override
+    // protected void configure(HttpSecurity http) throws Exception{
+    //     http.cors().and().csrf().disable();
+    // }
 
-
-  @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf().disable()
+        return http.csrf()
+                .disable()
                 .authorizeHttpRequests()
-                .anyRequest().permitAll()
+                .anyRequest()
+                .permitAll()
                 // .requestMatchers("/auth/register", "/auth/token", "/auth/validate").permitAll()
                 .and()
                 .build();
     }
-  
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
 
-  @Bean // added
-  public RestTemplate restTemplate() {
-    return new RestTemplate();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean // added
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

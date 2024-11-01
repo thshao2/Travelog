@@ -1,5 +1,7 @@
 package backend.travel_service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import backend.travel_service.entity.Location;
 import backend.travel_service.entity.Pin;
 import backend.travel_service.service.PinService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/pin")

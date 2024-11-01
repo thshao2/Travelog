@@ -13,103 +13,102 @@ import backend.auth_service.repository.UserRepository;
 
 @Service
 public class AuthService {
-  @Autowired
-  private UserRepository repository;
+    @Autowired
+    private UserRepository repository;
 
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-  @Autowired
-  private JwtService jwtService;
+    @Autowired
+    private JwtService jwtService;
 
-
-  public String saveUser(User userCredential) {
-    // check for duplicate email:
-    if (checkDuplicateEmails(userCredential.getEmail())) {
-      throw new DuplicateCredentialsException("Email is already in use");
+    public String saveUser(User userCredential) {
+        // check for duplicate email:
+        if (checkDuplicateEmails(userCredential.getEmail())) {
+            throw new DuplicateCredentialsException("Email is already in use");
+        }
+        // check for duplicate username:
+        // if (checkDuplicateUsernames(userCredential.getUsername())) {
+        //   throw new DuplicateCredentialsException("Username is already in use");
+        // }
+        // Take raw password and encode it.
+        userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
+        repository.save(userCredential);
+        return "Added user to the system";
     }
-    // check for duplicate username:
-    // if (checkDuplicateUsernames(userCredential.getUsername())) {
-    //   throw new DuplicateCredentialsException("Username is already in use");
+    // checking for duplicate email addresses:
+    private boolean checkDuplicateEmails(String userEmail) {
+        return repository.findByEmail(userEmail).isPresent();
+    }
+    // checking for duplicate usernames:
+    // private boolean checkDuplicateUsernames(String username) {
+    //   return repository.findByUsername(username).isPresent();
     // }
-    // Take raw password and encode it.
-    userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
-    repository.save(userCredential);
-    return "Added user to the system";
-  }
-  // checking for duplicate email addresses:
-  private boolean checkDuplicateEmails(String userEmail) {
-    return repository.findByEmail(userEmail).isPresent();
-  }
-  // checking for duplicate usernames:
-  // private boolean checkDuplicateUsernames(String username) {
-  //   return repository.findByUsername(username).isPresent();
-  // }
 
-  // Log in by verifying credentials & issuing a jwt.
-  public String logIn(User userCredential) {
-    Optional<Long> userId = validateLoginCredentials(userCredential);
-    if (userId.isPresent()) {
-      return jwtService.generateToken(userId.get());
-    } else {
-      throw new InvalidCredentialsException("Invalid username or password");
+    // Log in by verifying credentials & issuing a jwt.
+    public String logIn(User userCredential) {
+        Optional<Long> userId = validateLoginCredentials(userCredential);
+        if (userId.isPresent()) {
+            return jwtService.generateToken(userId.get());
+        } else {
+            throw new InvalidCredentialsException("Invalid username or password");
+        }
     }
-  }
 
-  // Validate username and password.
-  private Optional<Long> validateLoginCredentials(User userCredential) {
-    System.out.println(userCredential);
-    // Gather username and password from the request.
-    String inputEmail = userCredential.getEmail();
-    String inputPassword = userCredential.getPassword();
+    // Validate username and password.
+    private Optional<Long> validateLoginCredentials(User userCredential) {
+        System.out.println(userCredential);
+        // Gather username and password from the request.
+        String inputEmail = userCredential.getEmail();
+        String inputPassword = userCredential.getPassword();
 
-    // Fetch user based on email
-    Optional<User> userEntry = repository.findByEmail(inputEmail);
-    System.out.println("userEntry " + userEntry);
-    // User exists - now verify their password.
-    if (userEntry.isPresent()) {
-      System.out.println("userEntry is present");
-      User user = userEntry.get();
-      String expectedHashedPassword = user.getPassword();
+        // Fetch user based on email
+        Optional<User> userEntry = repository.findByEmail(inputEmail);
+        System.out.println("userEntry " + userEntry);
+        // User exists - now verify their password.
+        if (userEntry.isPresent()) {
+            System.out.println("userEntry is present");
+            User user = userEntry.get();
+            String expectedHashedPassword = user.getPassword();
 
-      // Password matches - return user ID.
-      System.out.println("inputPassword: " + inputPassword);
-      System.out.println("expectedHashedPassword: " + expectedHashedPassword);
-      if (passwordEncoder.matches(inputPassword, expectedHashedPassword)) {
-        System.out.println("password matches");
-        return Optional.of(user.getId());
-      }
+            // Password matches - return user ID.
+            System.out.println("inputPassword: " + inputPassword);
+            System.out.println("expectedHashedPassword: " + expectedHashedPassword);
+            if (passwordEncoder.matches(inputPassword, expectedHashedPassword)) {
+                System.out.println("password matches");
+                return Optional.of(user.getId());
+            }
+        }
+        return Optional.empty();
     }
-    return Optional.empty();
-  }
 
-  // // Validate JWT Token to get User ID.
-  // public Long validateToken(String token) {
-  //   return jwtService.validateToken(token);
-  // }
+    // // Validate JWT Token to get User ID.
+    // public Long validateToken(String token) {
+    //   return jwtService.validateToken(token);
+    // }
 
-  public User updateUser(Optional<User> existingUser, User user) {
-    System.out.println("Updating user: " + user);
-    // update user email
-    if (user.getEmail() != null) {
-      existingUser.get().setEmail(user.getEmail());
-    }
-    System.out.println("Updated user email: " + existingUser.get().getEmail());
-    // update username
-    if (user.getUsername() != null) {
-      existingUser.get().setUsername(user.getUsername());
-    }
-    System.out.println("Updated username: " + existingUser.get().getUsername());
+    public User updateUser(Optional<User> existingUser, User user) {
+        System.out.println("Updating user: " + user);
+        // update user email
+        if (user.getEmail() != null) {
+            existingUser.get().setEmail(user.getEmail());
+        }
+        System.out.println("Updated user email: " + existingUser.get().getEmail());
+        // update username
+        if (user.getUsername() != null) {
+            existingUser.get().setUsername(user.getUsername());
+        }
+        System.out.println("Updated username: " + existingUser.get().getUsername());
 
-    // if password exists, encode it then update it
-    if (user.getPassword() != null) {
-      existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
-      user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // if password exists, encode it then update it
+        if (user.getPassword() != null) {
+            existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        System.out.println("Updated password: " + existingUser.get().getPassword());
+        System.out.println("Updated Existing User: " + existingUser);
+        System.out.println("Updated User User: " + user);
+        repository.save(user);
+        return existingUser.get();
     }
-    System.out.println("Updated password: " + existingUser.get().getPassword());
-    System.out.println("Updated Existing User: " + existingUser);
-    System.out.println("Updated User User: " + user);
-    repository.save(user);
-    return existingUser.get();
-  }
 }

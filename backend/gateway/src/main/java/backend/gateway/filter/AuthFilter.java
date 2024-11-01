@@ -63,7 +63,8 @@ public class AuthFilter implements GlobalFilter, Ordered {
     //         return handleError(exchange, e.getResponseBodyAsString(), HttpStatus.valueOf(e.getStatusCode().value()));
     //     } catch (Exception e) {
     //         // Handle other exceptions
-    //         return handleError(exchange, "Error validating token: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    //         return handleError(exchange, "Error validating token: " + e.getMessage(),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
     //     }
 
     //     // Extract userId from response
@@ -136,12 +137,13 @@ public class AuthFilter implements GlobalFilter, Ordered {
         // If userId is present, attach it to the request header
         if (userId == null) {
             return handleError(exchange, "Unauthorized - token validation failed");
-        } 
+        }
         ServerHttpRequest updatedRequest = exchange.getRequest()
                 .mutate()
                 .header("X-User-Id", Long.toString(userId))
                 .build();
-        ServerWebExchange mutatedExchange = exchange.mutate().request(updatedRequest).build();
+        ServerWebExchange mutatedExchange =
+                exchange.mutate().request(updatedRequest).build();
         return chain.filter(mutatedExchange);
     }
 

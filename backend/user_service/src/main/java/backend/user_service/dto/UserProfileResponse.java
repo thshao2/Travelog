@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileResponse {
-	private String username;
-	private String email;
+    private String username;
+    private String email;
     private String bio;
-	private String avatarMediaId;
-	private String password;
+    private String avatarMediaId;
+    private String password;
 }

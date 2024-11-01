@@ -4,11 +4,13 @@ import { Platform, Text, Pressable, StyleSheet } from 'react-native'
 import JournalModal from '../journalModal';
 import PopupMenu from '../popupMenu';
 import config from '../config';
+import { getToken, removeToken } from "../utils/util";
 import { useLoginContext } from "../context/LoginContext";
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import './Map.css';
+import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
 const {API_URL} = config;
 
@@ -20,6 +22,8 @@ const INITIAL_ZOOM = 18.12
 
 function Map() {
   const loginContext = useLoginContext();
+  console.log("Inside map, login context is");
+  console.log(loginContext);
 
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
@@ -94,6 +98,27 @@ function Map() {
     }
   };
 
+  const postPinToDb = async (token: string|null, longitude: Double, latitude: Double) => {
+    try {
+      console.log("Authorization token is " + token);
+      const response = await fetch(`${API_URL}/travel/pin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }, 
+        body: JSON.stringify({latitude, longitude})
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const pin = await response.json();
+      return pin;
+    } catch(err) {
+      console.error("Error posting pin to database: " + err);
+    }
+  }
+
   const handleButtonClick = () => {
     mapRef.current?.flyTo({
       center: INITIAL_CENTER,
@@ -105,7 +130,7 @@ function Map() {
     setAddingPin(!addingPin); // Toggle pin drop mode
   };
 
-  const handleMapClick = (e: mapboxgl.MapMouseEvent) => {
+  const handleMapClick = async (e: mapboxgl.MapMouseEvent) => {
     if (addingPin && mapRef.current) {
       const { lng, lat } = e.lngLat;
 
@@ -114,11 +139,19 @@ function Map() {
         .setLngLat([lng, lat])
         .addTo(mapRef.current);
 
-      // Add click event listener to the marker
-      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker, 123)); // need the actual pinId
+      // Update database with the new pin
+      console.log("About to post pin, token is", loginContext.accessToken);
+      const token = loginContext.accessToken;
+      const newPin = await postPinToDb(token, lng, lat);
+      console.log("newPin is", newPin);
+
+      // Add event listener for pin & set pin ID
+      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker, newPin.id)); // need the actual pinId
+
 
       // Store the marker
       setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+
 
       // Exit pin drop mode after adding the marker
       setAddingPin(false);
@@ -184,6 +217,15 @@ function Map() {
   useEffect(()=>{
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
+
+    // // get access token
+    // const token = loginContext.accessToken;
+    // let token2;
+    // if (token == '' || token == null) {
+    //   token2 = await getToken();
+    // } else {
+    //   token2 = token;
+    // }
 
     fetchPins(loginContext.accessToken)
   }, [loginContext.accessToken]);
