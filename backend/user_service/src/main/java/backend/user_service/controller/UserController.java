@@ -109,8 +109,7 @@ public class UserController {
                 userProfileRepository.save(userProfile);
             }
 
-            // make a put request to auth service to update the user profile for the profile username, email, and
-            // password fields
+            // make a put request to auth service to update the user profile for the profile username, email fields
             UserDTO userDTO = new UserDTO();
             userDTO.setId(userId);
             userDTO.setUsername(profile.getUsername());

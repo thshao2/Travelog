@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -146,6 +147,28 @@ public class AuthController {
             System.err.println("An error occurred while updating the user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while updating the user");
+        }
+    }
+
+    @PutMapping("/user/update-password")
+    public ResponseEntity<Object> updateUserPassword(@RequestHeader("X-User-Id") Long userId, @RequestBody String currentPassword, @RequestBody String newPassword) {
+        System.out.println("PUT /auth/user/update-password endpoint hit with userId: " + userId);
+        try {
+            Optional<User> existingUser = userRepository.findById(userId);
+            if (existingUser.isPresent()) {
+                if (!authService.validatePassword(existingUser.get(), currentPassword)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid current password");
+                }
+                User updatedUser = authService.updateUserPassword(existingUser, newPassword);
+                System.out.println("User password updated: " + updatedUser);
+                return ResponseEntity.ok(updatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while updating the user password: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while updating the user password");
         }
     }
 }
