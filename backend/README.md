@@ -44,7 +44,8 @@ Give execution permission to `/backend/lint.sh` if needed
 
 # Live Reload
 - Unfortunately, Java only listens for live reload of 1 microservice at once. In our case, it'll automatically update our application for auth-service, but not for anything else. To recompile our program without needing to restart the docker:
-```docker exec -it <container name or id> mvn compile
+```
+docker exec -it <container name or id> mvn compile
 ```
 
 - To figure out the container name or id, run `docker ps`
