@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.auth_service.dto.Token;
 import backend.auth_service.dto.SetUserProfile;
+import backend.auth_service.dto.UpdatePasswordRequest;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.DuplicateCredentialsException;
@@ -156,16 +157,20 @@ public class AuthController {
         }
     }
 
-    @PutMapping("/user/update-password")
-    public ResponseEntity<Object> updateUserPassword(@RequestHeader("X-User-Id") Long userId, @RequestBody String currentPassword, @RequestBody String newPassword) {
+    @PutMapping("update-password")
+    public ResponseEntity<Object> updateUserPassword(@RequestHeader("X-User-Id") Long userId, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
         System.out.println("PUT /auth/user/update-password endpoint hit with userId: " + userId);
         try {
             Optional<User> existingUser = userRepository.findById(userId);
+
+            System.out.println("Existing user found: " + existingUser.get());
             if (existingUser.isPresent()) {
-                if (!authService.validatePassword(existingUser.get(), currentPassword)) {
+                System.out.println("validating password...");
+                if (!authService.validatePassword(existingUser, updatePasswordRequest.getCurrentPassword())) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid current password");
                 }
-                User updatedUser = authService.updateUserPassword(existingUser, newPassword);
+                System.out.println("Password validated");
+                User updatedUser = authService.updateUserPassword(existingUser, updatePasswordRequest.getNewPassword());
                 System.out.println("User password updated: " + updatedUser);
                 return ResponseEntity.ok(updatedUser);
             } else {

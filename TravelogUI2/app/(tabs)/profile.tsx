@@ -131,6 +131,12 @@ export default function ProfilePage() {
             setProfilePic(uri);
         }
     };
+    
+    const clearPasswordForm = async () => {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    };
 
     const updatePassword = async () => {
         if (newPassword !== confirmPassword) {
@@ -155,17 +161,16 @@ export default function ProfilePage() {
             if (response.ok) {
                 Alert.alert("Success", "Password updated successfully");
                 setShowPasswordForm(false);
-                setCurrentPassword("");
-                setNewPassword("");
-                setConfirmPassword("");
                 setPasswordError("");
             } else {
+                console.error("Failed to update password:", response.statusText);
                 setPasswordError("Failed to update password");
             }
         } catch (error) {
             console.error("Error updating password:", error);
             setPasswordError("Error updating password");
         }
+        clearPasswordForm();
     };
 
     const logout = async () => {
@@ -251,7 +256,7 @@ export default function ProfilePage() {
             </View>
 
             {isEditing && (
-                <Pressable style={styles.button} onPress={updateProfile}>
+                <Pressable style={styles.button} onPress={toggleEditing}>
                     <Text style={styles.buttonText}>Save Profile</Text>
                 </Pressable>
             )}
