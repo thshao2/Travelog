@@ -98,7 +98,7 @@ function Map() {
     }
   };
 
-  const postPinToDb = async (token: string|null, latitude: Double, longitude: Double) => {
+  const postPinToDb = async (token: string|null, longitude: Double, latitude: Double) => {
     try {
       console.log("Authorization token is " + token);
       const response = await fetch(`${API_URL}/travel/pin`, {
@@ -140,14 +140,9 @@ function Map() {
         .addTo(mapRef.current);
 
       // Update database with the new pin
+      console.log("About to post pin, token is", loginContext.accessToken);
       const token = loginContext.accessToken;
-      let token2;
-      if (token == '' || token == null) {
-        token2 = await getToken();
-      } else {
-        token2 = token;
-      }
-      const newPin = await postPinToDb(token2, lng, lat);
+      const newPin = await postPinToDb(token, lng, lat);
       console.log("newPin is", newPin);
 
       // Add event listener for pin & set pin ID
@@ -222,6 +217,15 @@ function Map() {
   useEffect(()=>{
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
+
+    // // get access token
+    // const token = loginContext.accessToken;
+    // let token2;
+    // if (token == '' || token == null) {
+    //   token2 = await getToken();
+    // } else {
+    //   token2 = token;
+    // }
 
     fetchPins(loginContext.accessToken)
   }, [loginContext.accessToken]);
