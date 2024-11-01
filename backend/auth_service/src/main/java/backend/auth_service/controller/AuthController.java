@@ -1,6 +1,8 @@
 package backend.auth_service.controller;
 
 import java.util.Optional;
+import java.time.LocalDate;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.auth_service.dto.Token;
+import backend.auth_service.dto.SetUserProfile;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.DuplicateCredentialsException;
 import backend.auth_service.exception.InvalidCredentialsException;
+import backend.auth_service.exception.UserProfileCreationException;
 import backend.auth_service.repository.UserRepository;
 import backend.auth_service.service.AuthService;
 import backend.auth_service.service.JwtService;
@@ -43,17 +47,19 @@ public class AuthController {
             // save in auth db
             authService.saveUser(user);
             // populate dto for sending to user db
-            // SetUserProfile userProfile = new SetUserProfile();
-            // userProfile.setUserId(user.getId());
-            // userProfile.setBio(null);
-            // userProfile.setAvatarMediaId(null);
-            // userProfile.setJointedAt(LocalDate.now());
+            SetUserProfile userProfile = new SetUserProfile();
+            userProfile.setUserId(user.getId());
+            userProfile.setBio(null);
+            userProfile.setAvatarMediaId(null);
+            userProfile.setJointedAt(LocalDate.now());
 
             // sendUserProfileToUserService(userProfile);
-            // System.out.println("here");
+            System.out.println("SUCCESSFULLY CREATED ACCOUNT");
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (DuplicateCredentialsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email is already registered with us");
+        } catch (UserProfileCreationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Failed to create user profile in user service");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while registering the user");
@@ -63,15 +69,15 @@ public class AuthController {
     // private void sendUserProfileToUserService(SetUserProfile userProfile) {
     //   RestTemplate restTemplate = new RestTemplate();
     //   try {
-    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:8080/user/createProfile",
+    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/createProfile",
     // userProfile, Void.class);
     //       if (response.getStatusCode() != HttpStatus.OK) {
     //           // Handle error appropriately
-    //           System.err.println("Failed to send user profile to user service: " + response.getStatusCode());
-    //       }
+    //           throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
+    //         }
     //   } catch (Exception e) {
-    //       // Handle connection errors, etc.
-    //       System.err.println("Error sending user profile to user service: " + e.getMessage());
+    //       throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
+          
     //   }
     // }
 
