@@ -4,11 +4,13 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { storeToken } from './utils/util';
 
 import config from './config';
+import { useLoginContext } from './context/LoginContext';
 
 const {API_URL} = config;
 
 const SignUpPage = () => {
   const navigation = useNavigation();
+  const loginContext = useLoginContext();
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -64,7 +66,8 @@ const SignUpPage = () => {
           const data = await response.json();
           console.log(data.token);
           await storeToken(data.token);
-          
+          loginContext.setEmail(email);
+          loginContext.setAccessToken(data.token);
           console.log("API Response: ", data);
           console.log(typeof(data));
           navigation.navigate('(tabs)');

@@ -67,7 +67,8 @@ public class AuthController {
             User userCopy = new User();
             userCopy.setEmail(user.getEmail());
             userCopy.setUsername(user.getUsername());
-            userCopy.setPassword(inputPassword);            System.out.println("USER: " + user);
+            userCopy.setPassword(inputPassword);            
+            System.out.println("USER: " + user);
             String token = authService.logIn(userCopy);
             System.out.println("SUCESSFULLY LOGGED IN");
             return ResponseEntity.status(HttpStatus.CREATED).body(new Token(token));
