@@ -15,5 +15,5 @@ public class SetUserProfile {
     private Long userId;
     private String bio; // optional bio
     private Long avatarMediaId; // optional pfp
-    private LocalDate jointedAt;
+    private LocalDate joinedAt;
 }

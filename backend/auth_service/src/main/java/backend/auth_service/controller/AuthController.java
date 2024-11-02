@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 
 import backend.auth_service.dto.Token;
 import backend.auth_service.dto.SetUserProfile;
@@ -53,9 +55,9 @@ public class AuthController {
             userProfile.setUserId(user.getId());
             userProfile.setBio(null);
             userProfile.setAvatarMediaId(null);
-            userProfile.setJointedAt(LocalDate.now());
+            userProfile.setJoinedAt(LocalDate.now());
 
-            // sendUserProfileToUserService(userProfile);
+            sendUserProfileToUserService(userProfile);
             System.out.println("SUCCESSFULLY CREATED ACCOUNT");
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (DuplicateCredentialsException e) {
@@ -68,20 +70,20 @@ public class AuthController {
         }
     }
 
-    // private void sendUserProfileToUserService(SetUserProfile userProfile) {
-    //   RestTemplate restTemplate = new RestTemplate();
-    //   try {
-    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/createProfile",
-    // userProfile, Void.class);
-    //       if (response.getStatusCode() != HttpStatus.OK) {
-    //           // Handle error appropriately
-    //           throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
-    //         }
-    //   } catch (Exception e) {
-    //       throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
+    private void sendUserProfileToUserService(SetUserProfile userProfile) {
+      RestTemplate restTemplate = new RestTemplate();
+      try {
+          ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/create",
+    userProfile, Void.class);
+          if (response.getStatusCode() != HttpStatus.OK) {
+              // Handle error appropriately
+              throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
+            }
+      } catch (Exception e) {
+          throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
           
-    //   }
-    // }
+      }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Object> logIn(@RequestBody User user) {
