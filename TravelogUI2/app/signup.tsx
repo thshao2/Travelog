@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, TextInput, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { storeToken } from './utils/util';
 
 import config from './config';
 
@@ -60,8 +61,10 @@ const SignUpPage = () => {
       if (response.ok) {
           console.log("I AM HERE")
           setDuplicateEmail(false);
-          const data = await response.text();
-          // await storeToken(data.token);
+          const data = await response.json();
+          console.log(data.token);
+          await storeToken(data.token);
+          
           console.log("API Response: ", data);
           console.log(typeof(data));
           navigation.navigate('(tabs)');
@@ -69,7 +72,8 @@ const SignUpPage = () => {
       } else if (response.status === 409) {
         setDuplicateEmail(true);
       } else {
-          console.error("Failed to fetch from auth-service. Status: ", response.status);
+          // console.error("Failed to fetch from auth-service. Status: ", response.status);
+          console.error("Failed to fetch from auth-service. Reponse: ", await response.text());
           setDuplicateEmail(false);
       }
     } catch (error) {

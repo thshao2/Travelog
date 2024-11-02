@@ -45,13 +45,18 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/signup") // handles post reqs to /auth/signup
-    public ResponseEntity<String> signup(@RequestBody User user) {
+    public ResponseEntity<Object> signup(@RequestBody User user) {
         System.out.println("POST /auth/signup hit");
         try {
             // save in auth db
+            
+            String inputPassword = user.getPassword();
             authService.saveUser(user);
+
             // populate dto for sending to user db
             SetUserProfile userProfile = new SetUserProfile();
+            userProfile.setEmail(user.getEmail());
+            userProfile.setUsername(user.getUsername());
             userProfile.setUserId(user.getId());
             userProfile.setBio(null);
             userProfile.setAvatarMediaId(null);
@@ -59,7 +64,13 @@ public class AuthController {
 
             sendUserProfileToUserService(userProfile);
             System.out.println("SUCCESSFULLY CREATED ACCOUNT");
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+            User userCopy = new User();
+            userCopy.setEmail(user.getEmail());
+            userCopy.setUsername(user.getUsername());
+            userCopy.setPassword(inputPassword);            System.out.println("USER: " + user);
+            String token = authService.logIn(userCopy);
+            System.out.println("SUCESSFULLY LOGGED IN");
+            return ResponseEntity.status(HttpStatus.CREATED).body(new Token(token));
         } catch (DuplicateCredentialsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email is already registered with us");
         } catch (UserProfileCreationException e) {

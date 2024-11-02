@@ -13,6 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SetUserProfile {
     private Long userId;
+    private String username;
+    private String email;
     private String bio; // optional bio
     private Long avatarMediaId; // optional pfp
     private LocalDate joinedAt;
