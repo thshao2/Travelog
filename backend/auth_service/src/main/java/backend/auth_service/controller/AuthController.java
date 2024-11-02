@@ -75,7 +75,8 @@ public class AuthController {
       try {
           ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/create",
     userProfile, Void.class);
-          if (response.getStatusCode() != HttpStatus.OK) {
+          System.out.println("STATUS CODE" + response.getStatusCode());
+          if (response.getStatusCode() != HttpStatus.CREATED) {
               // Handle error appropriately
               throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
             }
