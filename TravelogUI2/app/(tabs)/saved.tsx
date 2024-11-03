@@ -42,8 +42,7 @@ export default function SavedPage() {
 
 
   const handleCategoryPress = (category: string) => {
-    console.log("clicked", category)
-    // navigation.navigate('CategoryMemPage', { category });
+    navigation.navigate('categoryMemPage', { category });
   };
 
   return (
