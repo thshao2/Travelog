@@ -33,9 +33,10 @@ interface PopupMenuProps {
   },
   onClose: () => void,
   onAddJournal: () => void,
+  onDeletePin: () => void,
 }
 
-const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal }: PopupMenuProps) => {
+const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin }: PopupMenuProps) => {
   const loginContext = useLoginContext();
   const token = loginContext.accessToken;
 
@@ -137,6 +138,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
    const handleDeletePin = async () => {
     setIsDeleteModalVisible(false);
     console.log("Delete pin called!");
+    onDeletePin();
     // try {
     //   const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
     //     method: 'DELETE',
@@ -159,6 +161,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     //   console.error(err);
     //   setError('Failed to delete pin.');
     // }
+    
   };
 
   return (

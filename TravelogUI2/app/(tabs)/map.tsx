@@ -215,6 +215,31 @@ function Map() {
     }
   };
 
+  const handleDeletePin = async () => {
+    console.log("handleDeletePin called in map.tsx");
+    try {
+      // Make API call to delete the pin
+      // const response = await fetch(`${API_URL}/travel/pin/${pinId}`, {
+      //   method: 'DELETE',
+      //   headers: {
+      //     'Authorization': `Bearer ${token}`,
+      //   },
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to delete pin.');
+      // }
+
+      // Remove pin from local state
+      selectedPin.marker!.remove();
+      markersRef.current = markersRef.current.filter(pinMarker => pinMarker !== selectedPin.marker);
+      setSelectedPin({ pinId: null, marker: null, position: null });
+      console.log("Pin deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting pin:", error);
+    }
+  }
+
   useEffect(()=>{
     console.log("Use effect called in map - loginContext changed, refetching the pins. markersRef is currently", markersRef.current);
     markersRef.current.forEach(marker => {
@@ -222,15 +247,6 @@ function Map() {
       console.log("Removing", removed);
     });
     markersRef.current = [];
-
-    // // get access token
-    // const token = loginContext.accessToken;
-    // let token2;
-    // if (token == '' || token == null) {
-    //   token2 = await getToken();
-    // } else {
-    //   token2 = token;
-    // }
 
     fetchPins(loginContext.accessToken);
   }, [loginContext]);
@@ -266,6 +282,7 @@ function Map() {
           selectedPin={selectedPin}
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
+          onDeletePin={async () => handleDeletePin()}
         />
       )}
 
