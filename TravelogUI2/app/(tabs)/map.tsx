@@ -22,8 +22,6 @@ const INITIAL_ZOOM = 18.12
 
 function Map() {
   const loginContext = useLoginContext();
-  console.log("Inside map, login context is");
-  console.log(loginContext);
 
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
@@ -32,7 +30,7 @@ function Map() {
   const [zoom, setZoom] = useState<number>(INITIAL_ZOOM)
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
-  const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
+  // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   // Managing seleted pin for pop up menu
@@ -91,7 +89,9 @@ function Map() {
             .setLngLat([longitude, latitude])
             .addTo(mapRef.current);
             newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, pin.id));
+          markersRef.current.push(newMarker);
         });
+        console.log("after fetching pin, mapRef =", mapRef)
       }
     } catch (err) {
       console.error("Error fetching pins:", err);
@@ -150,7 +150,8 @@ function Map() {
 
 
       // Store the marker
-      setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+      // setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+      markersRef.current.push(newMarker);
 
 
       // Exit pin drop mode after adding the marker
@@ -215,7 +216,11 @@ function Map() {
   };
 
   useEffect(()=>{
-    markersRef.current.forEach(marker => marker.remove());
+    console.log("Use effect called in map - loginContext changed, refetching the pins. markersRef is currently", markersRef.current);
+    markersRef.current.forEach(marker => {
+      const removed = marker.remove();
+      console.log("Removing", removed);
+    });
     markersRef.current = [];
 
     // // get access token
@@ -227,8 +232,8 @@ function Map() {
     //   token2 = token;
     // }
 
-    fetchPins(loginContext.accessToken)
-  }, [loginContext.accessToken]);
+    fetchPins(loginContext.accessToken);
+  }, [loginContext]);
 
   useEffect(() => {
     if (mapRef.current) {
