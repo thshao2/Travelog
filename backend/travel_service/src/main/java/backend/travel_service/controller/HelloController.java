@@ -1,4 +1,4 @@
-package backend.travel_service;
+package backend.travel_service.controller;
 
 import java.util.List;
 import java.util.Map;

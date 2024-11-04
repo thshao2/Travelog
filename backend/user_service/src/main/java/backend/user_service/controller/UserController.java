@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import backend.user_service.dto.UserDTO;
 import backend.user_service.dto.UserProfileResponse;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
+import backend.user_service.service.UserService;
+
 
 @RestController
 @RequestMapping("/user")
@@ -24,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -90,6 +96,26 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createProfile(@RequestBody UserProfile userProfile) {
+        try {
+            System.out.println("Creating new user profile for user ID: " + userProfile.getUserId());
+
+            // Call the service method to create a new profile
+            boolean isCreated = userService.createNewProfile(userProfile);
+
+            if (isCreated) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("User profile created successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create user profile");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while creating the user profile: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the user profile");
+        }
+    }
+
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateUserProfile(

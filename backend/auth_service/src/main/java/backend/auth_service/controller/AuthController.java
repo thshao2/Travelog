@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 
 import backend.auth_service.dto.Token;
 import backend.auth_service.dto.SetUserProfile;
@@ -43,21 +45,33 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/signup") // handles post reqs to /auth/signup
-    public ResponseEntity<String> signup(@RequestBody User user) {
+    public ResponseEntity<Object> signup(@RequestBody User user) {
         System.out.println("POST /auth/signup hit");
         try {
             // save in auth db
+            
+            String inputPassword = user.getPassword();
             authService.saveUser(user);
+
             // populate dto for sending to user db
             SetUserProfile userProfile = new SetUserProfile();
+            userProfile.setEmail(user.getEmail());
+            userProfile.setUsername(user.getUsername());
             userProfile.setUserId(user.getId());
             userProfile.setBio(null);
             userProfile.setAvatarMediaId(null);
-            userProfile.setJointedAt(LocalDate.now());
+            userProfile.setJoinedAt(LocalDate.now());
 
-            // sendUserProfileToUserService(userProfile);
+            sendUserProfileToUserService(userProfile);
             System.out.println("SUCCESSFULLY CREATED ACCOUNT");
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+            User userCopy = new User();
+            userCopy.setEmail(user.getEmail());
+            userCopy.setUsername(user.getUsername());
+            userCopy.setPassword(inputPassword);            
+            System.out.println("USER: " + user);
+            String token = authService.logIn(userCopy);
+            System.out.println("SUCESSFULLY LOGGED IN");
+            return ResponseEntity.status(HttpStatus.CREATED).body(new Token(token));
         } catch (DuplicateCredentialsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email is already registered with us");
         } catch (UserProfileCreationException e) {
@@ -68,20 +82,21 @@ public class AuthController {
         }
     }
 
-    // private void sendUserProfileToUserService(SetUserProfile userProfile) {
-    //   RestTemplate restTemplate = new RestTemplate();
-    //   try {
-    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/createProfile",
-    // userProfile, Void.class);
-    //       if (response.getStatusCode() != HttpStatus.OK) {
-    //           // Handle error appropriately
-    //           throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
-    //         }
-    //   } catch (Exception e) {
-    //       throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
+    private void sendUserProfileToUserService(SetUserProfile userProfile) {
+      RestTemplate restTemplate = new RestTemplate();
+      try {
+          ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/create",
+    userProfile, Void.class);
+          System.out.println("STATUS CODE" + response.getStatusCode());
+          if (response.getStatusCode() != HttpStatus.CREATED) {
+              // Handle error appropriately
+              throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
+            }
+      } catch (Exception e) {
+          throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
           
-    //   }
-    // }
+      }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Object> logIn(@RequestBody User user) {
