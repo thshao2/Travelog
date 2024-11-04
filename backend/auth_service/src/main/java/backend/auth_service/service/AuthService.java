@@ -98,17 +98,32 @@ public class AuthService {
         if (user.getUsername() != null) {
             existingUser.get().setUsername(user.getUsername());
         }
-        System.out.println("Updated username: " + existingUser.get().getUsername());
-
-        // if password exists, encode it then update it
-        if (user.getPassword() != null) {
-            existingUser.get().setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        System.out.println("Updated password: " + existingUser.get().getPassword());
-        System.out.println("Updated Existing User: " + existingUser);
-        System.out.println("Updated User User: " + user);
-        repository.save(user);
+        System.out.println("Updated username: " + existingUser.get().getUsername());        System.out.println("Updated Existing User: " + existingUser);
+        repository.save(existingUser.get());
         return existingUser.get();
+    }
+
+    public User updateUserPassword(Optional<User> existingUser, String password) {
+        System.out.println("Updating user password: " + password);
+        // update user password
+        if (password != null) {
+            existingUser.get().setPassword(passwordEncoder.encode(password));
+        }
+        System.out.println("Updated user password: " + existingUser.get().getPassword());
+        repository.save(existingUser.get());
+        return existingUser.get();
+    }
+
+    public Boolean validatePassword(Optional<User> existingUser, String password) {
+        System.out.println("Verifying user password: " + password);
+        // verify user password
+        if (password != null) {
+            if (passwordEncoder.matches(password, existingUser.get().getPassword())) {
+                System.out.println("Password matches");
+                return true;
+            }
+        }
+        System.out.println("Password does not match");
+        return false;
     }
 }

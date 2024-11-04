@@ -1,6 +1,8 @@
 package backend.auth_service.controller;
 
 import java.util.Optional;
+import java.time.LocalDate;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,15 +11,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 
 import backend.auth_service.dto.Token;
+import backend.auth_service.dto.SetUserProfile;
+import backend.auth_service.dto.UpdatePasswordRequest;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
 import backend.auth_service.exception.DuplicateCredentialsException;
 import backend.auth_service.exception.InvalidCredentialsException;
+import backend.auth_service.exception.UserProfileCreationException;
 import backend.auth_service.repository.UserRepository;
 import backend.auth_service.service.AuthService;
 import backend.auth_service.service.JwtService;
@@ -37,43 +45,58 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/signup") // handles post reqs to /auth/signup
-    public ResponseEntity<String> signup(@RequestBody User user) {
+    public ResponseEntity<Object> signup(@RequestBody User user) {
         System.out.println("POST /auth/signup hit");
         try {
             // save in auth db
+            
+            String inputPassword = user.getPassword();
             authService.saveUser(user);
-            // populate dto for sending to user db
-            // SetUserProfile userProfile = new SetUserProfile();
-            // userProfile.setUserId(user.getId());
-            // userProfile.setBio(null);
-            // userProfile.setAvatarMediaId(null);
-            // userProfile.setJointedAt(LocalDate.now());
 
-            // sendUserProfileToUserService(userProfile);
-            // System.out.println("here");
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+            // populate dto for sending to user db
+            SetUserProfile userProfile = new SetUserProfile();
+            userProfile.setEmail(user.getEmail());
+            userProfile.setUsername(user.getUsername());
+            userProfile.setUserId(user.getId());
+            userProfile.setBio(null);
+            userProfile.setAvatarMediaId(null);
+            userProfile.setJoinedAt(LocalDate.now());
+
+            sendUserProfileToUserService(userProfile);
+            System.out.println("SUCCESSFULLY CREATED ACCOUNT");
+            User userCopy = new User();
+            userCopy.setEmail(user.getEmail());
+            userCopy.setUsername(user.getUsername());
+            userCopy.setPassword(inputPassword);            
+            System.out.println("USER: " + user);
+            String token = authService.logIn(userCopy);
+            System.out.println("SUCESSFULLY LOGGED IN");
+            return ResponseEntity.status(HttpStatus.CREATED).body(new Token(token));
         } catch (DuplicateCredentialsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User with email is already registered with us");
+        } catch (UserProfileCreationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Failed to create user profile in user service");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while registering the user");
         }
     }
 
-    // private void sendUserProfileToUserService(SetUserProfile userProfile) {
-    //   RestTemplate restTemplate = new RestTemplate();
-    //   try {
-    //       ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:8080/user/createProfile",
-    // userProfile, Void.class);
-    //       if (response.getStatusCode() != HttpStatus.OK) {
-    //           // Handle error appropriately
-    //           System.err.println("Failed to send user profile to user service: " + response.getStatusCode());
-    //       }
-    //   } catch (Exception e) {
-    //       // Handle connection errors, etc.
-    //       System.err.println("Error sending user profile to user service: " + e.getMessage());
-    //   }
-    // }
+    private void sendUserProfileToUserService(SetUserProfile userProfile) {
+      RestTemplate restTemplate = new RestTemplate();
+      try {
+          ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/create",
+    userProfile, Void.class);
+          System.out.println("STATUS CODE" + response.getStatusCode());
+          if (response.getStatusCode() != HttpStatus.CREATED) {
+              // Handle error appropriately
+              throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
+            }
+      } catch (Exception e) {
+          throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
+          
+      }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Object> logIn(@RequestBody User user) {
@@ -146,6 +169,32 @@ public class AuthController {
             System.err.println("An error occurred while updating the user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while updating the user");
+        }
+    }
+
+    @PutMapping("update-password")
+    public ResponseEntity<Object> updateUserPassword(@RequestHeader("X-User-Id") Long userId, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        System.out.println("PUT /auth/user/update-password endpoint hit with userId: " + userId);
+        try {
+            Optional<User> existingUser = userRepository.findById(userId);
+
+            System.out.println("Existing user found: " + existingUser.get());
+            if (existingUser.isPresent()) {
+                System.out.println("validating password...");
+                if (!authService.validatePassword(existingUser, updatePasswordRequest.getCurrentPassword())) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid current password");
+                }
+                System.out.println("Password validated");
+                User updatedUser = authService.updateUserPassword(existingUser, updatePasswordRequest.getNewPassword());
+                System.out.println("User password updated: " + updatedUser);
+                return ResponseEntity.ok(updatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while updating the user password: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while updating the user password");
         }
     }
 }
