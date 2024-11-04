@@ -7,6 +7,8 @@ import {
     Pressable,
     TextInput,
     Alert,
+    ImageBackground,
+    ScrollView,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -182,140 +184,170 @@ export default function ProfilePage() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.profileRow}>
-                {isEditing ? (
-                    <Pressable onPress={pickImage}>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <View style={styles.profileRow}>
+                    {isEditing ? (
+                        <Pressable onPress={pickImage}>
+                            <Image
+                                source={{ uri: profilePic }}
+                                style={styles.profilePic}
+                            />
+                        </Pressable>
+                    ) : (
                         <Image
                             source={{ uri: profilePic }}
                             style={styles.profilePic}
                         />
-                    </Pressable>
-                ) : (
-                    <Image
-                        source={{ uri: profilePic }}
-                        style={styles.profilePic}
-                    />
-                )}
+                    )}
 
-                <View style={styles.profileDetails}>
-                    <View style={styles.row}>
-                        {isEditing ? (
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Name"
-                                value={name}
-                                onChangeText={setName}
+                    <View style={styles.profileDetails}>
+                        <View style={styles.row}>
+                            {isEditing ? (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Name"
+                                    value={name}
+                                    onChangeText={setName}
+                                />
+                            ) : (
+                                <Text style={styles.name}>{name || "Name"}</Text>
+                            )}
+                            <MaterialIcons
+                                name="edit"
+                                size={24}
+                                color="black"
+                                onPress={toggleEditing}
+                                style={styles.editIcon}
                             />
-                        ) : (
-                            <Text style={styles.name}>{name || "Name"}</Text>
-                        )}
-                        <MaterialIcons
-                            name="edit"
-                            size={24}
-                            color="black"
-                            onPress={toggleEditing}
-                            style={styles.editIcon}
-                        />
+                        </View>
+
+                        <View style={styles.row}>
+                            {isEditing ? (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="user@example.com"
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    keyboardType="email-address"
+                                />
+                            ) : (
+                                <Text style={styles.email}>
+                                    Email: {email || "user@example.com"}
+                                </Text>
+                            )}
+                        </View>
                     </View>
+                </View>
 
+                <View style={styles.bioContainer}>
+                    <Text style={styles.bioTitle}>Bio</Text>
                     <View style={styles.row}>
                         {isEditing ? (
                             <TextInput
                                 style={styles.input}
-                                placeholder="user@example.com"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
+                                placeholder="This is a short bio."
+                                value={bio}
+                                onChangeText={setBio}
+                                multiline
                             />
                         ) : (
-                            <Text style={styles.email}>
-                                Email: {email || "user@example.com"}
+                            <Text style={styles.bioText}>
+                                {bio || "This is a short bio."}
                             </Text>
                         )}
                     </View>
                 </View>
-            </View>
 
-            <View style={styles.bioContainer}>
-                <Text style={styles.bioTitle}>Bio</Text>
-                <View style={styles.row}>
-                    {isEditing ? (
-                        <TextInput
-                            style={styles.input}
-                            placeholder="This is a short bio."
-                            value={bio}
-                            onChangeText={setBio}
-                            multiline
-                        />
-                    ) : (
-                        <Text style={styles.bioText}>
-                            {bio || "This is a short bio."}
+                {isEditing && (
+                    <Pressable style={styles.button} onPress={toggleEditing}>
+                        <Text style={styles.buttonText}>Save Profile</Text>
+                    </Pressable>
+                )}
+
+                <View style={styles.passwordSection}>
+                    <Pressable
+                        style={styles.passwordToggle}
+                        onPress={() => setShowPasswordForm(!showPasswordForm)}
+                    >
+                        <Text style={styles.passwordToggleText}>
+                            {showPasswordForm
+                                ? "Cancel Password Change"
+                                : "Change Password"}
                         </Text>
+                    </Pressable>
+
+                    {showPasswordForm && (
+                        <View style={styles.passwordForm}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Current Password"
+                                value={currentPassword}
+                                onChangeText={setCurrentPassword}
+                                secureTextEntry
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="New Password"
+                                value={newPassword}
+                                onChangeText={setNewPassword}
+                                secureTextEntry
+                            />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Confirm New Password"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                secureTextEntry
+                            />
+                            {passwordError ? (
+                                <Text style={styles.errorText}>
+                                    {passwordError}
+                                </Text>
+                            ) : null}
+                            <Pressable
+                                style={styles.button}
+                                onPress={updatePassword}
+                            >
+                                <Text style={styles.buttonText}>
+                                    Update Password
+                                </Text>
+                            </Pressable>
+                        </View>
                     )}
                 </View>
-            </View>
 
-            {isEditing && (
-                <Pressable style={styles.button} onPress={toggleEditing}>
-                    <Text style={styles.buttonText}>Save Profile</Text>
+                <View style={styles.statSectionContainer}>
+                    <ImageBackground 
+                    source={require("@/assets/images/pfp-background.jpg")}
+                    style={styles.backgroundImageStyle}
+                    >
+                        <Text style={styles.statsText}>You have visited:</Text>
+                        <View style={styles.statsTextContainer}>
+        
+                            <View style={styles.statsTextChunk}>
+                                <Text style={styles.statsNumberText}>18</Text>
+                                <Text style={styles.statsText}>countries</Text>
+                            </View>
+
+                            <View style={styles.statsTextChunk}>
+                                <Text style={styles.statsNumberText}>54</Text>
+                                <Text style={styles.statsText}>cities</Text>
+                            </View>
+
+                            <View style={styles.statsTextChunk}>
+                                <Text style={styles.statsNumberText}>7</Text>
+                                <Text style={styles.statsText}>continents</Text>
+                            </View>
+
+                        </View>
+                    </ImageBackground>
+                </View> 
+
+
+                <Pressable onPress={logout} style={styles.logoutButton}>
+                    <Text style={styles.logoutButtonText}>Logout</Text>
                 </Pressable>
-            )}
-
-            <View style={styles.passwordSection}>
-                <Pressable
-                    style={styles.passwordToggle}
-                    onPress={() => setShowPasswordForm(!showPasswordForm)}
-                >
-                    <Text style={styles.passwordToggleText}>
-                        {showPasswordForm
-                            ? "Cancel Password Change"
-                            : "Change Password"}
-                    </Text>
-                </Pressable>
-
-                {showPasswordForm && (
-                    <View style={styles.passwordForm}>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Current Password"
-                            value={currentPassword}
-                            onChangeText={setCurrentPassword}
-                            secureTextEntry
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="New Password"
-                            value={newPassword}
-                            onChangeText={setNewPassword}
-                            secureTextEntry
-                        />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Confirm New Password"
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
-                            secureTextEntry
-                        />
-                        {passwordError ? (
-                            <Text style={styles.errorText}>
-                                {passwordError}
-                            </Text>
-                        ) : null}
-                        <Pressable
-                            style={styles.button}
-                            onPress={updatePassword}
-                        >
-                            <Text style={styles.buttonText}>
-                                Update Password
-                            </Text>
-                        </Pressable>
-                    </View>
-                )}
-            </View>
-
-            <Pressable onPress={logout} style={styles.logoutButton}>
-                <Text style={styles.logoutButtonText}>Logout</Text>
-            </Pressable>
+            </ScrollView>
         </View>
     );
 }
@@ -325,6 +357,9 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: "#f5f5f5",
+    },
+    scrollViewContent: {
+        padding: 20,
     },
     profileRow: {
         flexDirection: "row",
@@ -401,6 +436,52 @@ const styles = StyleSheet.create({
     },
     spacer: {
         flex: 1,
+    },
+    statSectionContainer: {
+        width: "100%",
+        height: 500,
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 10,
+        marginTop: 10,
+    },
+    statsTextContainer: {
+        width: "100%",
+        height: 250,
+        justifyContent: "space-around",
+        alignItems: "center",
+        flexWrap: "wrap",
+        flexDirection: "row",
+    },
+    statsTextHeader: {
+        width: "100%",
+        height: 250,
+        justifyContent: "space-around",
+        alignItems: "center",
+        flexWrap: "wrap",
+        flexDirection: "row",
+    },
+    statsTextChunk: {
+        width: "20%",
+        height: 250,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    statsText: {
+        fontSize: 16,
+        color: "#FFFFFF",
+        backgroundColor: '#00000F',
+    },
+    statsNumberText: {
+        fontSize: 100,
+        fontWeight: "bold",
+        color: "#FFFFFF",
+    },
+    backgroundImageStyle: {
+        width: "100%",
+        height: "100%",
+        justifyContent: "center",
+        alignItems: "center",
     },
     logoutButton: {
         width: "20%",
