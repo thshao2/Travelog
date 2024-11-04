@@ -5,6 +5,7 @@ import JournalDetailModal from './journalDetail';
 import { useLoginContext } from './context/LoginContext';
 
 import config from './config';
+import DeleteConfirmationModal from './deleteConfirmationModal';
 
 const {API_URL} = config;
 
@@ -43,6 +44,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const fetchMemoriesData = async (pinId: number | null): Promise<void> => {
     setLoading(true);
@@ -133,6 +135,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 
    // Function to delete the pin
    const handleDeletePin = async () => {
+    setIsDeleteModalVisible(false);
     console.log("Delete pin called!");
     // try {
     //   const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
@@ -225,9 +228,16 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       </Pressable>
 
       {/* New Delete Pin Button */}
-      <Pressable style={styles.deleteButton} onPress={handleDeletePin}>
+      <Pressable style={styles.deleteButton} onPress={() => setIsDeleteModalVisible(true)}>
         <Text style={styles.deleteButtonText}>Delete Pin</Text>
       </Pressable>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        visible={isDeleteModalVisible}
+        onClose={() => setIsDeleteModalVisible(false)}
+        onConfirm={handleDeletePin}
+      />
 
     </View>
   );
