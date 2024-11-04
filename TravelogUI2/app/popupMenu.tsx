@@ -131,6 +131,33 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     fetchMemoriesData(selectedPin.pinId); 
   };
 
+   // Function to delete the pin
+   const handleDeletePin = async () => {
+    console.log("Delete pin called!");
+    // try {
+    //   const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
+    //     method: 'DELETE',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${token}`
+    //     }
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error('Failed to delete pin.');
+    //   }
+
+    //   const message = await response.text();
+    //   console.log(message);
+
+    //   // Close the popup after deletion or handle any other UI update
+    //   onClose();
+    // } catch (err) {
+    //   console.error(err);
+    //   setError('Failed to delete pin.');
+    // }
+  };
+
   return (
     <View
       style={[
@@ -197,6 +224,11 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         <Text style={styles.menuButtonText}>Add Journal</Text>
       </Pressable>
 
+      {/* New Delete Pin Button */}
+      <Pressable style={styles.deleteButton} onPress={handleDeletePin}>
+        <Text style={styles.deleteButtonText}>Delete Pin</Text>
+      </Pressable>
+
     </View>
   );
 };
@@ -256,6 +288,18 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   menuButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  deleteButton: {
+    backgroundColor: '#ff4444',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  deleteButtonText: {
     color: 'white',
     textAlign: 'center',
     fontWeight: '600',
