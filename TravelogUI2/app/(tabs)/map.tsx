@@ -366,9 +366,11 @@ function Map() {
       />
 
       {/* Plus button for dropping a pin */}
-      <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
-        <Text style={styles.plusButtonText}>+</Text>
-      </Pressable>
+      {loginContext.accessToken.length > 0 && (
+        <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
+          <Text style={styles.plusButtonText}>+</Text>
+        </Pressable>
+      )}
     </>
   )
 }

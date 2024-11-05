@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, PropsWithChildren, useEffect } from 'react';
 import {getToken, storeToken} from '../utils/util';
+import { useNavigation } from "@react-navigation/native";
+
 
 export const LoginContext = createContext({
   email: '',
@@ -11,6 +13,7 @@ export const LoginContext = createContext({
 export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
   const [email, setEmail] = useState('');
   const [accessToken, setAccessToken] = useState('');
+  const navigation = useNavigation();
 
   // Fetch token from AsyncStorage or localStorage
   useEffect(() => {
@@ -29,7 +32,10 @@ export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
   useEffect(() => {
     if (accessToken) {
       storeToken(accessToken);
-    }
+    } 
+    // else {
+    //   navigation.navigate("login")
+    // }
   }, [accessToken]);
 
   return (
