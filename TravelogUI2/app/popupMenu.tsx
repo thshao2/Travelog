@@ -138,30 +138,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
    const handleDeletePin = async () => {
     setIsDeleteModalVisible(false);
     console.log("Delete pin called!");
-    onDeletePin();
-    // try {
-    //   const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
-    //     method: 'DELETE',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${token}`
-    //     }
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error('Failed to delete pin.');
-    //   }
-
-    //   const message = await response.text();
-    //   console.log(message);
-
-    //   // Close the popup after deletion or handle any other UI update
-    //   onClose();
-    // } catch (err) {
-    //   console.error(err);
-    //   setError('Failed to delete pin.');
-    // }
-    
+    onDeletePin();    
   };
 
   return (

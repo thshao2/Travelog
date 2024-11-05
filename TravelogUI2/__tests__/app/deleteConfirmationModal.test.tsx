@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react-native'; // Use '@testing-library/react-native' for React Native
-import DeleteConfirmationModal from '../app/deleteConfirmationModal';
+import DeleteConfirmationModal from '../../app/deleteConfirmationModal';
 
 describe('DeleteConfirmationModal', () => {
   const mockOnClose = jest.fn();
   const mockOnConfirm = jest.fn();
 
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mocks after each test
+    jest.clearAllMocks();
   });
 
   test('renders the modal when visible prop is true', () => {
