@@ -12,33 +12,33 @@ import applyGlobalPolyfills from "../decoder";
 applyGlobalPolyfills()
 
 // Custom header component
-function CustomHeader() {
-  const navigation = useNavigation();
+// function CustomHeader() {
+//   const navigation = useNavigation();
 
-  return (
-    <View style={styles.headerContainer}>
-      <Pressable onPress={() => navigation.navigate('map')}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
-          style={styles.profilePic}
-        />
-      </Pressable>
+//   return (
+//     <View style={styles.headerContainer}>
+//       <Pressable onPress={() => navigation.navigate('map')}>
+//         <Image
+//           source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
+//           style={styles.profilePic}
+//         />
+//       </Pressable>
 
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search"
-        placeholderTextColor="#999"
-      />
+//       <TextInput
+//         style={styles.searchBar}
+//         placeholder="Search"
+//         placeholderTextColor="#999"
+//       />
 
-      <Pressable onPress={() =>navigation.navigate('profile')}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
-          style={styles.profilePic}
-        />
-      </Pressable>
-    </View>
-  );
-}
+//       <Pressable onPress={() =>navigation.navigate('profile')}>
+//         <Image
+//           source={{ uri: 'https://via.placeholder.com/40' }} // Replace with actual profile image URL
+//           style={styles.profilePic}
+//         />
+//       </Pressable>
+//     </View>
+//   );
+// }
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -47,8 +47,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: true,
-        header: () => <CustomHeader />, 
+        headerShown: false,
+        // header: () => <CustomHeader />, 
       }}
     >
       <Tabs.Screen

@@ -47,6 +47,7 @@ export default function SavedPage() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>My Lists</Text>
       <Pressable
           key={'All'}
           style={styles.categoryButton}
@@ -71,6 +72,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: "#f5f5f5",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   categoryButton: {
     padding: 15,
