@@ -47,6 +47,13 @@ export default function SavedPage() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Pressable
+          key={'All'}
+          style={styles.categoryButton}
+          onPress={() => handleCategoryPress('All')}
+        >
+          <Text style={styles.categoryButtonText}>All</Text>
+      </Pressable>
       {categories.map((category) => (
         <Pressable
           key={category}

@@ -21,6 +21,7 @@ export default function CategoryMemPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
+  const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
 
   const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -28,16 +29,23 @@ export default function CategoryMemPage() {
 
   const fetchMemoriesByCategory = async () => {
     try {
-      const response = await fetch(`${API_URL}/travel/memory/category/${category}`, {
+      const endpoint =
+        category === 'All'
+          ? `${API_URL}/travel/memory/user`
+          : `${API_URL}/travel/memory/category/${category}`;
+  
+      const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
       });
+  
       if (response.ok) {
         const data = await response.json();
         setMemories(data);
+        calculateVisitedStats(data);
       } else {
         setError('Failed to fetch memories.');
       }
@@ -47,6 +55,13 @@ export default function CategoryMemPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateVisitedStats = (memories: Journal[]) => {
+    const visited = memories.filter((memory) => memory.condition === 'Visited').length;
+    const total = memories.length;
+    const percentage = total > 0 ? Math.round((visited / total) * 100) : 0;
+    setVisitedStats({ count: visited, percentage });
   };
 
   const openJournalDetail = (journal: Journal) => {
@@ -115,17 +130,24 @@ export default function CategoryMemPage() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{category}</Text>
+      <View style={styles.statsContainer}>
+        <Text style={styles.title}>{category}</Text>
+        <Text style={styles.statText}>
+          Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)
+        </Text>
+      </View>
       <FlatList
         data={memories}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.memoryItem}>
             <Text style={styles.memoryTitle}>{item.title}</Text>
+            <Text>Location: {item.loc}</Text>
+            <Text>Status: {item.condition}</Text>
             <Text>From: {new Date(item.initDate).toLocaleDateString()}</Text>
             <Text>To: {new Date(item.endDate).toLocaleDateString()}</Text>
             <Text
-              numberOfLines={expanded[item.id] ? undefined : 5}
+              numberOfLines={expanded[item.id] ? undefined : 3}
               ellipsizeMode="tail"
             >
               {item.captionText}
@@ -178,6 +200,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f5f5f5",
+  },
+  statsContainer: {
+    marginBottom: 16,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  statText: {
+    fontSize: 16,
+    color: '#333',
   },
   title: {
     fontSize: 18,

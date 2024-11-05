@@ -36,8 +36,8 @@ public class MemoryController {
         return ResponseEntity.ok("Memory Service is running");
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Memory>> getMemoriesByUserId(@PathVariable Long userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<Memory>> getMemoriesByUserId(@RequestHeader("X-User-Id") Long userId) {
         List<Memory> memories = memoryService.getMemoriesByUserId(userId);
         return ResponseEntity.ok(memories);
     }
