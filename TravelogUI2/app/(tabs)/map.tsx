@@ -20,6 +20,19 @@ const INITIAL_CENTER: [number, number] = [
 ]
 const INITIAL_ZOOM = 18.12
 
+export type Journal = {
+  id: number;  
+  userId: number;
+  pinId: number;
+  title: string;
+  category: string;
+  loc: string;
+  condition: string,
+  captionText: string;
+  initDate: Date;
+  endDate: Date;
+}
+
 function Map() {
   const loginContext = useLoginContext();
 
@@ -42,6 +55,28 @@ function Map() {
 
   // Managing modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const [memories, setMemories] = useState<Journal[]>([]);
+
+  const fetchMemories = async (pinId: number | null) => {
+    if (!pinId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/travel/memory/${pinId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${loginContext.accessToken}`
+        }
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const memoriesData = await response.json();
+      setMemories(memoriesData);
+    } catch (err) {
+      console.error("Failed to fetch memories:", err);
+    }
+  };
 
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
@@ -283,6 +318,7 @@ function Map() {
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
           onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
+          key = {memories.length}
         />
       )}
 
@@ -290,6 +326,10 @@ function Map() {
         selectedPin={selectedPin}
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
+        onSubmitJournal={() => {
+          fetchMemories(selectedPin.pinId ? selectedPin.pinId : null);
+          setIsModalVisible(false);
+        }}
       />
 
       {/* Plus button for dropping a pin */}

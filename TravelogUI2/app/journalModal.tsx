@@ -20,9 +20,10 @@ interface JournalModalProps {
   },
   isModalVisible: boolean,
   setIsModalVisible: (state: boolean) => void,
+  onSubmitJournal: () => void,
 }
 
-function JournalModal({selectedPin, isModalVisible, setIsModalVisible}: JournalModalProps){
+function JournalModal({selectedPin, isModalVisible, setIsModalVisible, onSubmitJournal}: JournalModalProps){
     const loginContext = useLoginContext();
     const token = loginContext.accessToken;
     // State for managing the modal and form data
@@ -81,6 +82,7 @@ function JournalModal({selectedPin, isModalVisible, setIsModalVisible}: JournalM
               setEndDate(new Date());
               setJournalBody('');
               setIsModalVisible(false)
+              onSubmitJournal();
           } else {
               console.error("Failed to fetch from travel-service. Status: ", response.status);
           }

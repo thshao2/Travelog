@@ -34,6 +34,7 @@ interface PopupMenuProps {
   onClose: () => void,
   onAddJournal: () => void,
   onDeletePin: () => void,
+  // refreshMemories: () => void,
 }
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin }: PopupMenuProps) => {
