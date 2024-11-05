@@ -20,7 +20,9 @@ const INITIAL_CENTER: [number, number] = [
   -122.0626,
   37.0003
 ]
-const INITIAL_ZOOM = 18.12
+const INITIAL_ZOOM = 17.08
+
+const INITIAL_PITCH = 75
 
 export type Journal = {
   id: number;
@@ -43,6 +45,7 @@ function Map() {
 
   const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER)
   const [zoom, setZoom] = useState<number>(INITIAL_ZOOM)
+  const [pitch, setPitch] = useState<number>(INITIAL_PITCH)
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
   // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
@@ -86,6 +89,7 @@ function Map() {
       container: mapContainerRef.current ? mapContainerRef.current : '',
       center: center,
       zoom: zoom,
+      pitch: pitch,
       config: {
         basemap: {
           show3dObjects: true
@@ -102,6 +106,12 @@ function Map() {
 
     mapRef.current.addControl(geocoder);
 
+    // Listen for the geocoder result event
+    // geocoder.on('result', () => {
+    //   // Set the pitch to 75 after moving to the new location
+    //   mapRef.current?.setPitch(75);
+    // });
+
     mapRef.current.on('move', () => {
       // get the current center coordinates and zoom level from the map
       const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 }
@@ -110,6 +120,14 @@ function Map() {
       // update state
       setCenter([mapCenter.lng, mapCenter.lat])
       setZoom(mapZoom)
+      // mapRef.current?.setPitch(75);
+      setPitch(75)
+      // mapRef.current?.flyTo({
+      //   center: center,
+      //   zoom: zoom,
+      //   pitch: 75,
+      // })
+      // mapRef.current?.setPitch(INITIAL_PITCH);
     })
 
     return () => {
@@ -315,7 +333,7 @@ function Map() {
     <>
       {Platform.OS === 'web' ? (
         <div className="sidebar">
-          Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)}
+          Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)} | zIndex: {mapRef.current?.getPitch()}
         </div>
       ) : (
         <div className="sidebar">
