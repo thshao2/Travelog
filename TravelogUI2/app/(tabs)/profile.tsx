@@ -26,7 +26,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [profilePic, setProfilePic] = useState("");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
 
   // Password state
@@ -50,7 +49,6 @@ export default function ProfilePage() {
         const data = await response.json();
         // Set the fetched user data as default values in the state
         setName(data.username || "Travelog User");
-        setEmail(data.email);
         setBio(data.bio || "My Travelog bio!");
         setProfilePic(data.mediaUrl || "assets/images/default-pfp.png");
       } else {
@@ -80,11 +78,9 @@ export default function ProfilePage() {
   const updateProfile = async () => {
     const updateData: {
       username: string;
-      email: string;
       bio: string;
     } = {
       username: name,
-      email,
       bio,
     };
 
@@ -219,21 +215,6 @@ export default function ProfilePage() {
               />
             </View>
 
-            <View style={styles.row}>
-              {isEditing ? (
-                <TextInput
-                  style={styles.input}
-                  placeholder="user@example.com"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                />
-              ) : (
-                <Text style={styles.email}>
-                  Email: {email || "user@example.com"}
-                </Text>
-              )}
-            </View>
           </View>
         </View>
 
