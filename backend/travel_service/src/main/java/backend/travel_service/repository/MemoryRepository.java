@@ -23,6 +23,9 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
     @Query("SELECT DISTINCT m.category FROM Memory m WHERE m.userId = :userId")
     List<String> findDistinctCategories(Long userId);
 
+    @Query("SELECT m.pinId FROM Memory m WHERE m.userId = :userId AND m.condition = 'Visited'")
+    List<Long> findVisitedPins(Long userId);
+
     @Modifying
     @Transactional
     @Query("UPDATE Memory m SET m.pinId = null WHERE m.pinId = :pinId")
