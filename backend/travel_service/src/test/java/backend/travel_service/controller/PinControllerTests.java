@@ -70,7 +70,7 @@
 //     public void testPostPin_Success() throws Exception {
 //         Location location = new Location(100, 100); // Fill in the necessary properties for Location
 //         Pin savedPin = new Pin(); // Fill in the necessary properties for Pin
-        
+
 //         // Mock the service layer
 //         when(pinService.postPin(any(Location.class), anyLong())).thenReturn(savedPin);
 
@@ -79,7 +79,8 @@
 //                 .content("{\"someProperty\":\"someValue\"}") // Replace with actual JSON representation of Location
 //                 .header("X-User-Id", 1))
 //                 .andExpect(status().isOk())
-//                 .andExpect(content().json("{\"id\":null,\"someProperty\":\"someValue\"}")); // Replace with actual expected JSON for savedPin
+//                 .andExpect(content().json("{\"id\":null,\"someProperty\":\"someValue\"}")); // Replace with actual
+// expected JSON for savedPin
 //     }
 
 //     @Test
@@ -90,7 +91,8 @@
 //         mockMvc.perform(get("/pin")
 //                 .header("X-User-Id", 1))
 //                 .andExpect(status().isOk())
-//                 .andExpect(content().json("[{\"id\":null,\"someProperty\":\"someValue\"}]")); // Replace with actual expected JSON for pins
+//                 .andExpect(content().json("[{\"id\":null,\"someProperty\":\"someValue\"}]")); // Replace with actual
+// expected JSON for pins
 //     }
 
 //     @Test
@@ -107,48 +109,29 @@
 //     }
 // }
 
-
 package backend.travel_service.controller;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import backend.travel_service.entity.Location;
-import backend.travel_service.entity.Pin;
-import backend.travel_service.service.PinService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-
-import org.springframework.test.context.ContextConfiguration;
-import backend.travel_service.TestApplication;
-import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import backend.travel_service.service.PinService;
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import backend.travel_service.TestApplication;
+import backend.travel_service.entity.Location;
+import backend.travel_service.entity.Pin;
+import backend.travel_service.service.PinService;
 
 @WebMvcTest(PinController.class)
 @ContextConfiguration(classes = TestApplication.class)
@@ -169,7 +152,6 @@ public class PinControllerTests {
         Location location = new Location(1L, 37.000141856791984, -122.06259410472599);
         savedPin = new Pin(1L, location, 1L, LocalDateTime.now());
     }
-
 
     @Test
     public void testDeletePin_Success() throws Exception {
