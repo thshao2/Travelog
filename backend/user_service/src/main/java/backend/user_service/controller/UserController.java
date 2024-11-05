@@ -139,7 +139,6 @@ public class UserController {
             UserDTO userDTO = new UserDTO();
             userDTO.setId(userId);
             userDTO.setUsername(profile.getUsername());
-            userDTO.setEmail(profile.getEmail());
             userDTO.setPassword(profile.getPassword());
             ResponseEntity<UserDTO> response = restTemplate.exchange(
                     "http://auth-service:3010/auth/user/update",

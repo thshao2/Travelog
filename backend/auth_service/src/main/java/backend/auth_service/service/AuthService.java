@@ -89,11 +89,6 @@ public class AuthService {
 
     public User updateUser(Optional<User> existingUser, User user) {
         System.out.println("Updating user: " + user);
-        // update user email
-        if (user.getEmail() != null) {
-            existingUser.get().setEmail(user.getEmail());
-        }
-        System.out.println("Updated user email: " + existingUser.get().getEmail());
         // update username
         if (user.getUsername() != null) {
             existingUser.get().setUsername(user.getUsername());
