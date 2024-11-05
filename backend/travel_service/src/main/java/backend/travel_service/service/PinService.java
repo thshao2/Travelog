@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import backend.travel_service.entity.Location;
 import backend.travel_service.entity.Pin;
 import backend.travel_service.repository.LocationRepository;
+import backend.travel_service.repository.MemoryRepository;
 import backend.travel_service.repository.PinRepository;
 
 @Service
@@ -17,6 +18,9 @@ public class PinService {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private MemoryRepository memoryRepository;
 
     public Pin postPin(Location location, Long userId) {
         // Save location to database
@@ -37,5 +41,19 @@ public class PinService {
 
     public List<Pin> getPinList(Long userId) {
         return pinRepository.findByUserId(userId);
+    }
+
+    public void deletePinById(Long pinId) {
+        if (pinRepository.existsById(pinId)) {
+            // Delete pin object
+            pinRepository.deleteById(pinId);
+
+            // Deassociate all memories with this pin
+            memoryRepository.updateMemoriesPinIdToNull(pinId);
+
+            System.out.println("Pin with ID " + pinId + " was deleted successfully.");
+        } else {
+            System.out.println("Pin with ID " + pinId + " does not exist.");
+        }
     }
 }

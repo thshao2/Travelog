@@ -3,7 +3,9 @@ package backend.travel_service.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import backend.travel_service.entity.Memory;
 
@@ -20,4 +22,9 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
 
     @Query("SELECT DISTINCT m.category FROM Memory m WHERE m.userId = :userId")
     List<String> findDistinctCategories(Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Memory m SET m.pinId = null WHERE m.pinId = :pinId")
+    void updateMemoriesPinIdToNull(Long pinId);
 }

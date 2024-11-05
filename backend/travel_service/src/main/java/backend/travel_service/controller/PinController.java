@@ -29,4 +29,10 @@ public class PinController {
         List<Pin> pins = pinService.getPinList(userId);
         return ResponseEntity.ok(pins);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMemory(@PathVariable Long id) {
+        pinService.deletePinById(id);
+        return ResponseEntity.ok("Memory with ID " + id + " has been deleted / does not exist.");
+    }
 }

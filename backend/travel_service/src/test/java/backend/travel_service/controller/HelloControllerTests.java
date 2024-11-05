@@ -13,19 +13,17 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import backend.travel_service.TestApplication;
-import backend.travel_service.controller.HelloController;
 
 @WebMvcTest(HelloController.class)
 // @AutoConfigureMockMvc(addFilters = false)
-@ContextConfiguration(classes = TestApplication.class) // need spring context config for testing 
+@ContextConfiguration(classes = TestApplication.class) // need spring context config for testing
 public class HelloControllerTests {
 
     @Autowired
@@ -36,31 +34,36 @@ public class HelloControllerTests {
 
     @Test
     public void testIndex() throws Exception {
-        mockMvc.perform(get("/"))                .andExpect(status().isOk())
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
                 .andExpect(content().string("Greetings from Spring Boot - Travel Service!!!!"));
     }
 
     @Test
     public void testLocationConnection_Success() throws Exception {
-        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {{
-            put("username", "testuser");
-        }});
+        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {
+            {
+                put("username", "testuser");
+            }
+        });
         when(jdbcTemplate.queryForList(anyString())).thenReturn(mockResult);
 
         mockMvc.perform(get("/location-db-test"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Connection successful! Retrieved data: " + mockResult.toString()));
-    }    
+    }
 
     @Test
     public void testMemoryConnection_Success() throws Exception {
-        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {{
-            put("username", "testuser");
-        }});
+        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {
+            {
+                put("username", "testuser");
+            }
+        });
         when(jdbcTemplate.queryForList(anyString())).thenReturn(mockResult);
 
         mockMvc.perform(get("/memory-db-test"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Connection successful! Retrieved data: " + mockResult.toString()));
-    }    
+    }
 }

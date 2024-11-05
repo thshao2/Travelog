@@ -1,8 +1,7 @@
 package backend.auth_service.controller;
 
-import java.util.Optional;
 import java.time.LocalDate;
-
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-
-import backend.auth_service.dto.Token;
 import backend.auth_service.dto.SetUserProfile;
+import backend.auth_service.dto.Token;
 import backend.auth_service.dto.UpdatePasswordRequest;
 import backend.auth_service.dto.ValidateTokenResponse;
 import backend.auth_service.entity.User;
@@ -49,7 +47,7 @@ public class AuthController {
         System.out.println("POST /auth/signup hit");
         try {
             // save in auth db
-            
+
             String inputPassword = user.getPassword();
             authService.saveUser(user);
 
@@ -67,7 +65,7 @@ public class AuthController {
             User userCopy = new User();
             userCopy.setEmail(user.getEmail());
             userCopy.setUsername(user.getUsername());
-            userCopy.setPassword(inputPassword);            
+            userCopy.setPassword(inputPassword);
             System.out.println("USER: " + user);
             String token = authService.logIn(userCopy);
             System.out.println("SUCESSFULLY LOGGED IN");
@@ -83,19 +81,19 @@ public class AuthController {
     }
 
     private void sendUserProfileToUserService(SetUserProfile userProfile) {
-      RestTemplate restTemplate = new RestTemplate();
-      try {
-          ResponseEntity<Void> response = restTemplate.postForEntity("http://user-service:3010/user/create",
-    userProfile, Void.class);
-          System.out.println("STATUS CODE" + response.getStatusCode());
-          if (response.getStatusCode() != HttpStatus.CREATED) {
-              // Handle error appropriately
-              throw new UserProfileCreationException("Failed to send user profile to user service: " + response.getStatusCode());
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<Void> response =
+                    restTemplate.postForEntity("http://user-service:3010/user/create", userProfile, Void.class);
+            System.out.println("STATUS CODE" + response.getStatusCode());
+            if (response.getStatusCode() != HttpStatus.CREATED) {
+                // Handle error appropriately
+                throw new UserProfileCreationException(
+                        "Failed to send user profile to user service: " + response.getStatusCode());
             }
-      } catch (Exception e) {
-          throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
-          
-      }
+        } catch (Exception e) {
+            throw new UserProfileCreationException("Error sending user profile to user service: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")
@@ -173,7 +171,8 @@ public class AuthController {
     }
 
     @PutMapping("update-password")
-    public ResponseEntity<Object> updateUserPassword(@RequestHeader("X-User-Id") Long userId, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+    public ResponseEntity<Object> updateUserPassword(
+            @RequestHeader("X-User-Id") Long userId, @RequestBody UpdatePasswordRequest updatePasswordRequest) {
         System.out.println("PUT /auth/user/update-password endpoint hit with userId: " + userId);
         try {
             Optional<User> existingUser = userRepository.findById(userId);

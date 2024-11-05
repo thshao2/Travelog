@@ -98,7 +98,8 @@ public class AuthService {
         if (user.getUsername() != null) {
             existingUser.get().setUsername(user.getUsername());
         }
-        System.out.println("Updated username: " + existingUser.get().getUsername());        System.out.println("Updated Existing User: " + existingUser);
+        System.out.println("Updated username: " + existingUser.get().getUsername());
+        System.out.println("Updated Existing User: " + existingUser);
         repository.save(existingUser.get());
         return existingUser.get();
     }

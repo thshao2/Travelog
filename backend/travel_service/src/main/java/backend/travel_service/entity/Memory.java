@@ -21,7 +21,7 @@ public class Memory {
     @Column(name = "user_id", nullable = false)
     private Long userId; // FK to User in User Service
 
-    @Column(name = "pin_id", nullable = false)
+    @Column(name = "pin_id", nullable = true)
     private Long pinId; // FK to Pin
 
     @Column(nullable = false)

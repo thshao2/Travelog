@@ -8,4 +8,6 @@ import backend.travel_service.entity.Pin;
 
 public interface PinRepository extends JpaRepository<Pin, Long> {
     List<Pin> findByUserId(Long userId);
+
+    List<Pin> findPinById(Long pinId);
 }
