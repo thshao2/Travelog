@@ -215,20 +215,20 @@ function Map() {
     }
   };
 
-  const handleDeletePin = async () => {
+  const handleDeletePin = async (token: string) => {
     console.log("handleDeletePin called in map.tsx");
     try {
       // Make API call to delete the pin
-      // const response = await fetch(`${API_URL}/travel/pin/${pinId}`, {
-      //   method: 'DELETE',
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`,
-      //   },
-      // });
+      const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-      // if (!response.ok) {
-      //   throw new Error('Failed to delete pin.');
-      // }
+      if (!response.ok) {
+        throw new Error('Failed to delete pin.');
+      }
 
       // Remove pin from local state
       selectedPin.marker!.remove();
@@ -282,7 +282,7 @@ function Map() {
           selectedPin={selectedPin}
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
-          onDeletePin={async () => handleDeletePin()}
+          onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
         />
       )}
 
