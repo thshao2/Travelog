@@ -86,6 +86,11 @@ function Map() {
       container: mapContainerRef.current ? mapContainerRef.current : '',
       center: center,
       zoom: zoom,
+      config: {
+        basemap: {
+          show3dObjects: true
+        }
+      }
     });
 
     // Initialize and add the Mapbox Geocoder
@@ -127,18 +132,17 @@ function Map() {
       const pins = await response.json();
       console.log(pins);
 
-      if (mapRef.current) {
-        pins.forEach((pin: any) => {
-          const { latitude, longitude } = pin.location;
-
+      pins.forEach((pin: any) => {
+        const { latitude, longitude } = pin.location;
+        if (mapRef.current) {
           const newMarker = new mapboxgl.Marker({ draggable: true })
             .setLngLat([longitude, latitude])
             .addTo(mapRef.current);
           newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, pin.id));
           markersRef.current.push(newMarker);
-        });
-        console.log("after fetching pin, mapRef =", mapRef)
-      }
+        }
+      });
+      console.log("after fetching pin, mapRef =", mapRef)
     } catch (err) {
       console.error("Error fetching pins:", err);
     }
