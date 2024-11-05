@@ -1,18 +1,20 @@
 import { useRef, useEffect, useState } from 'react';
-import mapboxgl, { Map as MapboxMap, Marker} from 'mapbox-gl';
+import mapboxgl, { Map as MapboxMap, Marker } from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { Platform, Text, Pressable, StyleSheet } from 'react-native'
 import JournalModal from '../journalModal';
 import PopupMenu from '../popupMenu';
 import config from '../config';
-import { getToken, removeToken } from "../utils/util";
 import { useLoginContext } from "../context/LoginContext";
 
 import 'mapbox-gl/dist/mapbox-gl.css';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+
 
 import './Map.css';
 import { Double } from 'react-native/Libraries/Types/CodegenTypes';
 
-const {API_URL} = config;
+const { API_URL } = config;
 
 const INITIAL_CENTER: [number, number] = [
   -122.0626,
@@ -21,7 +23,7 @@ const INITIAL_CENTER: [number, number] = [
 const INITIAL_ZOOM = 18.12
 
 export type Journal = {
-  id: number;  
+  id: number;
   userId: number;
   pinId: number;
   title: string;
@@ -86,6 +88,15 @@ function Map() {
       zoom: zoom,
     });
 
+    // Initialize and add the Mapbox Geocoder
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      placeholder: "Search for places",
+    });
+
+    mapRef.current.addControl(geocoder);
+
     mapRef.current.on('move', () => {
       // get the current center coordinates and zoom level from the map
       const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 }
@@ -94,7 +105,7 @@ function Map() {
       // update state
       setCenter([mapCenter.lng, mapCenter.lat])
       setZoom(mapZoom)
-    })      
+    })
 
     return () => {
       mapRef.current?.remove();
@@ -115,15 +126,15 @@ function Map() {
       }
       const pins = await response.json();
       console.log(pins);
-  
+
       if (mapRef.current) {
         pins.forEach((pin: any) => {
           const { latitude, longitude } = pin.location;
-          
+
           const newMarker = new mapboxgl.Marker({ draggable: true })
             .setLngLat([longitude, latitude])
             .addTo(mapRef.current);
-            newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, pin.id));
+          newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, pin.id));
           markersRef.current.push(newMarker);
         });
         console.log("after fetching pin, mapRef =", mapRef)
@@ -133,7 +144,7 @@ function Map() {
     }
   };
 
-  const postPinToDb = async (token: string|null, longitude: Double, latitude: Double) => {
+  const postPinToDb = async (token: string | null, longitude: Double, latitude: Double) => {
     try {
       console.log("Authorization token is " + token);
       const response = await fetch(`${API_URL}/travel/pin`, {
@@ -141,15 +152,15 @@ function Map() {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }, 
-        body: JSON.stringify({latitude, longitude})
+        },
+        body: JSON.stringify({ latitude, longitude })
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const pin = await response.json();
       return pin;
-    } catch(err) {
+    } catch (err) {
       console.error("Error posting pin to database: " + err);
     }
   }
@@ -198,21 +209,21 @@ function Map() {
     const lngLat = marker.getLngLat();
     const point = mapRef.current?.project([lngLat.lng, lngLat.lat]); // Get pixel position of the marker
     const mapContainerBounds = mapContainerRef.current?.getBoundingClientRect(); // Get map container dimensions
-  
+
     if (point && mapContainerBounds) {
       let top = point.y - 20;
       let left = point.x + 10;
-  
+
       // Check if popup goes off the right side of the screen
-      if (left + 250 > mapContainerBounds.width) { 
+      if (left + 250 > mapContainerBounds.width) {
         left = point.x - 250;
       }
-  
+
       // Check if popup goes off the bottom of the screen
       if (top + 180 > mapContainerBounds.height) {
         top = point.y - 200;
       }
-  
+
       setSelectedPin({
         pinId,
         marker,
@@ -221,23 +232,23 @@ function Map() {
           left: left,
         },
       });
-  
+
       // Update popup position when the map moves
       mapRef.current?.on('move', () => {
         const updatedPoint = mapRef.current?.project([lngLat.lng, lngLat.lat]);
-  
+
         if (updatedPoint) {
           let updatedTop = updatedPoint.y - 20;
           let updatedLeft = updatedPoint.x + 10;
-  
+
           if (updatedLeft + 250 > mapContainerBounds.width) {
             updatedLeft = updatedPoint.x - 250;
           }
-  
+
           if (updatedTop + 180 > mapContainerBounds.height) {
             updatedTop = updatedPoint.y - 200;
           }
-  
+
           setSelectedPin((prevPin) => ({
             ...prevPin,
             position: {
@@ -275,7 +286,7 @@ function Map() {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Use effect called in map - loginContext changed, refetching the pins. markersRef is currently", markersRef.current);
     markersRef.current.forEach(marker => {
       const removed = marker.remove();
@@ -318,7 +329,7 @@ function Map() {
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
           onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
-          key = {memories.length}
+          key={memories.length}
         />
       )}
 
