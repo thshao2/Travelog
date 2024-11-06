@@ -85,4 +85,7 @@ public class MemoryController {
         memoryService.updateMemory(id, memoryDto);
         return ResponseEntity.ok("Memory updated successfully.");
     }
+
+    @GetMapping("/stats/{userId}")
+    // public ResponseEntity<String> getStats()
 }

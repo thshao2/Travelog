@@ -1,19 +1,28 @@
 package backend.travel_service.service;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import backend.travel_service.dto.MemoryDto;
+import backend.travel_service.dto.VisitedStatsDto;
 import backend.travel_service.entity.Memory;
+import backend.travel_service.entity.Location;
 import backend.travel_service.repository.MemoryRepository;
+import backend.travel_service.repository.PinRepository;
+
 
 @Service
 public class MemoryService {
 
     @Autowired
     private MemoryRepository memoryRepository;
+
+    @Autowired
+    private PinRepository pinRepository;
 
     public List<Memory> getMemoriesByUserId(Long userId) {
         return memoryRepository.findByUserId(userId);
@@ -59,4 +68,25 @@ public class MemoryService {
         memory.setEndDate(memoryDto.getEndDate());
         memoryRepository.save(memory);
     }
+
+    public List<Location> getVisitedLocations(Long userId) {
+        // get all 'visited' pins
+        List<Long> visitedPinIds = memoryRepository.findVisitedPins(userId);
+
+        // get locations of 'visited' pins
+        List<Location> visitedLocations = pinRepository.findVisitedLocations(visitedPinIds);
+
+        return visitedLocations;
+    }
+
+    public VisitedStatsDto getVisitedStats(Long userId) {
+        // get list of visited locations
+        List<Location> visitedLocations = getVisitedLocations(Long userId);
+
+        Set<String> continents = new HashSet<>();
+
+        return new VisitedStatsDto(); // TODO: initialize dto w values
+    }
+
+
 }
