@@ -6,8 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -121,6 +121,7 @@ public class UserController {
     public ResponseEntity<Boolean> updateUserProfile(
             @RequestHeader("X-User-Id") Long userId, @RequestBody UserProfileResponse profile) {
         try {
+            System.out.println("updated user profile image: " + profile.getUri());
             System.out.println("Updating user profile for user ID: " + userId);
 
             // Fetch the user profile using the user ID

@@ -13,4 +13,5 @@ public class UserProfileResponse {
     private String bio;
     private String avatarMediaId;
     private String password;
+    private String uri;
 }

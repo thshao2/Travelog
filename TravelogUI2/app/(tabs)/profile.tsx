@@ -79,9 +79,11 @@ export default function ProfilePage() {
     const updateData: {
       username: string;
       bio: string;
+      uri: string;
     } = {
       username: name,
       bio,
+      uri: profilePic,
     };
 
     try {
