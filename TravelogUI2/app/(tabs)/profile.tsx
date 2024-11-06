@@ -63,6 +63,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (loginContext.accessToken.length > 0) {
       fetchProfile(loginContext.accessToken);
+
+      fetchStats(loginContext.accessToken);
     } else {
       navigation.navigate("login");
     }
@@ -175,6 +177,36 @@ export default function ProfilePage() {
     loginContext.setAccessToken("");
     navigation.navigate("login");
   };
+
+  // stats state
+  const [stats, setStats] = useState({continents: 0, countries: 0, cities: 0});
+
+  const fetchStats = async (token: string) => {
+    try {
+      const response = await fetch(`${API_URL}/stats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loginContext.accessToken}`,
+        },
+      });
+
+      // console.log(response);
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats({
+          continents: data.continents,
+          countries: data.countries,
+          cities: data.cities,
+        });
+      } else {
+        console.error("Failed to fetch stats: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching stats: ", error);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -304,17 +336,17 @@ export default function ProfilePage() {
             <View style={styles.statsTextContainer}>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>18</Text>
+                <Text style={styles.statsNumberText}>{stats.countries}</Text>
                 <Text style={styles.statsText}>countries</Text>
               </View>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>54</Text>
+                <Text style={styles.statsNumberText}>{stats.cities}</Text>
                 <Text style={styles.statsText}>cities</Text>
               </View>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>7</Text>
+                <Text style={styles.statsNumberText}>{stats.continents}</Text>
                 <Text style={styles.statsText}>continents</Text>
               </View>
 

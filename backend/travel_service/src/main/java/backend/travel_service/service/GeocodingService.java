@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GeocodingService {
     private final String MAPBOX_URL = "https://api.mapbox.com/search/geocode/v6/reverse?";
 
-    private final String apiKey = "--"; // LIMITED # REQS/MONTH !!!
+    private final String apiKey = "pk.eyJ1IjoiZnlzaGloIiwiYSI6ImNtMzVwNjQ0YzA1Mmoyam9qaXVoN3ljemkifQ.QRRhMrpEB70fij6DhzJsxg"; // LIMITED # REQS/MONTH !!!
 
     private final RestTemplate restTemplate;
 

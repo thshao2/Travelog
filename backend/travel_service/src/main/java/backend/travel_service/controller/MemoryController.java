@@ -91,8 +91,8 @@ public class MemoryController {
         return ResponseEntity.ok("Memory updated successfully.");
     }
 
-    @GetMapping("/stats/{userId}")
-    public ResponseEntity<VisitedStatsDto> getVisitedStats(@PathVariable Long userId) {
+    @GetMapping("/stats")
+    public ResponseEntity<VisitedStatsDto> getVisitedStats(@RequestHeader("X-User-Id") Long userId) {
         VisitedStatsDto stats = memoryService.getVisitedStats(userId);
         return ResponseEntity.ok(stats);
     }
