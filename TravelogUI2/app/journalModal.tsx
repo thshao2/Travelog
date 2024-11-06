@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView } from 'react-native';
+import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable } from 'react-native';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Picker } from '@react-native-picker/picker';
 import { useLoginContext } from './context/LoginContext';
 import * as ImagePicker from 'expo-image-picker';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import config from './config';
 
@@ -115,6 +116,11 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   const handleSectionChange = (index: number, content: string) => {
     const newSections = [...sections];
     newSections[index].content = content;
+    setSections(newSections);
+  };
+
+  const deleteSection = (index: number) => {
+    const newSections = sections.filter((_, i) => i !== index);
     setSections(newSections);
   };
 
@@ -236,6 +242,9 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                     <Image source={{ uri: section.content }} style={styles.image} />
                   </>
                 )}
+                <Pressable onPress={() => deleteSection(index)} style={styles.deleteButton}>
+                  <MaterialIcons name="delete" size={24} color="red" />
+                </Pressable>
               </View>
             ))}
           </ScrollView>
@@ -341,5 +350,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 8,
+  },
+  deleteButton: {
+    marginLeft: 10,
   },
 });
