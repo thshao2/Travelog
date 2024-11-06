@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.travel_service.dto.MemoryDto;
+import backend.travel_service.dto.VisitedStatsDto;
 import backend.travel_service.entity.Memory;
 import backend.travel_service.service.MemoryService;
+import backend.travel_service.service.GeocodingService;
 
 @RestController
 @RequestMapping("/memory")
@@ -24,6 +26,9 @@ public class MemoryController {
 
     @Autowired
     private MemoryService memoryService;
+
+    @Autowired
+    private GeocodingService geocodingService;
 
     @Autowired
     public MemoryController(MemoryService memoryService) {
@@ -87,5 +92,8 @@ public class MemoryController {
     }
 
     @GetMapping("/stats/{userId}")
-    // public ResponseEntity<String> getStats()
+    public ResponseEntity<VisitedStatsDto> getVisitedStats(@PathVariable Long userId) {
+        VisitedStatsDto stats = memoryService.getVisitedStats(userId);
+        return ResponseEntity.ok(stats);
+    }
 }

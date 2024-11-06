@@ -94,9 +94,9 @@ public class MemoryService {
         
         // put into set
         for (Location location : visitedLocations) {
-            GeocodingService.LocationData locationData = geocodingService.getLocationData(location.getLatitude(), location.getLongitude());
-            String country = geocodingService.getCountryFromLocation(location); // Call Mapbox geocoding to get country
-            String city = geocodingService.getCityFromLocation(location); // Call Mapbox geocoding to get city
+            List<String> locationData = geocodingService.getLocationData(location.getLatitude(), location.getLongitude());
+            String country = locationData.get(0); 
+            String city = locationData.get(1);
             
             // Add country and city to the sets
             countries.add(country);
@@ -112,6 +112,5 @@ public class MemoryService {
         // Return the stats as a DTO
         return new VisitedStatsDto(continents.size(), countries.size(), cities.size());
     }
-
 
 }

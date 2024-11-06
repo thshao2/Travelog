@@ -1,5 +1,8 @@
 package backend.travel_service.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,7 +25,7 @@ public class GeocodingService {
     }
 
     // get geocoding data
-    public String getLocationData(double latitude, double longitude) {
+    public List<String> getLocationData(double latitude, double longitude) {
         String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&types=place&access_token=" + apiKey;
 
         String response = restTemplate.getForObject(url, String.class);
@@ -31,29 +34,20 @@ public class GeocodingService {
     }
 
     // parse location data to get city + country
-    private String parseLocationData(String response) {
-        // TODO: parse stuff here
+    private List<String> parseLocationData(String response) {
         try {
             JsonNode rootNode = objectMapper.readTree(response);
 
-            // extract place name
+            // extract place (city) and country name
             JsonNode firstFeature = rootNode.path("features").get(0);
-            String placeName = firstFeature.path("properties").path("name").asText("Unknown Place");
+            String city = firstFeature.path("properties").path("name").asText("Unknown city");
+            String country = firstFeature.path("properties").path("country").asText("Unknown country");
 
-            // extract country name
-            JsonNode context = firstFeature.path("context");
-            String countryName = "Unknown Country";
+            return Arrays.asList(city, country);
 
-            for (JsonNode ctx : context) {
-                if (ctx.has("country")) {
-                    countryName = ctx.path("country").asText("Unknown Country");
-                    break;
-                }
-            }
-            return "Place: " + placeName + ", Country: " + countryName;
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error parsing location data";
+            return Arrays.asList("Error parsing location data");
         }
     }
 }
