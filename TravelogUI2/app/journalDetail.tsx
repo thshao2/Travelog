@@ -92,91 +92,91 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       transparent={true}
       onRequestClose={() => setIsDetailVisible(false)}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.modalTitle}>{isEditMode ? "Edit Journal" : journal.title}</Text>
-            <View style={styles.iconContainer}>
-              <MaterialIcons name="edit" size={24} color="black" onPress={handleEditToggle} />
-              <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id)} />
-              <MaterialIcons name="close" size={24} color="black" onPress={onClose} />
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.modalTitle}>{isEditMode ? "Edit Journal" : journal.title}</Text>
+              <View style={styles.iconContainer}>
+                <MaterialIcons name="edit" size={24} color="black" onPress={handleEditToggle} />
+                <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id)} />
+                <MaterialIcons name="close" size={24} color="black" onPress={onClose} />
+              </View>
             </View>
-          </View>
 
-          {isEditMode ? (
-            <View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Title*</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter title..."
-                    value={editedJournalTitle}
-                    onChangeText={setEditedJournalTitle}
+            {isEditMode ? (
+              <View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Title*</Text>
+                  <TextInput
+                      style={styles.input}
+                      placeholder="Enter title..."
+                      value={editedJournalTitle}
+                      onChangeText={setEditedJournalTitle}
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Category</Text>
+                  <TextInput
+                  style={styles.input}
+                  placeholder="Enter category..."
+                  value={editedJournalCategory}
+                  onChangeText={setEditedJournalCategory}
                 />
-              </View>
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Category</Text>
-                <TextInput
-                style={styles.input}
-                placeholder="Enter category..."
-                value={editedJournalCategory}
-                onChangeText={setEditedJournalCategory}
-              />
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Location*</Text>
+                  <TextInput
+                  style={styles.input}
+                  placeholder="Enter location..."
+                  value={editedJournalLocation}
+                  onChangeText={setEditedJournalLocation}
+                />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Location*</Text>
-                <TextInput
-                style={styles.input}
-                placeholder="Enter location..."
-                value={editedJournalLocation}
-                onChangeText={setEditedJournalLocation}
-              />
-              </View>
+                {/* Status dropdown */}
+                <View style={styles.inputContainer}>
+                      <Text style={styles.label}>Status*</Text>
+                      <View style={styles.dropdownContainer}>
+                          <Picker
+                              selectedValue={editedJournalCondition}
+                              onValueChange={setEditedJournalCondition}
+                              style={styles.dropdown}
+                          >
+                              <Picker.Item label="Visited" value="Visited" />
+                              <Picker.Item label="Planned" value="Planned" />
+                          </Picker>
+                      </View>
+                </View>
 
-              {/* Status dropdown */}
-              <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Status*</Text>
-                    <View style={styles.dropdownContainer}>
-                        <Picker
-                            selectedValue={editedJournalCondition}
-                            onValueChange={setEditedJournalCondition}
-                            style={styles.dropdown}
-                        >
-                            <Picker.Item label="Visited" value="Visited" />
-                            <Picker.Item label="Planned" value="Planned" />
-                        </Picker>
-                    </View>
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Start Date*</Text>
+                  <DatePickerInput
+                  locale="en"
+                  label="Enter start date..."
+                  value={editedInitDate}
+                  onChange={(d: any) => setEditedInitDate(d)}
+                  inputMode="start"
+                  mode="outlined"
+                  style={styles.datePicker}
+                />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Start Date*</Text>
-                <DatePickerInput
-                locale="en"
-                label="Enter start date..."
-                value={editedInitDate}
-                onChange={(d: any) => setEditedInitDate(d)}
-                inputMode="start"
-                mode="outlined"
-                style={styles.datePicker}
-              />
-              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>End Date*</Text>
+                  <DatePickerInput
+                  locale="en"
+                  label="Enter end date..."
+                  value={editedEndDate}
+                  onChange={(d: any) => setEditedEndDate(d)}
+                  inputMode="start"
+                  mode="outlined"
+                  style={styles.datePicker}
+                />
+                </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>End Date*</Text>
-                <DatePickerInput
-                locale="en"
-                label="Enter end date..."
-                value={editedEndDate}
-                onChange={(d: any) => setEditedEndDate(d)}
-                inputMode="start"
-                mode="outlined"
-                style={styles.datePicker}
-              />
-              </View>
-
-              <ScrollView style={styles.sectionsScrollView}>
                 {sections.map((section, index) => (
                   <View key={index} style={styles.inputContainer}>
                     {section.type === 'text' ? (
@@ -198,43 +198,41 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                     )}
                   </View>
                 ))}
-              </ScrollView>
 
-              <View style={styles.buttonContainer}>
-                <Button title="Add Text" onPress={addTextSection} color="#007AFF" />
-                <Button title="Add Image" onPress={addImageSection} color="#007AFF" />
-              </View>
+                <View style={styles.buttonContainer}>
+                  <Button title="Add Text" onPress={addTextSection} color="#007AFF" />
+                  <Button title="Add Image" onPress={addImageSection} color="#007AFF" />
+                </View>
 
-              <View style={styles.buttonContainer}>
-                <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
-                <Button title="Cancel" onPress={() => setIsEditMode(false)} color="#f44336" />
+                <View style={styles.buttonContainer}>
+                  <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
+                  <Button title="Cancel" onPress={() => setIsEditMode(false)} color="#f44336" />
+                </View>
               </View>
-            </View>
-          ) : (
-            <>
-              <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
-              <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
-              <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
-              <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
-              <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
-                  
-              <View style={styles.blogContainer}>
-                <ScrollView>
-                  {sections.map((section, index) => (
-                    <View key={index} style={styles.sectionContainer}>
-                      {section.type === 'text' ? (
-                        <Text style={styles.journalBody}>{section.content}</Text>
-                      ) : (
-                        <Image source={{ uri: section.content }} style={styles.image} />
-                      )}
-                    </View>
-                  ))}
-                </ScrollView>
+            ) : (
+              <View>
+                <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
+                <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
+                <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
+                <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
+                <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
+                    
+                <View style={styles.blogContainer}>
+                    {sections.map((section, index) => (
+                      <View key={index} style={styles.sectionContainer}>
+                        {section.type === 'text' ? (
+                          <Text style={styles.journalBody}>{section.content}</Text>
+                        ) : (
+                          <Image source={{ uri: section.content }} style={styles.image} />
+                        )}
+                      </View>
+                    ))}
+                </View>
               </View>
-            </>
-          )}
-        </View>
-      </View>
+            )}
+          </View>
+        </View>       
+      </ScrollView>
     </Modal>
   );
 };
@@ -371,8 +369,5 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     maxHeight: '80%',
-  },
-  sectionsScrollView: {
-    maxHeight: 300,
   },
 });
