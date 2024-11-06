@@ -14,6 +14,7 @@ import backend.travel_service.entity.Location;
 import backend.travel_service.repository.MemoryRepository;
 import backend.travel_service.repository.PinRepository;
 import backend.travel_service.utils.CountryContinentMapping;
+import backend.travel_service.service.GeocodingService;
 
 
 @Service
@@ -24,6 +25,9 @@ public class MemoryService {
 
     @Autowired
     private PinRepository pinRepository;
+
+    @Autowired
+    private GeocodingService geocodingService;
 
     public List<Memory> getMemoriesByUserId(Long userId) {
         return memoryRepository.findByUserId(userId);
@@ -82,7 +86,7 @@ public class MemoryService {
 
     public VisitedStatsDto getVisitedStats(Long userId) {
         // get list of visited locations
-        List<Location> visitedLocations = getVisitedLocations(Long userId);
+        List<Location> visitedLocations = getVisitedLocations(userId);
 
         Set<String> continents = new HashSet<>();
         Set<String> countries = new HashSet<>();
@@ -90,8 +94,9 @@ public class MemoryService {
         
         // put into set
         for (Location location : visitedLocations) {
-            String country = getCountryFromGeocoding(location); // Call Mapbox geocoding to get country
-            String city = getCityFromGeocoding(location); // Call Mapbox geocoding to get city
+            GeocodingService.LocationData locationData = geocodingService.getLocationData(location.getLatitude(), location.getLongitude());
+            String country = geocodingService.getCountryFromLocation(location); // Call Mapbox geocoding to get country
+            String city = geocodingService.getCityFromLocation(location); // Call Mapbox geocoding to get city
             
             // Add country and city to the sets
             countries.add(country);
