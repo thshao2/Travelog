@@ -118,6 +118,16 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setSections(newSections);
   };
 
+  const clearForm = () => {
+    setJournalTitle('');
+    setJournalCategory('');
+    setJournalLocation('');
+    setCondition('Visited');
+    setInitDate(new Date());
+    setEndDate(new Date());
+    setSections([{ type: 'text', content: '' }]);
+  };
+
   return (
     <Modal
       visible={isModalVisible}
@@ -239,7 +249,10 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
           {/* Submit and cancel buttons */}
           <View style={styles.buttonContainer}>
             <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid} color="#4CAF50" />
-            <Button title="Cancel" onPress={() => setIsModalVisible(false)} color="#f44336" />
+            <Button title="Cancel" onPress={() => {
+              setIsModalVisible(false);
+              clearForm();
+            }} color="#f44336" />
           </View>
         </View>
       </View>
