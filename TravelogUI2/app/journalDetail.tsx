@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { DatePickerInput } from 'react-native-paper-dates';
-import { GestureResponderEvent } from 'react-native';
 import { Journal } from './popupMenu';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
@@ -23,7 +23,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
   const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
-  const [editedJournalBody, setEditedJournalBody] = useState(journal.captionText);
+  const [sections, setSections] = useState(journal.captionText.split('\n\n').map(content => ({ type: 'text', content })));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -47,10 +47,42 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       condition: editedJournalCondition, 
       initDate: editedInitDate,
       endDate: editedEndDate,
-      captionText: editedJournalBody,
+      captionText: 'test',
+      // captionText: sections.map(section => section.content).join('\n\n'),
     });
 
     setIsEditMode(false);
+  };
+
+  const addTextSection = () => {
+    setSections([...sections, { type: 'text', content: '' }]);
+  };
+
+  const addImageSection = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const { uri } = result.assets[0];
+      setSections([...sections, { type: 'image', content: uri }]);
+    }
+  };
+
+  const handleSectionChange = (index: number, content: string) => {
+    const newSections = [...sections];
+    newSections[index].content = content;
+    setSections(newSections);
   };
 
   return (
@@ -72,7 +104,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
           </View>
 
           {isEditMode ? (
-            <>
+            <View>
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Title*</Text>
                 <TextInput
@@ -144,22 +176,40 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               />
               </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Journal</Text>
-                <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Write your journal here..."
-                value={editedJournalBody}
-                onChangeText={setEditedJournalBody}
-                multiline={true}
-              />
+              <ScrollView style={styles.sectionsScrollView}>
+                {sections.map((section, index) => (
+                  <View key={index} style={styles.inputContainer}>
+                    {section.type === 'text' ? (
+                      <>
+                        <Text style={styles.label}>Journal</Text>
+                        <TextInput
+                          style={[styles.input, styles.textArea]}
+                          placeholder="Write your journal here..."
+                          value={section.content}
+                          onChangeText={(text) => handleSectionChange(index, text)}
+                          multiline={true}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Text style={styles.label}>Image</Text>
+                        <Image source={{ uri: section.content }} style={styles.image} />
+                      </>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+
+              <View style={styles.buttonContainer}>
+                <Button title="Add Text" onPress={addTextSection} color="#007AFF" />
+                <Button title="Add Image" onPress={addImageSection} color="#007AFF" />
               </View>
-              
+
               <View style={styles.buttonContainer}>
                 <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
                 <Button title="Cancel" onPress={() => setIsEditMode(false)} color="#f44336" />
               </View>
-            </>
+            </View>
           ) : (
             <>
               <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
@@ -170,7 +220,15 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                   
               <View style={styles.blogContainer}>
                 <ScrollView>
-                  <Text style={styles.journalBody}>{journal.captionText}</Text>
+                  {sections.map((section, index) => (
+                    <View key={index} style={styles.sectionContainer}>
+                      {section.type === 'text' ? (
+                        <Text style={styles.journalBody}>{section.content}</Text>
+                      ) : (
+                        <Image source={{ uri: section.content }} style={styles.image} />
+                      )}
+                    </View>
+                  ))}
                 </ScrollView>
               </View>
             </>
@@ -302,5 +360,19 @@ const styles = StyleSheet.create({
   dropdown: {
       height: 40,
       width: '100%',
+  },
+  sectionContainer: {
+    marginBottom: 15,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
+  scrollView: {
+    maxHeight: '80%',
+  },
+  sectionsScrollView: {
+    maxHeight: 300,
   },
 });
