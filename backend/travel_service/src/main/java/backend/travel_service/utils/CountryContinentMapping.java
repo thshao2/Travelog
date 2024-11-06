@@ -35,7 +35,7 @@ public class CountryContinentMapping {
             "Kenya",
             "Lesotho",
             "Liberia",
-            "libya",
+            "Libya",
             "Madagascar",
             "Malawi",
             "Mali",

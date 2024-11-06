@@ -13,6 +13,7 @@ import backend.travel_service.entity.Memory;
 import backend.travel_service.entity.Location;
 import backend.travel_service.repository.MemoryRepository;
 import backend.travel_service.repository.PinRepository;
+import backend.travel_service.utils.CountryContinentMapping;
 
 
 @Service
@@ -84,8 +85,27 @@ public class MemoryService {
         List<Location> visitedLocations = getVisitedLocations(Long userId);
 
         Set<String> continents = new HashSet<>();
+        Set<String> countries = new HashSet<>();
+        Set<String> cities = new HashSet<>();
+        
+        // put into set
+        for (Location location : visitedLocations) {
+            String country = getCountryFromGeocoding(location); // Call Mapbox geocoding to get country
+            String city = getCityFromGeocoding(location); // Call Mapbox geocoding to get city
+            
+            // Add country and city to the sets
+            countries.add(country);
+            cities.add(city);
+            
+            // identify continent + add into set only if found
+            String continent = CountryContinentMapping.getContinentByCountry(country);
+            if (!"Unknown".equals(continent)) {
+                continents.add(continent);
+            }
+        }
 
-        return new VisitedStatsDto(); // TODO: initialize dto w values
+        // Return the stats as a DTO
+        return new VisitedStatsDto(continents.size(), countries.size(), cities.size());
     }
 
 
