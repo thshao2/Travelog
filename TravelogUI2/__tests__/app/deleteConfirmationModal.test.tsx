@@ -16,7 +16,7 @@ describe('DeleteConfirmationModal', () => {
     );
 
     expect(screen.queryByText(/Are you sure you want to delete this pin?/i)).toBeTruthy();
-    expect(screen.queryByText(/The journal entries will be preserved and will be visible under "Saved", but it will no longer show up in the map./i)).toBeTruthy();
+    expect(screen.queryByText(/Your journal entries will be accessable in "Saved"/i)).toBeTruthy();
     expect(screen.queryByText("Yes")).toBeTruthy();
     expect(screen.queryByText("No")).toBeTruthy();
   });

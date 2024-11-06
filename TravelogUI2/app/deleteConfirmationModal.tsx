@@ -19,7 +19,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ visib
         <View style={styles.modalContainer}>
           <Text style={styles.titleText}>Are you sure you want to delete this pin?</Text>
           <Text style={styles.bodyText}>
-            The journal entries will be preserved and will be visible under "Saved", but it will no longer show up in the map.
+            Your journal entries will be accessable in "Saved"
           </Text>
           <View style={styles.buttonContainer}>
             <Pressable style={styles.confirmButton} onPress={onConfirm}>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 300,
+    width: 450,
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -69,13 +69,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   confirmButton: {
-    backgroundColor: '#d9534f',
+    backgroundColor: '#007AFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   cancelButton: {
-    backgroundColor: '#5bc0de',
+    backgroundColor: '#f44336',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

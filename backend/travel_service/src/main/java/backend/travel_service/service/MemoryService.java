@@ -16,15 +16,15 @@ public class MemoryService {
     private MemoryRepository memoryRepository;
 
     public List<Memory> getMemoriesByUserId(Long userId) {
-        return memoryRepository.findByUserId(userId);
+        return memoryRepository.findByUserIdOrderByEndDateDesc(userId);
     }
 
     public List<Memory> getMemoriesByPinId(Long pinId) {
-        return memoryRepository.findByPinId(pinId);
+        return memoryRepository.findByPinIdOrderByEndDateDesc(pinId);
     }
 
     public List<Memory> getMemoriesByUserIdAndPinId(Long userId, Long pinId) {
-        return memoryRepository.findByUserIdAndPinId(userId, pinId);
+        return memoryRepository.findByUserIdAndPinIdOrderByEndDateDesc(userId, pinId);
     }
 
     public List<Memory> getMemoriesByCategory(Long userId, String category) {
