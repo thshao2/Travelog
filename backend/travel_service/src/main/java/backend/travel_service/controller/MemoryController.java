@@ -20,6 +20,10 @@ import backend.travel_service.entity.Memory;
 import backend.travel_service.service.MemoryService;
 import backend.travel_service.service.GeocodingService;
 
+// // TEMP FOR TESTING
+// import org.springframework.web.bind.annotation.CrossOrigin;
+
+// @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/memory")
 public class MemoryController {
@@ -93,6 +97,7 @@ public class MemoryController {
 
     @GetMapping("/stats")
     public ResponseEntity<VisitedStatsDto> getVisitedStats(@RequestHeader("X-User-Id") Long userId) {
+        System.out.println("I AM HERE IN /STATS");
         VisitedStatsDto stats = memoryService.getVisitedStats(userId);
         return ResponseEntity.ok(stats);
     }

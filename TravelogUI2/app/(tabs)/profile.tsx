@@ -44,7 +44,7 @@ export default function ProfilePage() {
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
       });
-      console.log(response);
+      console.log("fetchProfile response: ", response);
       if (response.ok) {
         const data = await response.json();
         // Set the fetched user data as default values in the state
@@ -58,6 +58,37 @@ export default function ProfilePage() {
       console.error("Error fetching profile:", error);
     }
   };
+
+  // stats state
+  const [stats, setStats] = useState({continents: -1, countries: -1, cities: -1});
+
+  const fetchStats = async (token: string) => {
+    console.log('HEHREHRERE');
+    try {
+      const response = await fetch(`${API_URL}/travel/memory/stats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loginContext.accessToken}`,
+        },
+      });
+
+      console.log('fetchStats response: ', response);
+
+      if (response.ok) {
+        const data = await response.json();
+        setStats({
+          continents: data.continents,
+          countries: data.countries,
+          cities: data.cities,
+        });
+      } else {
+        console.error("Failed to fetch stats: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching stats: ", error);
+    }
+  }
 
   // Fetch user profile on component mount
   useEffect(() => {
@@ -177,36 +208,6 @@ export default function ProfilePage() {
     loginContext.setAccessToken("");
     navigation.navigate("login");
   };
-
-  // stats state
-  const [stats, setStats] = useState({continents: 0, countries: 0, cities: 0});
-
-  const fetchStats = async (token: string) => {
-    try {
-      const response = await fetch(`${API_URL}/stats`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${loginContext.accessToken}`,
-        },
-      });
-
-      // console.log(response);
-
-      if (response.ok) {
-        const data = await response.json();
-        setStats({
-          continents: data.continents,
-          countries: data.countries,
-          cities: data.cities,
-        });
-      } else {
-        console.error("Failed to fetch stats: ", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching stats: ", error);
-    }
-  }
 
   return (
     <View style={styles.container}>
