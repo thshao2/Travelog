@@ -62,7 +62,7 @@ export default function ProfilePage() {
   // Fetch user profile on component mount
   useEffect(() => {
     if (loginContext.accessToken.length > 0) {
-      fetchProfile(loginContext.accessToken);
+      fetchProfile();
     } else {
       navigation.navigate("login");
     }
@@ -101,7 +101,7 @@ export default function ProfilePage() {
         console.log("Profile updated successfully");
       } else {
         console.error("Error updating profile:", response.statusText);
-        await fetchProfile(loginContext.accessToken);
+        await fetchProfile();
       }
     } catch (error) {
       console.error("Error updating profile:", error);
