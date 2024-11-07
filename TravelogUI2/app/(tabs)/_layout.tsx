@@ -5,7 +5,7 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Ionicons } from "@expo/vector-icons";  // Import Ionicons for icons
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { StyleSheet } from "react-native";
+// import { StyleSheet } from "react-native";
 
 import applyGlobalPolyfills from "../decoder";
 applyGlobalPolyfills();
@@ -105,26 +105,26 @@ export default function TabLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 60,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-  },
-  searchBar: {
-    flex: 1,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
-    paddingHorizontal: 15,
-    marginHorizontal: 10,
-  },
-  profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-});
+// const styles = StyleSheet.create({
+//   headerContainer: {
+//     flexDirection: "row",
+//     justifyContent: "space-between",
+//     alignItems: "center",
+//     height: 60,
+//     paddingHorizontal: 10,
+//     backgroundColor: "#fff",
+//   },
+//   searchBar: {
+//     flex: 1,
+//     height: 40,
+//     borderRadius: 20,
+//     backgroundColor: "#f0f0f0",
+//     paddingHorizontal: 15,
+//     marginHorizontal: 10,
+//   },
+//   profilePic: {
+//     width: 40,
+//     height: 40,
+//     borderRadius: 20,
+//   },
+// });

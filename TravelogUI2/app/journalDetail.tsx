@@ -357,7 +357,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 8,
     color: "#555",
-    maxHeight: 200,
   },
   dropdownContainer: {
     flex: 1,

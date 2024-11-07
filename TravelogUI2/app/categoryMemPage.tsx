@@ -95,7 +95,11 @@ export default function CategoryMemPage() {
       console.log(message);
   
       // Update the memories state to remove the deleted journal
-      setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
+      setMemories((prevMemories) => {
+        const updatedMemories = prevMemories.filter(journal => journal.id !== journalId);
+        calculateVisitedStats(updatedMemories);
+        return updatedMemories;
+      });
     } catch (err) {
       console.error(err);
       setError("Failed to delete memory.");
@@ -151,10 +155,12 @@ export default function CategoryMemPage() {
             <Text>From: {new Date(item.initDate).toLocaleDateString()}</Text>
             <Text>To: {new Date(item.endDate).toLocaleDateString()}</Text>
             <View>
-              {JSON.parse(item.captionText).map((section: any, index: number) => (
+              {JSON.parse(item.captionText).slice(0, expanded[item.id] ? undefined : 1).map((section: any, index: number) => (
                 <View key={index} style={styles.sectionContainer}>
                   {section.type === "text" ? (
-                    <Text>{section.content}</Text>
+                    <Text numberOfLines={expanded[item.id] ? undefined : 3} ellipsizeMode="tail">
+                      {section.content}
+                    </Text>
                   ) : (
                     <Image source={{ uri: section.content }} style={styles.image} />
                   )}
