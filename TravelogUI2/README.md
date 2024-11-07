@@ -23,8 +23,9 @@ In the output, you'll find options to open the app in a
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Linting
-To lint, run:
+We will be using ESLint for linting. The linting rules are stored in `.eslintrc.js` with details explaining what each rule does.
 
+To check for linting issues, run:
 ```
 npm run lint
 ```
