@@ -15,6 +15,26 @@ The backend will be built using Java Spring.
 - **src/test/**: Testing directory
 - **.mvn**: Wrapper files that allow you to build the project without needing to install Maven globally on your machine.
 
+## Best Practices
+
+### Coding Patterns
+Each microservice will follow the controller, repository, service pattern and has separate directories to distinguish between them.
+- **Controller**: The controller layer handles incoming HTTP requests and sends responses to the client. It uses the service layer to perform business logic. Controllers are annotated with `@RestController` and define request mappings using annotations like `@GetMapping`, `@PostMapping`, `@PutMapping`, and `@DeleteMapping`.
+- **Service**: The service layer contains business logic and interacts with the repository layer to perform CRUD operations. Services are annotated with `@Service`.
+- **Repository**: The repository layer interacts with the database using Spring Data JPA. Repositories are interfaces that extend `JpaRepository` and are annotated with `@Repository`.
+
+### Direct Transfer Objects (DTO)
+DTOs are used to transfer data between the client and server. They help in encapsulating the data and ensuring that only the required information is exposed. DTOs are simple POJOs (Plain Old Java Objects) with getters, setters, and constructors.
+
+### Schema
+Each individual schema is stored in each microservice's entity directory, and the Spring Data JPA with the Hibernate ORM is used to automatically generate tables into PostgreSQL upon startup.
+- **Entities**: Entities represent the database tables and are annotated with `@Entity`. They contain fields that map to the table columns and are annotated with JPA annotations like `@Id`, `@Column`, and `@GeneratedValue`.
+- **Database Initialization**: The database schema is automatically generated based on the entity classes. Additionally, dummy data can be inserted using the `DataInitializer` class, which implements `CommandLineRunner` and runs on application startup.
+
+### API Gateway
+- **Routing**: The API Gateway routes incoming requests to the appropriate microservices based on the request path. Routes are defined in `backend/gateway/src/main/resources/application.properties`.
+
+
 # Linting Instructions
 We will be using `spotless` as the tool for linting. Inside pom.xml under plugin, there's configurations for spotless.
 Since it needs to be ran using mvn, we'll need to run it within our docker container.
