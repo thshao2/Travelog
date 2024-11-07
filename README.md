@@ -20,7 +20,7 @@ npm run installs
 ## Deployment
 
 ```bash
-npm run restart-bakend-prod
+npm run restart-backend-prod
 npm run installs
 npm run build-frontend
 ```
