@@ -11,10 +11,16 @@ To start the entire web application, run
 npm start
 ```
 
-Run:
+To install all dependencies with npm in this project, run
 
 ```bash
 npm run installs
 ```
 
-to install all dependencies with npm in this project.
+## Deployment
+
+```bash
+npm run restart-bakend-prod
+npm run installs
+npm run build-frontend
+```
