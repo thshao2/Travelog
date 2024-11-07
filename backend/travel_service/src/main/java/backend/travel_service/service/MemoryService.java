@@ -77,9 +77,12 @@ public class MemoryService {
     public List<Location> getVisitedLocations(Long userId) {
         // get all 'visited' pins
         List<Long> visitedPinIds = memoryRepository.findVisitedPins(userId);
+        System.out.println("IN MEMORY SERVICE JAVA -- CHECKING RESULTS OF QUERIES");
+        System.out.println(visitedPinIds);
 
         // get locations of 'visited' pins
         List<Location> visitedLocations = pinRepository.findVisitedLocations(visitedPinIds);
+        System.out.println(visitedLocations);
 
         return visitedLocations;
     }
