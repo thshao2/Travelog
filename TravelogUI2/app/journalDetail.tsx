@@ -21,8 +21,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
   const [editedJournalLocation, setEditedJournalLocation] = useState(journal.loc);
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
-  const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
-  const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
+  const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
+  const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
   const [sections, setSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -225,9 +225,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
                 <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
                 <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
-                <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
-                <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
-                    
+                <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{(journal.initDate).toLocaleDateString()}</Text></Text>
+                <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{(journal.endDate).toLocaleDateString()}</Text></Text>
                 <View style={styles.blogContainer}>
                   {sections.map((section, index) => (
                     <View key={index} style={styles.sectionContainer}>
