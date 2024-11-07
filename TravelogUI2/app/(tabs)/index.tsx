@@ -6,7 +6,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 import applyGlobalPolyfills from "../decoder";
-applyGlobalPolyfills()
+applyGlobalPolyfills();
 
 export default function HomeScreen() {
   return (

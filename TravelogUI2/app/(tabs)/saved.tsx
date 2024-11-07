@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { Text, View, StyleSheet, Pressable, ScrollView } from "react-native";
+import React, { useState, useCallback } from "react";
+import { Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import config from '../config';
+import config from "../config";
 import { useLoginContext } from "../context/LoginContext";
 
 const { API_URL } = config;
@@ -13,47 +13,46 @@ export default function SavedPage() {
 
   const [categories, setCategories] = useState<string[]>([]);
 
-  const fetchCategories = async (token: string) => {
+  const fetchCategories = async(token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/memory/categories`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
       } else {
-        console.error('Error fetching categories:', response.statusText);
-        navigation.navigate('login');
+        console.error("Error fetching categories:", response.statusText);
+        navigation.navigate("login");
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       fetchCategories(token);
-    }, [token])
+    }, [token]),
   );
 
-
   const handleCategoryPress = (category: string) => {
-    navigation.navigate('categoryMemPage', { category });
+    navigation.navigate("categoryMemPage", { category });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>My Lists</Text>
       <Pressable
-          key={'All'}
-          style={styles.categoryButton}
-          onPress={() => handleCategoryPress('All')}
-        >
-          <Text style={styles.categoryButtonText}>All</Text>
+        key={"All"}
+        style={styles.categoryButton}
+        onPress={() => handleCategoryPress("All")}
+      >
+        <Text style={styles.categoryButtonText}>All</Text>
       </Pressable>
       {categories.map((category) => (
         <Pressable

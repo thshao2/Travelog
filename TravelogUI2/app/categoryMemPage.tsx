@@ -10,7 +10,7 @@ import config from "./config";
 const { API_URL } = config;
 
 export default function CategoryMemPage() {
-  const route = useRoute<RouteProp<RootStackParamList, 'categoryMemPage'>>();
+  const route = useRoute<RouteProp<RootStackParamList, "categoryMemPage">>();
   const { category } = route.params;
   const loginContext = useLoginContext();
   const token = loginContext.accessToken;
@@ -27,18 +27,18 @@ export default function CategoryMemPage() {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const fetchMemoriesByCategory = async () => {
+  const fetchMemoriesByCategory = async() => {
     try {
       const endpoint =
-        category === 'All'
+        category === "All"
           ? `${API_URL}/travel/memory/user`
           : `${API_URL}/travel/memory/category/${category}`;
   
       const response = await fetch(endpoint, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
   
@@ -47,10 +47,10 @@ export default function CategoryMemPage() {
         setMemories(data);
         calculateVisitedStats(data);
       } else {
-        setError('Failed to fetch memories.');
+        setError("Failed to fetch memories.");
       }
     } catch (err) {
-      setError('Error fetching memories.');
+      setError("Error fetching memories.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function CategoryMemPage() {
   };
 
   const calculateVisitedStats = (memories: Journal[]) => {
-    const visited = memories.filter((memory) => memory.condition === 'Visited').length;
+    const visited = memories.filter((memory) => memory.condition === "Visited").length;
     const total = memories.length;
     const percentage = total > 0 ? Math.round((visited / total) * 100) : 0;
     setVisitedStats({ count: visited, percentage });
@@ -75,20 +75,20 @@ export default function CategoryMemPage() {
   };
 
   // Function to delete a memory by ID
-  const handleDeleteJournal = async (journalId: number) => {
+  const handleDeleteJournal = async(journalId: number) => {
     setIsDetailVisible(false);
     
     try {
       const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
       });
   
       if (!response.ok) {
-        throw new Error('Failed to delete memory.');
+        throw new Error("Failed to delete memory.");
       }
   
       const message = await response.text();
@@ -98,25 +98,25 @@ export default function CategoryMemPage() {
       setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
     } catch (err) {
       console.error(err);
-      setError('Failed to delete memory.');
+      setError("Failed to delete memory.");
     }
   };
 
   // Function to edit a memory by ID
-  const handleEditJournal = async (updatedJournal: Journal) => {
+  const handleEditJournal = async(updatedJournal: Journal) => {
     setIsDetailVisible(false);
 
     const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
       },
-      body: JSON.stringify(updatedJournal)
+      body: JSON.stringify(updatedJournal),
     });
   
     if (!response.ok) {
-      throw new Error('Failed to edit memory.');
+      throw new Error("Failed to edit memory.");
     }
     fetchMemoriesByCategory(); 
   };
@@ -125,8 +125,12 @@ export default function CategoryMemPage() {
     fetchMemoriesByCategory();
   }, [category]);
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (error) return <Text style={styles.errorText}>{error}</Text>;
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -149,7 +153,7 @@ export default function CategoryMemPage() {
             <View>
               {JSON.parse(item.captionText).map((section: any, index: number) => (
                 <View key={index} style={styles.sectionContainer}>
-                  {section.type === 'text' ? (
+                  {section.type === "text" ? (
                     <Text>{section.content}</Text>
                   ) : (
                     <Image source={{ uri: section.content }} style={styles.image} />
@@ -163,24 +167,24 @@ export default function CategoryMemPage() {
               </Text>
             </Pressable>
             <Pressable
-                style={styles.editButton}
-                onPress={() =>
-                  openJournalDetail({
-                    id: item.id,
-                    userId: item.userId,
-                    pinId: item.pinId,
-                    title: item.title,
-                    category: item.category,
-                    condition: item.condition,
-                    loc: item.loc,
-                    initDate: new Date(item.initDate),
-                    endDate: new Date(item.endDate),
-                    captionText: item.captionText,
-                  })
-                }
-              >
-                <Text>Edit</Text>
-              </Pressable>
+              style={styles.editButton}
+              onPress={() =>
+                openJournalDetail({
+                  id: item.id,
+                  userId: item.userId,
+                  pinId: item.pinId,
+                  title: item.title,
+                  category: item.category,
+                  condition: item.condition,
+                  loc: item.loc,
+                  initDate: new Date(item.initDate),
+                  endDate: new Date(item.endDate),
+                  captionText: item.captionText,
+                })
+              }
+            >
+              <Text>Edit</Text>
+            </Pressable>
           </View>
         )}
       />
@@ -209,12 +213,12 @@ const styles = StyleSheet.create({
   statsContainer: {
     marginBottom: 16,
     padding: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     borderRadius: 8,
   },
   statText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   title: {
     fontSize: 18,

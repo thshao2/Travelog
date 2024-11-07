@@ -1,4 +1,4 @@
-import { useNavigation as useNativeNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation as useNativeNavigation, NavigationProp } from "@react-navigation/native";
 
 declare global {
   namespace ReactNavigation {

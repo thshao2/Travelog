@@ -10,10 +10,10 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import applyGlobalPolyfills from "./decoder";
-applyGlobalPolyfills()
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { LoginProvider } from "./context/LoginContext";
+applyGlobalPolyfills();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

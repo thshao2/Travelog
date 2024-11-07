@@ -5,11 +5,10 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Ionicons } from "@expo/vector-icons";  // Import Ionicons for icons
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { View, TextInput, Image, Pressable, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { StyleSheet } from "react-native";
 
 import applyGlobalPolyfills from "../decoder";
-applyGlobalPolyfills()
+applyGlobalPolyfills();
 
 // Custom header component
 // function CustomHeader() {
@@ -105,7 +104,6 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
 
 const styles = StyleSheet.create({
   headerContainer: {

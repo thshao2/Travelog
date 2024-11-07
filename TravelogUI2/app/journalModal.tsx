@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable } from 'react-native';
-import { DatePickerInput } from 'react-native-paper-dates';
-import { Picker } from '@react-native-picker/picker';
-import { useLoginContext } from './context/LoginContext';
-import * as ImagePicker from 'expo-image-picker';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable } from "react-native";
+import { DatePickerInput } from "react-native-paper-dates";
+import { Picker } from "@react-native-picker/picker";
+import { useLoginContext } from "./context/LoginContext";
+import * as ImagePicker from "expo-image-picker";
+import { MaterialIcons } from "@expo/vector-icons";
 
-import config from './config';
+import config from "./config";
 
 const { API_URL } = config;
 
@@ -27,13 +27,13 @@ interface JournalModalProps {
 function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmitJournal }: JournalModalProps) {
   const loginContext = useLoginContext();
   const token = loginContext.accessToken;
-  const [journalTitle, setJournalTitle] = useState('');
-  const [journalCategory, setJournalCategory] = useState('');
-  const [journalLocation, setJournalLocation] = useState('');
-  const [condition, setCondition] = useState('Visited');
+  const [journalTitle, setJournalTitle] = useState("");
+  const [journalCategory, setJournalCategory] = useState("");
+  const [journalLocation, setJournalLocation] = useState("");
+  const [condition, setCondition] = useState("Visited");
   const [initDate, setInitDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [sections, setSections] = useState([{ type: 'text', content: '' }]);
+  const [sections, setSections] = useState([{ type: "text", content: "" }]);
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     }
   }, [journalTitle, journalLocation, condition, initDate, endDate]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async() => {
     console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, sections);
     console.log("sections", sections);
     try {
@@ -61,18 +61,18 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       };
 
       let response = await fetch(`${API_URL}/travel/memory`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(memoryData),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log("API Response: ", data);
-        setIsModalVisible(false)
+        setIsModalVisible(false);
         onSubmitJournal();
       } else {
         console.error("Failed to fetch from travel-service. Status: ", response.status);
@@ -84,10 +84,10 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   };
 
   const addTextSection = () => {
-    setSections([...sections, { type: 'text', content: '' }]);
+    setSections([...sections, { type: "text", content: "" }]);
   };
 
-  const addImageSection = async () => {
+  const addImageSection = async() => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert("Permission to access camera roll is required!");
@@ -101,7 +101,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     });
     if (!result.canceled) {
       const { uri } = result.assets[0];
-      setSections([...sections, { type: 'image', content: uri }]);
+      setSections([...sections, { type: "image", content: uri }]);
       console.log(sections);
     }
   };
@@ -118,13 +118,13 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   };
 
   const clearForm = () => {
-    setJournalTitle('');
-    setJournalCategory('');
-    setJournalLocation('');
-    setCondition('Visited');
+    setJournalTitle("");
+    setJournalCategory("");
+    setJournalLocation("");
+    setCondition("Visited");
     setInitDate(new Date());
     setEndDate(new Date());
-    setSections([{ type: 'text', content: '' }]);
+    setSections([{ type: "text", content: "" }]);
   };
 
   return (
@@ -134,7 +134,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       transparent={true}
       onRequestClose={() => setIsModalVisible(false)}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>New Journal</Text>
@@ -218,7 +218,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
             {/* Sections for text and images */}
             {sections.map((section, index) => (
               <View key={index} style={styles.inputContainer}>
-                {section.type === 'text' ? (
+                {section.type === "text" ? (
                   <>
                     <Text style={styles.label}>Journal</Text>
                     <TextInput
@@ -267,58 +267,58 @@ export default JournalModal;
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    color: '#333',
+    color: "#333",
   },
   modalContent: {
     marginTop: 20,
-    width: '85%',
+    width: "85%",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 15,
     elevation: 10,
   },
   datePicker: {
-    width: '100%',
+    width: "100%",
     marginBottom: 15,
   },
   journalInput: {
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
     height: 100,
     fontSize: 16,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
     marginBottom: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 15,
   },
   label: {
     width: 100,
     marginRight: 10,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   input: {
     flex: 1,
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 4,
     padding: 10,
@@ -327,13 +327,13 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   dropdown: {
     height: 40,
-    width: '100%',
+    width: "100%",
   },
   image: {
     width: 100,

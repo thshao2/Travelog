@@ -1,5 +1,5 @@
-declare module '@mapbox/mapbox-gl-geocoder' {
-    import { Map } from 'mapbox-gl';
+declare module "@mapbox/mapbox-gl-geocoder" {
+    import { Map } from "mapbox-gl";
   
     interface GeocoderOptions {
       accessToken: string;

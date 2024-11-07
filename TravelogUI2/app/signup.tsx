@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, TextInput, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect, useCallback } from "react";
+import { View, TextInput, Text, StyleSheet, Pressable } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { storeToken } from './utils/util';
+import { storeToken } from "./utils/util";
 
-import config from './config';
-import { useLoginContext } from './context/LoginContext';
+import config from "./config";
+import { useLoginContext } from "./context/LoginContext";
 
-const {API_URL} = config;
+const { API_URL } = config;
 
 const SignUpPage = () => {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
 
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
   const [duplicateEmail, setDuplicateEmail] = useState<boolean>(false);
@@ -38,50 +38,50 @@ const SignUpPage = () => {
   // Reset to empty form
   useFocusEffect(
     useCallback(() => {
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-    }, [])
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    }, []),
   );
 
   // Handle sign-up button press
   // NEED TO CALL MICROSERVICES FUNCTION TO ADD USERS DATA TO DB
-  const handleSignUp = async () => {
-    console.log("submitting form: ", username, email, password)
+  const handleSignUp = async() => {
+    console.log("submitting form: ", username, email, password);
     try {
       // Make a POST request to /auth/login endpoint via the API Gateway
       let response = await fetch(`${API_URL}/auth/signup`, {
-          method: 'POST',
-          body: JSON.stringify({username: username, email: email, password: password}),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        method: "POST",
+        body: JSON.stringify({ username: username, email: email, password: password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       // response = await response.json();
-      console.log(response)
+      console.log(response);
       if (response.ok) {
-          console.log("I AM HERE")
-          setDuplicateEmail(false);
-          const data = await response.json();
-          console.log(data.token);
-          await storeToken(data.token);
-          loginContext.setEmail(email);
-          loginContext.setAccessToken(data.token);
-          console.log("API Response: ", data);
-          console.log(typeof(data));
-          navigation.navigate('(tabs)');
+        console.log("I AM HERE");
+        setDuplicateEmail(false);
+        const data = await response.json();
+        console.log(data.token);
+        await storeToken(data.token);
+        loginContext.setEmail(email);
+        loginContext.setAccessToken(data.token);
+        console.log("API Response: ", data);
+        console.log(typeof(data));
+        navigation.navigate("(tabs)");
 
       } else if (response.status === 409) {
         setDuplicateEmail(true);
       } else {
-          // console.error("Failed to fetch from auth-service. Status: ", response.status);
-          console.error("Failed to fetch from auth-service. Reponse: ", await response.text());
-          setDuplicateEmail(false);
+        // console.error("Failed to fetch from auth-service. Status: ", response.status);
+        console.error("Failed to fetch from auth-service. Reponse: ", await response.text());
+        setDuplicateEmail(false);
       }
     } catch (error) {
-        console.log("THERE WAS AN ERROR IN SIGNUP")
-        console.error("Error calling auth-service: ", error);
+      console.log("THERE WAS AN ERROR IN SIGNUP");
+      console.error("Error calling auth-service: ", error);
     }
   };
 
@@ -106,7 +106,7 @@ const SignUpPage = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      {!validateEmail(email) && email !== '' && (
+      {!validateEmail(email) && email !== "" && (
         <Text style={styles.errorText}>Please enter a valid email address.</Text>
       )}
       {duplicateEmail && (
@@ -130,7 +130,7 @@ const SignUpPage = () => {
         onChangeText={setConfirmPassword}
         secureTextEntry={true}
       />
-      {confirmPassword !== '' && confirmPassword !== password && (
+      {confirmPassword !== "" && confirmPassword !== password && (
         <Text style={styles.errorText}>Passwords do not match.</Text>
       )}
 
@@ -139,14 +139,14 @@ const SignUpPage = () => {
         onPress={handleSignUp}
         disabled={!isFormValid}
         style={[
-            styles.signUpButton,
-            { backgroundColor: isFormValid ? "#4444ff" : "gray" }
-          ]}
+          styles.signUpButton,
+          { backgroundColor: isFormValid ? "#4444ff" : "gray" },
+        ]}
       >
         <Text style={styles.signUpButtonText}>Sign Up</Text>
       </Pressable>
 
-      <Text style={styles.text}>Have an account already? <Pressable><Text style={styles.loginText} onPress={() => navigation.navigate('login')}>Click here to login!</Text></Pressable></Text>
+      <Text style={styles.text}>Have an account already? <Pressable><Text style={styles.loginText} onPress={() => navigation.navigate("login")}>Click here to login!</Text></Pressable></Text>
     </View>
   );
 };
@@ -154,30 +154,30 @@ const SignUpPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
   },
   title: {
-    color: '#4444ff',
+    color: "#4444ff",
     fontSize: 24,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   text: {
-    color: 'gray',
-    textAlign: 'center',
+    color: "gray",
+    textAlign: "center",
   },
   input: {
     height: 40,
     borderWidth: 1,
-    borderColor: 'gray',
-    color: 'gray',
+    borderColor: "gray",
+    color: "gray",
     marginBottom: 12,
     paddingLeft: 10,
     borderRadius: 5,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   signUpButton: {

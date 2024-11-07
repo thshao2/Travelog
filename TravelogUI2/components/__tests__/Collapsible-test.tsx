@@ -1,15 +1,15 @@
-import * as React from 'react';
-import renderer from 'react-test-renderer';
+import * as React from "react";
+import renderer from "react-test-renderer";
 
-import { Collapsible } from '../Collapsible';
+import { Collapsible } from "../Collapsible";
 
-describe('Collapsible Component', () => {
-  it('matches snapshot when closed', () => {
+describe("Collapsible Component", () => {
+  it("matches snapshot when closed", () => {
     const tree = renderer.create(<Collapsible title="Test Title">Collapsed Content</Collapsible>).toJSON();
     expect(tree).toMatchSnapshot();
   });
 
-  it('matches snapshot when open', () => {
+  it("matches snapshot when open", () => {
     const component = renderer.create(<Collapsible title="Test Title">Expanded Content</Collapsible>);
     
     // Toggle open state by simulating the press event

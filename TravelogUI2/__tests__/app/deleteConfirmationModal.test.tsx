@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react-native'; // Use '@testing-library/react-native' for React Native
-import DeleteConfirmationModal from '../../app/deleteConfirmationModal';
+import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react-native"; // Use '@testing-library/react-native' for React Native
+import DeleteConfirmationModal from "../../app/deleteConfirmationModal";
 
-describe('DeleteConfirmationModal', () => {
+describe("DeleteConfirmationModal", () => {
   const mockOnClose = jest.fn();
   const mockOnConfirm = jest.fn();
 
@@ -10,9 +10,9 @@ describe('DeleteConfirmationModal', () => {
     jest.clearAllMocks();
   });
 
-  test('renders the modal when visible prop is true', () => {
+  test("renders the modal when visible prop is true", () => {
     render(
-      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />
+      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />,
     );
 
     expect(screen.queryByText(/Are you sure you want to delete this pin?/i)).toBeTruthy();
@@ -21,17 +21,17 @@ describe('DeleteConfirmationModal', () => {
     expect(screen.queryByText("No")).toBeTruthy();
   });
 
-  test('does not render the modal when visible prop is false', () => {
+  test("does not render the modal when visible prop is false", () => {
     render(
-      <DeleteConfirmationModal visible={false} onClose={mockOnClose} onConfirm={mockOnConfirm} />
+      <DeleteConfirmationModal visible={false} onClose={mockOnClose} onConfirm={mockOnConfirm} />,
     );
 
     expect(screen.queryByText(/Are you sure you want to delete this pin?/i)).toBeNull(); // Use queryByText to check for absence
   });
 
-  test('calls onConfirm when Yes button is pressed', () => {
+  test("calls onConfirm when Yes button is pressed", () => {
     render(
-      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />
+      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />,
     );
 
     fireEvent.press(screen.getByText(/Yes/i)); // Simulate pressing the Yes button
@@ -39,9 +39,9 @@ describe('DeleteConfirmationModal', () => {
     expect(mockOnConfirm).toHaveBeenCalled(); // Check if onConfirm was called
   });
 
-  test('calls onClose when No button is pressed', () => {
+  test("calls onClose when No button is pressed", () => {
     render(
-      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />
+      <DeleteConfirmationModal visible={true} onClose={mockOnClose} onConfirm={mockOnConfirm} />,
     );
 
     fireEvent.press(screen.getByText("No")); // Simulate pressing the No button

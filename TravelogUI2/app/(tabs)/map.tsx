@@ -1,28 +1,27 @@
-import { useRef, useEffect, useState } from 'react';
-import mapboxgl, { Map as MapboxMap, Marker } from 'mapbox-gl';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import { Platform, Text, Pressable, StyleSheet } from 'react-native'
-import JournalModal from '../journalModal';
-import PopupMenu from '../popupMenu';
-import config from '../config';
+import { useRef, useEffect, useState } from "react";
+import mapboxgl, { Map as MapboxMap, Marker } from "mapbox-gl";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import { Platform, Text, Pressable, StyleSheet } from "react-native";
+import JournalModal from "../journalModal";
+import PopupMenu from "../popupMenu";
+import config from "../config";
 import { useLoginContext } from "../context/LoginContext";
 
-import 'mapbox-gl/dist/mapbox-gl.css';
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-
-import './Map.css';
-import { Double } from 'react-native/Libraries/Types/CodegenTypes';
+import "./Map.css";
+import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
 const { API_URL } = config;
 
 const INITIAL_CENTER: [number, number] = [
   -122.0626,
-  37.0003
-]
-const INITIAL_ZOOM = 17.08
+  37.0003,
+];
+const INITIAL_ZOOM = 17.08;
 
-const INITIAL_PITCH = 75
+const INITIAL_PITCH = 75;
 
 export type Journal = {
   id: number;
@@ -43,9 +42,9 @@ function Map() {
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
 
-  const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER)
-  const [zoom, setZoom] = useState<number>(INITIAL_ZOOM)
-  const [pitch, setPitch] = useState<number>(INITIAL_PITCH)
+  const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER);
+  const [zoom, setZoom] = useState<number>(INITIAL_ZOOM);
+  const [pitch, setPitch] = useState<number>(INITIAL_PITCH);
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
   // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
@@ -63,18 +62,22 @@ function Map() {
 
   const [memories, setMemories] = useState<Journal[]>([]);
 
-  const fetchMemories = async (pinId: number | null) => {
-    if (!pinId) return;
+  const fetchMemories = async(pinId: number | null) => {
+    if (!pinId) {
+      return;
+    }
 
     try {
       const response = await fetch(`${API_URL}/travel/memory/${pinId}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${loginContext.accessToken}`
-        }
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${loginContext.accessToken}`,
+        },
       });
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
       const memoriesData = await response.json();
       setMemories(memoriesData);
@@ -84,17 +87,17 @@ function Map() {
   };
 
   useEffect(() => {
-    mapboxgl.accessToken = 'pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg'
+    mapboxgl.accessToken = "pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg";
     mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current ? mapContainerRef.current : '',
+      container: mapContainerRef.current ? mapContainerRef.current : "",
       center: center,
       zoom: zoom,
       pitch: pitch,
       config: {
         basemap: {
-          show3dObjects: true
-        }
-      }
+          show3dObjects: true,
+        },
+      },
     });
 
     // Initialize and add the Mapbox Geocoder
@@ -112,40 +115,40 @@ function Map() {
     //   mapRef.current?.setPitch(75);
     // });
 
-    mapRef.current.on('move', () => {
+    mapRef.current.on("move", () => {
       // get the current center coordinates and zoom level from the map
-      const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 }
-      const mapZoom = mapRef.current ? mapRef.current.getZoom() : 18.12
+      const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 };
+      const mapZoom = mapRef.current ? mapRef.current.getZoom() : 18.12;
 
       // update state
-      setCenter([mapCenter.lng, mapCenter.lat])
-      setZoom(mapZoom)
+      setCenter([mapCenter.lng, mapCenter.lat]);
+      setZoom(mapZoom);
       // mapRef.current?.setPitch(75);
-      setPitch(75)
+      setPitch(75);
       // mapRef.current?.flyTo({
       //   center: center,
       //   zoom: zoom,
       //   pitch: 75,
       // })
       // mapRef.current?.setPitch(INITIAL_PITCH);
-    })
+    });
 
     return () => {
       mapRef.current?.remove();
-    }
-  }, [])
+    };
+  }, []);
 
-  const fetchPins = async (token: string) => {
+  const fetchPins = async(token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/pin`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const pins = await response.json();
       console.log(pins);
@@ -160,45 +163,45 @@ function Map() {
           markersRef.current.push(newMarker);
         }
       });
-      console.log("after fetching pin, mapRef =", mapRef)
+      console.log("after fetching pin, mapRef =", mapRef);
     } catch (err) {
       console.error("Error fetching pins:", err);
     }
   };
 
-  const postPinToDb = async (token: string | null, longitude: Double, latitude: Double) => {
+  const postPinToDb = async(token: string | null, longitude: Double, latitude: Double) => {
     try {
       console.log("Authorization token is " + token);
       const response = await fetch(`${API_URL}/travel/pin`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ latitude, longitude })
+        body: JSON.stringify({ latitude, longitude }),
       });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const pin = await response.json();
       return pin;
     } catch (err) {
       console.error("Error posting pin to database: " + err);
     }
-  }
+  };
 
   const handleButtonClick = () => {
     mapRef.current?.flyTo({
       center: INITIAL_CENTER,
-      zoom: INITIAL_ZOOM
-    })
-  }
+      zoom: INITIAL_ZOOM,
+    });
+  };
 
   const handlePinDropMode = () => {
     setAddingPin(!addingPin); // Toggle pin drop mode
   };
 
-  const handleMapClick = async (e: mapboxgl.MapMouseEvent) => {
+  const handleMapClick = async(e: mapboxgl.MapMouseEvent) => {
     if (addingPin && mapRef.current) {
       const { lng, lat } = e.lngLat;
 
@@ -214,13 +217,11 @@ function Map() {
       console.log("newPin is", newPin);
 
       // Add event listener for pin & set pin ID
-      newMarker.getElement().addEventListener('click', () => handlePinClick(newMarker, newPin.id)); // need the actual pinId
-
+      newMarker.getElement().addEventListener("click", () => handlePinClick(newMarker, newPin.id)); // need the actual pinId
 
       // Store the marker
       // setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
       markersRef.current.push(newMarker);
-
 
       // Exit pin drop mode after adding the marker
       setAddingPin(false);
@@ -256,7 +257,7 @@ function Map() {
       });
 
       // Update popup position when the map moves
-      mapRef.current?.on('move', () => {
+      mapRef.current?.on("move", () => {
         const updatedPoint = mapRef.current?.project([lngLat.lng, lngLat.lat]);
 
         if (updatedPoint) {
@@ -283,19 +284,19 @@ function Map() {
     }
   };
 
-  const handleDeletePin = async (token: string) => {
+  const handleDeletePin = async(token: string) => {
     console.log("handleDeletePin called in map.tsx");
     try {
       // Make API call to delete the pin
       const response = await fetch(`${API_URL}/travel/pin/${selectedPin.pinId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete pin.');
+        throw new Error("Failed to delete pin.");
       }
 
       // Remove pin from local state
@@ -306,7 +307,7 @@ function Map() {
     } catch (error) {
       console.error("Error deleting pin:", error);
     }
-  }
+  };
 
   useEffect(() => {
     console.log("Use effect called in map - loginContext changed, refetching the pins. markersRef is currently", markersRef.current);
@@ -321,17 +322,17 @@ function Map() {
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.on('click', handleMapClick);
+      mapRef.current.on("click", handleMapClick);
     }
 
     return () => {
-      mapRef.current?.off('click', handleMapClick);
+      mapRef.current?.off("click", handleMapClick);
     };
   }, [addingPin]);
 
   return (
     <>
-      {Platform.OS === 'web' ? (
+      {Platform.OS === "web" ? (
         <div className="sidebar">
           Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)} | zIndex: {mapRef.current?.getPitch()}
         </div>
@@ -350,7 +351,7 @@ function Map() {
           selectedPin={selectedPin}
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
-          onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
+          onDeletePin={async() => handleDeletePin(loginContext.accessToken)}
           key={memories.length}
         />
       )}
@@ -372,31 +373,31 @@ function Map() {
         </Pressable>
       )}
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   plusButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#007aff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#007aff",
+    justifyContent: "center",
+    alignItems: "center",
     zIndex: 1, // Ensures the button stays on top of the map
   },
   plusButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
 export default function map() {
   return (
     <Map />
-  )
+  );
 }
