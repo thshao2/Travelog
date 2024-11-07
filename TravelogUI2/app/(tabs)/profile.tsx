@@ -99,6 +99,7 @@ export default function ProfilePage() {
 
       if (response.ok) {
         console.log("Profile updated successfully");
+        console.log(profilePic);
       } else {
         console.error("Error updating profile:", response.statusText);
         await fetchProfile();
@@ -126,6 +127,7 @@ export default function ProfilePage() {
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
+      console.log(result);
       setProfilePic(uri);
     }
   };
