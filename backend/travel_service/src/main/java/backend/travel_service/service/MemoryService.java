@@ -95,9 +95,9 @@ public class MemoryService {
         // put into set
         for (Location location : visitedLocations) {
             List<String> locationData = geocodingService.getLocationData(location.getLatitude(), location.getLongitude());
-            String country = locationData.get(0); 
-            String city = locationData.get(1);
-            
+            String city = locationData.get(0); 
+            String country = locationData.get(1);
+
             // Add country and city to the sets
             countries.add(country);
             cities.add(city);
@@ -107,6 +107,18 @@ public class MemoryService {
             if (!"Unknown".equals(continent)) {
                 continents.add(continent);
             }
+        }
+        System.out.println("I AM HERE IN MEMORY SERVICE STATS !!!");
+        System.out.println(continents.size());
+        System.out.println(countries.size());
+        System.out.println(cities.size());
+
+        for (String country : countries) {
+            System.out.println(country);
+        }
+
+        for (String city : cities) {
+            System.out.println(city);
         }
 
         // Return the stats as a DTO

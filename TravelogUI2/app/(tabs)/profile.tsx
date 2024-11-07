@@ -74,9 +74,9 @@ export default function ProfilePage() {
       });
 
       console.log('fetchStats response: ', response);
-
       if (response.ok) {
         const data = await response.json();
+        console.log('continents: ', data.continents, ' countries: ', data.countries, ' cities: ', data.cities);
         setStats({
           continents: data.continents,
           countries: data.countries,

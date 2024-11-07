@@ -38,10 +38,12 @@ public class GeocodingService {
         try {
             JsonNode rootNode = objectMapper.readTree(response);
 
+            System.out.println("-- PARSED JSON: -- " + rootNode.toString());
+
             // extract place (city) and country name
             JsonNode firstFeature = rootNode.path("features").get(0);
             String city = firstFeature.path("properties").path("name").asText("Unknown city");
-            String country = firstFeature.path("properties").path("country").asText("Unknown country");
+            String country = firstFeature.path("properties").path("context").path("country").path("name").asText("Unknown country");
 
             return Arrays.asList(city, country);
 
