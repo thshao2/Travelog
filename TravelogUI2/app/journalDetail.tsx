@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { DatePickerInput } from 'react-native-paper-dates';
 import { Journal } from './popupMenu';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+
 export interface JournalDetailProps {
   isDetailVisible: boolean,
   setIsDetailVisible: (state: boolean) => void,
@@ -84,6 +85,11 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const handleSectionChange = (index: number, content: string) => {
     const newSections = [...sections];
     newSections[index].content = content;
+    setSections(newSections);
+  };
+
+  const deleteSection = (index: number) => {
+    const newSections = sections.filter((_, i) => i !== index);
     setSections(newSections);
   };
 
@@ -198,6 +204,9 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                         <Image source={{ uri: section.content }} style={styles.image} />
                       </>
                     )}
+                    <Pressable onPress={() => deleteSection(index)} style={styles.deleteButton}>
+                      <MaterialIcons name="delete" size={24} color="red" />
+                    </Pressable>
                   </View>
                 ))}
 
@@ -371,5 +380,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     maxHeight: '80%',
+  },
+  deleteButton: {
+    marginLeft: 10,
   },
 });

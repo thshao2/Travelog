@@ -233,7 +233,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                   <>
                     <Text style={styles.label}>Image</Text>
                     <Image source={{ uri: section.content }} style={styles.image} />
-                  </>
+                  </> 
                 )}
                 <Pressable onPress={() => deleteSection(index)} style={styles.deleteButton}>
                   <MaterialIcons name="delete" size={24} color="red" />
