@@ -76,11 +76,11 @@ export default function ProfilePage() {
       console.log('fetchStats response: ', response);
       if (response.ok) {
         const data = await response.json();
-        console.log('continents: ', data.continents, ' countries: ', data.countries, ' cities: ', data.cities);
+        console.log('continents: ', data.visitedContinentCount, ' countries: ', data.visitedCountryCount, ' cities: ', data.visitedCityCount);
         setStats({
-          continents: data.continents,
-          countries: data.countries,
-          cities: data.cities,
+          continents: data.visitedContinentCount,
+          countries: data.visitedCountryCount,
+          cities: data.visitedCityCount,
         });
       } else {
         console.error("Failed to fetch stats: ", response.statusText);
