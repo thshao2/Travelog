@@ -141,7 +141,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       transparent={true}
       onRequestClose={() => setIsModalVisible(false)}
     >
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>New Journal</Text>
