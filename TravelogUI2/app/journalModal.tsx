@@ -46,7 +46,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
 
   const handleSubmit = async () => {
     console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, sections);
-
+    console.log("sections", sections);
     try {
       const memoryData = {
         pinId: selectedPin.pinId,
@@ -54,7 +54,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         category: journalCategory,
         loc: journalLocation,
         condition: condition,
-        captionText: sections.map(section => section.content).join('\n\n'),
+        captionText: JSON.stringify(sections),
         initDate: initDate,
         endDate: endDate,
         mediaIds: [1, 2, 3],  // Replace with actual media IDs
@@ -72,14 +72,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       if (response.ok) {
         const data = await response.json();
         console.log("API Response: ", data);
-        // Reset the journal form
-        setJournalTitle('');
-        setJournalCategory('');
-        setJournalLocation('');
-        setCondition('Visited');
-        setInitDate(new Date());
-        setEndDate(new Date());
-        setSections([{ type: 'text', content: '' }]);
         setIsModalVisible(false)
         onSubmitJournal();
       } else {
@@ -88,6 +80,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     } catch (error) {
       console.error("Error calling travel-service: ", error);
     }
+    clearForm();
   };
 
   const addTextSection = () => {

@@ -5,7 +5,6 @@ import { DatePickerInput } from 'react-native-paper-dates';
 import { Journal } from './popupMenu';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
-
 export interface JournalDetailProps {
   isDetailVisible: boolean,
   setIsDetailVisible: (state: boolean) => void,
@@ -23,7 +22,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(journal?.initDate || new Date()));
   const [editedEndDate, setEditedEndDate] = useState(new Date(journal?.endDate || new Date()));
-  const [sections, setSections] = useState(journal.captionText.split('\n\n').map(content => ({ type: 'text', content })));
+  const [sections, setSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -33,6 +32,10 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       setIsFormValid(false);
     }
   }, [editedJournalTitle, editedJournalLocation, editedJournalCondition, editedInitDate, editedEndDate]);
+
+  useEffect(() => {
+    console.log('sections', sections);
+  }, [sections]);
 
   const handleEditToggle = () => {
     setIsEditMode(!isEditMode);
@@ -47,8 +50,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       condition: editedJournalCondition, 
       initDate: editedInitDate,
       endDate: editedEndDate,
-      captionText: 'test',
-      // captionText: sections.map(section => section.content).join('\n\n'),
+      captionText: JSON.stringify(sections),
     });
 
     setIsEditMode(false);

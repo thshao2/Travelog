@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, FlatList, ActivityIndicator, Pressable } from "react-native";
+import { Text, View, StyleSheet, FlatList, ActivityIndicator, Pressable, Image } from "react-native";
 import { useLoginContext } from "./context/LoginContext";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { Journal } from "./popupMenu";
@@ -146,12 +146,17 @@ export default function CategoryMemPage() {
             <Text>Status: {item.condition}</Text>
             <Text>From: {new Date(item.initDate).toLocaleDateString()}</Text>
             <Text>To: {new Date(item.endDate).toLocaleDateString()}</Text>
-            <Text
-              numberOfLines={expanded[item.id] ? undefined : 3}
-              ellipsizeMode="tail"
-            >
-              {item.captionText}
-            </Text>
+            <View>
+              {JSON.parse(item.captionText).map((section: any, index: number) => (
+                <View key={index} style={styles.sectionContainer}>
+                  {section.type === 'text' ? (
+                    <Text>{section.content}</Text>
+                  ) : (
+                    <Image source={{ uri: section.content }} style={styles.image} />
+                  )}
+                </View>
+              ))}
+            </View>
             <Pressable onPress={() => toggleExpand(item.id)}>
               <Text style={styles.expandButton}>
                 {expanded[item.id] ? "Show Less" : "Show More"}
@@ -249,5 +254,13 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: "#007bff",
     fontWeight: "bold",
+  },
+  sectionContainer: {
+    marginBottom: 10,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
   },
 });
