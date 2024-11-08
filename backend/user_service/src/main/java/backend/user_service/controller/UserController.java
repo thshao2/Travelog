@@ -137,6 +137,12 @@ public class UserController {
             }
             System.out.println("User profile: " + userProfile);
 
+            System.out.println("USER NAME: " + username);
+
+            System.out.println("BIO: " + bio);
+
+            System.out.println("FILE:" + file);
+
             if (bio != null) {
                 userProfile.setBio(bio);
             }
@@ -159,8 +165,8 @@ public class UserController {
 
             // If a file was uploaded, store it in S3 and update the media URL
             if (file != null && !file.isEmpty()) {
-                // String mediaUrl = userService.uploadToS3(file); // Upload file to S3
-                // userProfile.setMediaUrl(mediaUrl);
+                String mediaUrl = userService.uploadToS3(file); // Upload file to S3
+                userProfile.setAvatarMediaId(mediaUrl);
             }
 
             userProfileRepository.save(userProfile);

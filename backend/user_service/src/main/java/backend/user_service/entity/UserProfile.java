@@ -36,7 +36,7 @@ public class UserProfile {
     private String bio;
 
     @Column(name = "avatar_media_id", nullable = true) // FK to Media table for avatar
-    private Long avatarMediaId; // Reference to Media entity for the avatar
+    private String avatarMediaId; // Reference to Media entity for the avatar (later)
 
     @Column(nullable = false)
     private LocalDate joinedAt;

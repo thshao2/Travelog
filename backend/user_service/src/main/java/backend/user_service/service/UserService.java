@@ -10,10 +10,13 @@ import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.IOException;
 import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
@@ -23,6 +26,9 @@ public class UserService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private S3Client s3Client;
 
     public boolean createNewProfile(UserProfile profile) {
         UserProfile newUserProfile = new UserProfile();
@@ -52,6 +58,25 @@ public class UserService {
             return user_repository.save(userProfile);
         } else {
             return null;
+        }
+    }
+
+    public String uploadToS3(MultipartFile file) {
+        String bucketName = "travelog-media";
+        String uniqueFileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+    
+        try {
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(uniqueFileName)
+                    .build(),
+                RequestBody.fromBytes(file.getBytes())
+            );
+            return "https://" + bucketName + ".s3.amazonaws.com/" + uniqueFileName;
+        } catch (S3Exception | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to upload file to S3");
         }
     }
 }
