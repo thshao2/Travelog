@@ -82,7 +82,8 @@ public class MemoryService {
 
         // get locations of 'visited' pins
         List<Location> visitedLocations = pinRepository.findVisitedLocations(visitedPinIds);
-        System.out.println(visitedLocations);
+        List<Location> allLocations = pinRepository.findAllLocations();
+        System.out.println(allLocations);
 
         return visitedLocations;
     }

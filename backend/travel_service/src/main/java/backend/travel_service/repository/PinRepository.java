@@ -15,4 +15,7 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
 
     @Query("SELECT p.location FROM Pin p WHERE p.id IN :pinIds") // id = pinId
     List<Location> findVisitedLocations(List<Long> pinIds);
+
+    @Query("SELECT l from Location l") // id = pinId
+    List<Location> findAllLocations();
 }

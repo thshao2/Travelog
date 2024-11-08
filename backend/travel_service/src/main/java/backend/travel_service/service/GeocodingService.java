@@ -38,7 +38,7 @@ public class GeocodingService {
         try {
             JsonNode rootNode = objectMapper.readTree(response);
 
-            System.out.println("-- PARSED JSON: -- " + rootNode.toString());
+            // System.out.println("-- PARSED JSON: -- " + rootNode.toString());
 
             // extract place (city) and country name
             JsonNode firstFeature = rootNode.path("features").get(0);
