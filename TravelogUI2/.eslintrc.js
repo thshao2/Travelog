@@ -12,6 +12,9 @@ module.exports = {
     // Turn off the base rule as it can report incorrect errors
     "no-unused-vars": "off",
 
+    // Disable unresolved path errors
+    "import/no-unresolved": "off",
+
     // Turn off the TypeScript rule as it can report incorrect errors
     "@typescript-eslint/no-unused-vars": "off",
 
@@ -43,7 +46,7 @@ module.exports = {
     "no-multiple-empty-lines": ["error", { "max": 1 }],
 
     // Disallow space before function parentheses
-    "space-before-function-paren": ["error", "never"],
+    // "space-before-function-paren": ["error", "never"],
 
     // Enforce consistent spacing before and after keywords
     "keyword-spacing": ["error", { "before": true, "after": true }],

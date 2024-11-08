@@ -5,4 +5,4 @@ export type RootStackParamList = {
     "+not-found": undefined;
     savedPage: undefined;
     categoryMemPage: { category: string };
-  };
+};

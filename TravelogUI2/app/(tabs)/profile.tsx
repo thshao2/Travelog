@@ -35,7 +35,7 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const fetchProfile = async() => {
+  const fetchProfile = async () => {
     try {
       const response = await fetch(`${API_URL}/user/profile`, {
         method: "GET",
@@ -75,7 +75,7 @@ export default function ProfilePage() {
     setIsEditing(!isEditing);
   };
 
-  const updateProfile = async() => {
+  const updateProfile = async () => {
     const updateData: {
       username: string;
       bio: string;
@@ -109,7 +109,7 @@ export default function ProfilePage() {
     }
   };
 
-  const pickImage = async() => {
+  const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -132,13 +132,13 @@ export default function ProfilePage() {
     }
   };
 
-  const clearPasswordForm = async() => {
+  const clearPasswordForm = async () => {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
   };
 
-  const updatePassword = async() => {
+  const updatePassword = async () => {
     if (newPassword !== confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
@@ -173,7 +173,7 @@ export default function ProfilePage() {
     clearPasswordForm();
   };
 
-  const logout = async() => {
+  const logout = async () => {
     await removeToken();
     loginContext.setEmail("");
     loginContext.setAccessToken("");
