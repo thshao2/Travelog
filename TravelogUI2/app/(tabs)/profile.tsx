@@ -112,31 +112,31 @@ export default function ProfilePage() {
   };
 
   const updateProfile = async () => {
-    // const formData = new FormData();
-    // formData.append("username", name);
-    // formData.append("bio", bio);
+    const formData = new FormData();
+    formData.append("username", name);
+    formData.append("bio", bio);
 
-    // console.log(profilePic);
+    console.log(profilePic);
 
-    // // Add the profile image file if it exists
-    // if (base64 !== "" && profilePic) {
-    //   formData.append("image", base64);
-    // }
+    // Add the profile image file if it exists
+    if (base64 !== "" && profilePic) {
+      formData.append("image", base64);
+    }
 
-    const formData = {
-      username: name,
-      bio: bio,
-      image: base64, // Sending Base64 image
-    };
+    // const formData = {
+    //   username: name,
+    //   bio: bio,
+    //   image: base64, // Sending Base64 image
+    // };
 
     try {
       const response = await fetch(`${API_URL}/user/update`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
       if (response.ok) {

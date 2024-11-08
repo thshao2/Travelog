@@ -61,6 +61,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-service-db:5432/user_db
       SPRING_DATASOURCE_USERNAME: user_db_user
       SPRING_DATASOURCE_PASSWORD: user_db_password
+      AWS_ACCESS_KEY_ID: access-key-id
+      AWS_SECRET_ACCESS_KEY: secret-access-key
+      AWS_REGION: us-west-1
     command: mvn spring-boot:run
     networks:
       - backend
