@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +20,8 @@ import backend.user_service.dto.UserProfileResponse;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 import backend.user_service.service.UserService;
+
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -119,9 +122,12 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateUserProfile(
-            @RequestHeader("X-User-Id") Long userId, @RequestBody UserProfileResponse profile) {
+        @RequestHeader("X-User-Id") Long userId,
+        @RequestParam("username") String username,
+        @RequestParam("bio") String bio,
+        @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
-            System.out.println("updated user profile image: " + profile.getUri());
+            // System.out.println("updated user profile image: " + profile.getUri());
             System.out.println("Updating user profile for user ID: " + userId);
 
             // Fetch the user profile using the user ID
@@ -131,23 +137,35 @@ public class UserController {
             }
             System.out.println("User profile: " + userProfile);
 
-            if (profile.getBio() != null) {
-                userProfile.setBio(profile.getBio());
-                userProfileRepository.save(userProfile);
+            if (bio != null) {
+                userProfile.setBio(bio);
+            }
+
+            if (username != null) {
+                userProfile.setUsername(username);
             }
 
             // make a put request to auth service to update the user profile for the profile username, email fields
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(userId);
-            userDTO.setUsername(profile.getUsername());
-            userDTO.setPassword(profile.getPassword());
-            ResponseEntity<UserDTO> response = restTemplate.exchange(
-                    "http://auth-service:3010/auth/user/update",
-                    HttpMethod.PUT,
-                    new HttpEntity<>(userDTO),
-                    UserDTO.class);
-            System.out.println("User response final: " + response);
+            // UserDTO userDTO = new UserDTO();
+            // userDTO.setId(userId);
+            // userDTO.setUsername(profile.getUsername());
+            // userDTO.setPassword(profile.getPassword());
+            // ResponseEntity<UserDTO> response = restTemplate.exchange(
+            //         "http://auth-service:3010/auth/user/update",
+            //         HttpMethod.PUT,
+            //         new HttpEntity<>(userDTO),
+            //         UserDTO.class);
+            // System.out.println("User response final: " + response);
+
+            // If a file was uploaded, store it in S3 and update the media URL
+            if (file != null && !file.isEmpty()) {
+                // String mediaUrl = userService.uploadToS3(file); // Upload file to S3
+                // userProfile.setMediaUrl(mediaUrl);
+            }
+
+            userProfileRepository.save(userProfile);
             return ResponseEntity.ok(true);
+
         } catch (Exception e) {
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

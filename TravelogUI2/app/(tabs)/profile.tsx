@@ -76,15 +76,18 @@ export default function ProfilePage() {
   };
 
   const updateProfile = async () => {
-    const updateData: {
-      username: string;
-      bio: string;
-      uri: string;
-    } = {
-      username: name,
-      bio,
-      uri: profilePic,
-    };
+    const formData = new FormData();
+    formData.append("username", name);
+    formData.append("bio", bio);
+
+    // Add the profile image file if it exists
+    if (profilePic) {
+      formData.append("file", {
+        uri: profilePic,
+        name: "profile.jpg",
+        type: "image/jpeg", 
+      } as unknown as Blob); // Cast to Blob
+    }
 
     try {
       const token = await getToken(); // Use the getToken function
@@ -94,7 +97,7 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updateData),
+        body: formData,
       });
 
       if (response.ok) {

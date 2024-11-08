@@ -9,6 +9,12 @@ import org.springframework.web.client.RestTemplate;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import java.io.IOException;
+import java.util.UUID;
+
 @Service
 public class UserService {
 
