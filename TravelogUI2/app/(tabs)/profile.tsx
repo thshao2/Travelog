@@ -44,7 +44,7 @@ export default function ProfilePage() {
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
       });
-      console.log(response);
+      console.log("fetchProfile response: ", response);
       if (response.ok) {
         const data = await response.json();
         // Set the fetched user data as default values in the state
@@ -59,10 +59,43 @@ export default function ProfilePage() {
     }
   };
 
+  // stats state
+  const [stats, setStats] = useState({continents: -1, countries: -1, cities: -1});
+
+  const fetchStats = async (token: string) => {
+    console.log('HEHREHRERE');
+    try {
+      const response = await fetch(`${API_URL}/travel/memory/stats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loginContext.accessToken}`,
+        },
+      });
+
+      console.log('fetchStats response: ', response);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('continents: ', data.visitedContinentCount, ' countries: ', data.visitedCountryCount, ' cities: ', data.visitedCityCount);
+        setStats({
+          continents: data.visitedContinentCount,
+          countries: data.visitedCountryCount,
+          cities: data.visitedCityCount,
+        });
+      } else {
+        console.error("Failed to fetch stats: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching stats: ", error);
+    }
+  }
+
   // Fetch user profile on component mount
   useEffect(() => {
     if (loginContext.accessToken.length > 0) {
-      fetchProfile();
+      fetchProfile(loginContext.accessToken);
+
+      fetchStats(loginContext.accessToken);
     } else {
       navigation.navigate("login");
     }
@@ -308,17 +341,17 @@ export default function ProfilePage() {
             <View style={styles.statsTextContainer}>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>18</Text>
+                <Text style={styles.statsNumberText}>{stats.countries}</Text>
                 <Text style={styles.statsText}>countries</Text>
               </View>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>54</Text>
+                <Text style={styles.statsNumberText}>{stats.cities}</Text>
                 <Text style={styles.statsText}>cities</Text>
               </View>
 
               <View style={styles.statsTextChunk}>
-                <Text style={styles.statsNumberText}>7</Text>
+                <Text style={styles.statsNumberText}>{stats.continents}</Text>
                 <Text style={styles.statsText}>continents</Text>
               </View>
 
