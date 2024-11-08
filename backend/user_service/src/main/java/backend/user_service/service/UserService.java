@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Base64;
+
 
 @Service
 public class UserService {
@@ -61,9 +63,10 @@ public class UserService {
         }
     }
 
-    public String uploadToS3(MultipartFile file) {
+    public String uploadToS3(String base64Image) {
+        byte[] decodedImage = Base64.getDecoder().decode(base64Image);
         String bucketName = "travelog-media";
-        String uniqueFileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String uniqueFileName = UUID.randomUUID() + "-profile.jpg";
     
         try {
             s3Client.putObject(
@@ -71,10 +74,10 @@ public class UserService {
                     .bucket(bucketName)
                     .key(uniqueFileName)
                     .build(),
-                RequestBody.fromBytes(file.getBytes())
+                RequestBody.fromBytes(decodedImage)
             );
             return "https://" + bucketName + ".s3.amazonaws.com/" + uniqueFileName;
-        } catch (S3Exception | IOException e) {
+        } catch (S3Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to upload file to S3");
         }

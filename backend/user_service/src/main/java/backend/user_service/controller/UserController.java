@@ -143,20 +143,19 @@ public class UserController {
 
             String username = profileUpdateRequest.getUsername();
             String bio = profileUpdateRequest.getBio();
-            MultipartFile file = profileUpdateRequest.getFile();
-
+            String base64Image = profileUpdateRequest.getImage();
+            
             if (bio != null) {
                 userProfile.setBio(bio);
             }
 
             if (username != null) {
-                System.out.println("SHOULD BE HERE");
                 userProfile.setUsername(username);
             }
 
             // If a file was uploaded, store it in S3 and update the media URL
-            if (file != null && !file.isEmpty()) {
-                String mediaUrl = userService.uploadToS3(file); // Upload file to S3
+            if (base64Image != null) {
+                String mediaUrl = userService.uploadToS3(base64Image); // Upload file to S3
                 userProfile.setAvatarMediaId(mediaUrl);
             }
 

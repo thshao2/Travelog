@@ -9,6 +9,7 @@ import {
   Alert,
   ImageBackground,
   ScrollView,
+  Platform,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -170,12 +171,35 @@ export default function ProfilePage() {
       console.log(result);
       setProfilePic(uri);
 
-      // Convert the image to a Base64 string
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+      // // Convert the image to a Base64 string
+      // const base64 = await FileSystem.readAsStringAsync(uri, {
+      //   encoding: FileSystem.EncodingType.Base64,
+      // });
 
-      setBase(base64);
+      let base64 = "";
+
+      if (Platform.OS === "web") {
+        // Web: fetch the image and convert to Base64
+        const response = await fetch(uri);
+        const blob = await response.blob();
+  
+        // Convert blob to Base64
+        base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob); // Read the blob as a data URL
+        });
+      } else {
+        // Mobile: use FileSystem to get Base64 string
+        base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+      }
+
+      if (base64 !== "") {
+        setBase(base64);
+      }
     }
 
   };

@@ -12,5 +12,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserProfileUpdateRequest {
     private String username;
     private String bio;
-    private MultipartFile file;
+    private String image;
 }
