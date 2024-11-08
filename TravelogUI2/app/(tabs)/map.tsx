@@ -138,7 +138,7 @@ function Map() {
     };
   }, []);
 
-  const fetchPins = async(token: string) => {
+  const fetchPins = async (token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/pin`, {
         method: "GET",

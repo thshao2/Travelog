@@ -2,17 +2,22 @@ import React, { createContext, useState, useContext, PropsWithChildren, useEffec
 import { getToken, storeToken } from "../utils/util";
 import { useNavigation } from "@react-navigation/native";
 
+import config from "../config";
+const { API_URL } = config;
+
 export const LoginContext = createContext({
   email: "",
+  // eslint-disable-next-line unused-imports/no-unused-vars
   setEmail: (email: string) => { },
   accessToken: "",
+  // eslint-disable-next-line unused-imports/no-unused-vars
   setAccessToken: (accessToken: string) => { },
 });
 
 export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
   const [email, setEmail] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const _navigation = useNavigation();
+  const navigation = useNavigation();
 
   // Fetch token from AsyncStorage or localStorage
   useEffect(() => {
@@ -29,12 +34,31 @@ export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
 
   // Update token in storage whenever accessToken changes
   useEffect(() => {
-    if (accessToken) {
-      storeToken(accessToken);
-    } 
-    // else {
-    //   navigation.navigate("login")
-    // }
+
+    const checkValidToken = async () => {
+      try {
+        const response = await fetch(`${API_URL}/user/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        console.log(response);
+        if (!response.ok) {
+          setAccessToken("");
+          setEmail("");
+          console.log("INVALID INVALID TOKEN")
+          return false;
+        } 
+        storeToken(accessToken);
+        console.log("STORED TOKEN STORE TOKEN")
+      } catch (error) {
+        return false;
+      }
+    };
+
+    checkValidToken();
   }, [accessToken]);
 
   return (
