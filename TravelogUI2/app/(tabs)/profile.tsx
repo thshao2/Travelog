@@ -60,7 +60,7 @@ export default function ProfilePage() {
   };
 
   // stats state
-  const [stats, setStats] = useState({continents: -1, countries: -1, cities: -1});
+  const [stats, setStats] = useState({continents: 0, countries: 0, cities: 0});
 
   const fetchStats = async (token: string) => {
     console.log('HEHREHRERE');
@@ -93,7 +93,7 @@ export default function ProfilePage() {
   // Fetch user profile on component mount
   useEffect(() => {
     if (loginContext.accessToken.length > 0) {
-      fetchProfile(loginContext.accessToken);
+      fetchProfile();
 
       fetchStats(loginContext.accessToken);
     } else {
