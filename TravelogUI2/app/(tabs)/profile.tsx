@@ -60,10 +60,10 @@ export default function ProfilePage() {
   };
 
   // stats state
-  const [stats, setStats] = useState({continents: 0, countries: 0, cities: 0});
+  const [stats, setStats] = useState({ continents: 0, countries: 0, cities: 0 });
 
-  const fetchStats = async (token: string) => {
-    console.log('HEHREHRERE');
+  const fetchStats = async () => {
+    console.log("HEHREHRERE");
     try {
       const response = await fetch(`${API_URL}/travel/memory/stats`, {
         method: "GET",
@@ -73,10 +73,10 @@ export default function ProfilePage() {
         },
       });
 
-      console.log('fetchStats response: ', response);
+      console.log("fetchStats response: ", response);
       if (response.ok) {
         const data = await response.json();
-        console.log('continents: ', data.visitedContinentCount, ' countries: ', data.visitedCountryCount, ' cities: ', data.visitedCityCount);
+        console.log("continents: ", data.visitedContinentCount, " countries: ", data.visitedCountryCount, " cities: ", data.visitedCityCount);
         setStats({
           continents: data.visitedContinentCount,
           countries: data.visitedCountryCount,
@@ -88,14 +88,14 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error fetching stats: ", error);
     }
-  }
+  };
 
   // Fetch user profile on component mount
   useEffect(() => {
     if (loginContext.accessToken.length > 0) {
       fetchProfile();
 
-      fetchStats(loginContext.accessToken);
+      fetchStats();
     } else {
       navigation.navigate("login");
     }
