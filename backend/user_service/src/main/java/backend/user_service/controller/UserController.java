@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import backend.user_service.dto.UserDTO;
+import backend.user_service.dto.UserProfileUpdateRequest;
+
 import backend.user_service.dto.UserProfileResponse;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
@@ -123,9 +127,7 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateUserProfile(
         @RequestHeader("X-User-Id") Long userId,
-        @RequestParam("username") String username,
-        @RequestParam("bio") String bio,
-        @RequestParam(value = "file", required = false) MultipartFile file) {
+        @ModelAttribute UserProfileUpdateRequest profileUpdateRequest) {
         try {
             // System.out.println("updated user profile image: " + profile.getUri());
             System.out.println("Updating user profile for user ID: " + userId);
@@ -137,18 +139,14 @@ public class UserController {
             }
             System.out.println("User profile: " + userProfile);
 
-            System.out.println("USER NAME: " + username);
+            System.out.println("NEW PROFILE UPDATE: " + profileUpdateRequest);
 
-            System.out.println("BIO: " + bio);
-
-            System.out.println("FILE:" + file);
-
-            if (bio != null) {
-                userProfile.setBio(bio);
+            if (profileUpdateRequest.getBio() != null) {
+                userProfile.setBio(profileUpdateRequest.getBio());
             }
 
-            if (username != null) {
-                userProfile.setUsername(username);
+            if (profileUpdateRequest.getUsername() != null) {
+                userProfile.setUsername(profileUpdateRequest.getUsername());
             }
 
             // make a put request to auth service to update the user profile for the profile username, email fields
@@ -164,8 +162,8 @@ public class UserController {
             // System.out.println("User response final: " + response);
 
             // If a file was uploaded, store it in S3 and update the media URL
-            if (file != null && !file.isEmpty()) {
-                String mediaUrl = userService.uploadToS3(file); // Upload file to S3
+            if (profileUpdateRequest.getFile() != null && !profileUpdateRequest.getFile().isEmpty()) {
+                String mediaUrl = userService.uploadToS3(profileUpdateRequest.getFile()); // Upload file to S3
                 userProfile.setAvatarMediaId(mediaUrl);
             }
 

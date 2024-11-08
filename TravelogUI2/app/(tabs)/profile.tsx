@@ -133,7 +133,7 @@ export default function ProfilePage() {
           // "Content-Type": "application/json",
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
       if (response.ok) {
