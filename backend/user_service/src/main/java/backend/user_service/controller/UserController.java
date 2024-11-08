@@ -85,7 +85,7 @@ public class UserController {
                 // Create a response DTO combining user and user profile
                 UserProfileResponse userProfileResponse = new UserProfileResponse();
                 if (userDTO != null) {
-                    userProfileResponse.setUsername(userDTO.getUsername());
+                    userProfileResponse.setUsername(userProfile.getUsername());
                     userProfileResponse.setEmail(userDTO.getEmail());
                 }
                 userProfileResponse.setBio(userProfile.getBio());
@@ -141,29 +141,22 @@ public class UserController {
 
             System.out.println("NEW PROFILE UPDATE: " + profileUpdateRequest);
 
-            if (profileUpdateRequest.getBio() != null) {
-                userProfile.setBio(profileUpdateRequest.getBio());
+            String username = profileUpdateRequest.getUsername();
+            String bio = profileUpdateRequest.getBio();
+            MultipartFile file = profileUpdateRequest.getFile();
+
+            if (bio != null) {
+                userProfile.setBio(bio);
             }
 
-            if (profileUpdateRequest.getUsername() != null) {
-                userProfile.setUsername(profileUpdateRequest.getUsername());
+            if (username != null) {
+                System.out.println("SHOULD BE HERE");
+                userProfile.setUsername(username);
             }
-
-            // make a put request to auth service to update the user profile for the profile username, email fields
-            // UserDTO userDTO = new UserDTO();
-            // userDTO.setId(userId);
-            // userDTO.setUsername(profile.getUsername());
-            // userDTO.setPassword(profile.getPassword());
-            // ResponseEntity<UserDTO> response = restTemplate.exchange(
-            //         "http://auth-service:3010/auth/user/update",
-            //         HttpMethod.PUT,
-            //         new HttpEntity<>(userDTO),
-            //         UserDTO.class);
-            // System.out.println("User response final: " + response);
 
             // If a file was uploaded, store it in S3 and update the media URL
-            if (profileUpdateRequest.getFile() != null && !profileUpdateRequest.getFile().isEmpty()) {
-                String mediaUrl = userService.uploadToS3(profileUpdateRequest.getFile()); // Upload file to S3
+            if (file != null && !file.isEmpty()) {
+                String mediaUrl = userService.uploadToS3(file); // Upload file to S3
                 userProfile.setAvatarMediaId(mediaUrl);
             }
 

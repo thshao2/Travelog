@@ -13,6 +13,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import config from "../config";
 import { getToken, removeToken } from "../utils/util";
 import { useLoginContext } from "../context/LoginContext";
@@ -34,6 +35,7 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [base64, setBase] = useState("");
 
   const fetchProfile = async () => {
     try {
@@ -109,36 +111,35 @@ export default function ProfilePage() {
   };
 
   const updateProfile = async () => {
-    const formData = new FormData();
-    formData.append("username", name);
-    formData.append("bio", bio);
+    // const formData = new FormData();
+    // formData.append("username", name);
+    // formData.append("bio", bio);
 
-    // Add the profile image file if it exists
-    if (profilePic) {
-      formData.append("file", {
-        uri: profilePic,
-        name: "profile.jpg",
-        type: "image/jpeg", 
-      } as unknown as Blob); // Cast to Blob
-    }
+    // console.log(profilePic);
 
-    console.log(name);
-    console.log(bio);
-    console.log(formData);
+    // // Add the profile image file if it exists
+    // if (base64 !== "" && profilePic) {
+    //   formData.append("image", base64);
+    // }
+
+    const formData = {
+      username: name,
+      bio: bio,
+      image: base64, // Sending Base64 image
+    };
 
     try {
       const response = await fetch(`${API_URL}/user/update`, {
         method: "PUT",
         headers: {
-          // "Content-Type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         console.log("Profile updated successfully");
-        console.log(profilePic);
       } else {
         console.error("Error updating profile:", response.statusText);
         await fetchProfile();
@@ -168,7 +169,15 @@ export default function ProfilePage() {
       const { uri } = result.assets[0];
       console.log(result);
       setProfilePic(uri);
+
+      // Convert the image to a Base64 string
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      setBase(base64);
     }
+
   };
 
   const clearPasswordForm = async () => {
