@@ -63,7 +63,6 @@ export default function ProfilePage() {
   const [stats, setStats] = useState({ continents: 0, countries: 0, cities: 0 });
 
   const fetchStats = async () => {
-    console.log("HEHREHRERE");
     try {
       const response = await fetch(`${API_URL}/travel/memory/stats`, {
         method: "GET",
@@ -73,7 +72,7 @@ export default function ProfilePage() {
         },
       });
 
-      console.log("fetchStats response: ", response);
+      // console.log("fetchStats response: ", response);
       if (response.ok) {
         const data = await response.json();
         console.log("continents: ", data.visitedContinentCount, " countries: ", data.visitedCountryCount, " cities: ", data.visitedCityCount);
@@ -97,7 +96,8 @@ export default function ProfilePage() {
 
       fetchStats();
     } else {
-      navigation.navigate("login");
+      console.log(`HERE IS TOKEN: ${loginContext.accessToken}`)
+      // navigation.navigate("login");
     }
   }, [loginContext.accessToken]);
 
@@ -122,15 +122,18 @@ export default function ProfilePage() {
       } as unknown as Blob); // Cast to Blob
     }
 
+    console.log(name);
+    console.log(bio);
+    console.log(formData);
+
     try {
-      const token = await getToken(); // Use the getToken function
       const response = await fetch(`${API_URL}/user/update`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          // "Content-Type": "application/json",
+          Authorization: `Bearer ${loginContext.accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
