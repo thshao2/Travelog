@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, PropsWithChildren, useEffect } from "react";
 import { getToken, storeToken } from "../utils/util";
-import { useNavigation } from "@react-navigation/native";
 
 import config from "../config";
 const { API_URL } = config;
@@ -17,7 +16,6 @@ export const LoginContext = createContext({
 export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
   const [email, setEmail] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const navigation = useNavigation();
 
   // Fetch token from AsyncStorage or localStorage
   useEffect(() => {
@@ -48,11 +46,11 @@ export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
         if (!response.ok) {
           setAccessToken("");
           setEmail("");
-          console.log("INVALID INVALID TOKEN")
+          console.log("INVALID INVALID TOKEN");
           return false;
         } 
         storeToken(accessToken);
-        console.log("STORED TOKEN STORE TOKEN")
+        console.log("STORED TOKEN STORE TOKEN");
       } catch (error) {
         return false;
       }

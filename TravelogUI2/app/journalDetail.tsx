@@ -89,7 +89,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   };
 
   const deleteSection = (index: number) => {
-    const newSections = sections.filter((_, i) => i !== index);
+    const newSections = sections.filter((_:any, i: number) => i !== index);
     setSections(newSections);
   };
 
@@ -185,7 +185,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                   />
                 </View>
 
-                {sections.map((section, index) => (
+                {sections.map((section: any, index: number) => (
                   <View key={index} style={styles.inputContainer}>
                     {section.type === "text" ? (
                       <>
@@ -228,7 +228,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{(journal.initDate).toLocaleDateString()}</Text></Text>
                 <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{(journal.endDate).toLocaleDateString()}</Text></Text>
                 <View style={styles.blogContainer}>
-                  {sections.map((section, index) => (
+                  {sections.map((section: any, index: number) => (
                     <View key={index} style={styles.sectionContainer}>
                       {section.type === "text" ? (
                         <Text style={styles.journalBody}>{section.content}</Text>
