@@ -25,6 +25,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
   const [sections, setSections] = useState(JSON.parse(journal.captionText));
+  const [encodedSections, setEncodedSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       condition: editedJournalCondition, 
       initDate: editedInitDate,
       endDate: editedEndDate,
-      captionText: JSON.stringify(sections),
+      captionText: JSON.stringify(encodedSections),
     });
 
     setIsEditMode(false);
@@ -60,6 +61,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
   const addTextSection = () => {
     setSections([...sections, { type: "text", content: "" }]);
+    setEncodedSections([...encodedSections, { type: "text", content: "" }]);
   };
 
   const addImageSection = async() => {
@@ -79,6 +81,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
+      setSections([...sections, { type: "image", content: uri }]);
       let base64 = "";
 
       if (Platform.OS === "web") {
@@ -101,7 +104,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       }
 
       if (base64 !== "") {
-        setSections([...sections, { type: "image", content: base64 }]);
+        setEncodedSections([...encodedSections, { type: "image", content: base64 }]);
       }
     }
   };
@@ -110,11 +113,18 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
     const newSections = [...sections];
     newSections[index].content = content;
     setSections(newSections);
+
+    const newEncodedSections = [...encodedSections];
+    newEncodedSections[index].content = content;
+    setEncodedSections(newEncodedSections);
   };
 
   const deleteSection = (index: number) => {
     const newSections = sections.filter((_:any, i: number) => i !== index);
     setSections(newSections);
+
+    const newEncodedSections = encodedSections.filter((_:any, i:number) => i !== index);
+    setEncodedSections(newEncodedSections);
   };
 
   return (
