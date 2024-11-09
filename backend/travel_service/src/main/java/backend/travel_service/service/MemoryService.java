@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -113,6 +115,26 @@ public class MemoryService {
         }
     }
 
+    private void deleteFromS3(String mediaURL) {
+        String bucketName = "travelog-media";
+        
+        // Extract the key from the media URL
+        String key = mediaURL.substring(mediaURL.lastIndexOf("/") + 1);
+    
+        try {
+            s3Client.deleteObject(
+                DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build()
+            );
+            System.out.println("Successfully deleted " + mediaURL + " from S3.");
+        } catch (S3Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to delete file from S3");
+        }
+    }
+
     public void deleteMemoryById(Long memoryId) {
         if (memoryRepository.existsById(memoryId)) {
             memoryRepository.deleteById(memoryId);
@@ -128,9 +150,52 @@ public class MemoryService {
         memory.setCategory(memoryDto.getCategory());
         memory.setLoc(memoryDto.getLoc());
         memory.setCondition(memoryDto.getCondition());
-        memory.setCaptionText(memoryDto.getCaptionText());
         memory.setInitDate(memoryDto.getInitDate());
         memory.setEndDate(memoryDto.getEndDate());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Parse captionText as a List of Maps
+            List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+            List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+
+            // Collect URLs of images in previous and current sections
+            Set<String> previousImageUrls = previousCaptionSections.stream()
+                .filter(section -> "image".equals(section.get("type")))
+                .map(section -> section.get("content"))
+                .collect(Collectors.toSet());
+
+            Set<String> currentImageUrls = captionSections.stream()
+                .filter(section -> "image".equals(section.get("type")))
+                .map(section -> section.get("content"))
+                .collect(Collectors.toSet());
+            
+            // Determine deleted images (in previous but not in current)
+            Set<String> deletedImages = new HashSet<>(previousImageUrls);
+            deletedImages.removeAll(currentImageUrls);
+            deletedImages.forEach(this::deleteFromS3);
+
+            // Determine added images (in current but not in previous)
+            Set<String> addedImages = new HashSet<>(currentImageUrls);
+            addedImages.removeAll(previousImageUrls);
+
+            for (Map<String, String> section : captionSections) {
+                String type = section.get("type");
+                String content = section.get("content");
+    
+                if ("image".equals(type) && addedImages.contains(content)) {
+                    // Upload new image to S3 and replace content with S3 URL
+                    String S3URL = uploadToS3(content, memory.getTitle());
+                    section.put("content", S3URL);
+                }
+            }
+    
+            // Update captionText with modified captionSections
+            memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         memoryRepository.save(memory);
     }
 

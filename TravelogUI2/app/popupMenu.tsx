@@ -117,7 +117,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // Function to edit a memory by ID
-  const handleEditJournal = async(updatedJournal: Journal) => {
+  const handleEditJournal = async (updatedJournal: Journal) => {
     setIsDetailVisible(false);
 
     const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
@@ -136,7 +136,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // Function to delete the pin
-  const handleDeletePin = async() => {
+  const handleDeletePin = async () => {
     setIsDeleteModalVisible(false);
     console.log("Delete pin called!");
     onDeletePin();    
