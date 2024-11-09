@@ -96,6 +96,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://travel-service-db:5432/travel_db
       SPRING_DATASOURCE_USERNAME: travel_db_user
       SPRING_DATASOURCE_PASSWORD: travel_db_password
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     command: mvn spring-boot:run
     networks:
       - backend
