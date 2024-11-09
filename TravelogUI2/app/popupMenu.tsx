@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import JournalDetailModal from "./journalDetail";
@@ -66,7 +66,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       const memoriesData: Journal[] = await response.json();
       setMemories(memoriesData);
       console.log("NEW MEMORIES: ------");
-      console.log(memoriesData[0].captionText);
+      console.log(memoriesData.length > 0 ? memoriesData[0].captionText : "");
       console.log("------");
     } catch (err) {
       console.error(err);
