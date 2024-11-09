@@ -19,6 +19,8 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Base64;
 
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+
 
 @Service
 public class UserService {
@@ -80,6 +82,26 @@ public class UserService {
         } catch (S3Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to upload file to S3");
+        }
+    }
+
+    public void deleteFromS3(String mediaURL) {
+        String bucketName = "travelog-media";
+        
+        // Extract the key from the media URL
+        String key = mediaURL.substring(mediaURL.lastIndexOf("/") + 1);
+    
+        try {
+            s3Client.deleteObject(
+                DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build()
+            );
+            System.out.println("Successfully deleted " + mediaURL + " from S3.");
+        } catch (S3Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to delete file from S3");
         }
     }
 }

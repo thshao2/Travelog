@@ -141,6 +141,9 @@ public class UserController {
             // If a file was uploaded, store it in S3 and update the media URL
             if (base64Image != null) {
                 String mediaUrl = userService.uploadToS3(base64Image); // Upload file to S3
+                if (userProfile.getAvatarMediaId() != "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png" && userProfile.getAvatarMediaId() != null) {
+                    userService.deleteFromS3(userProfile.getAvatarMediaId());
+                }
                 userProfile.setAvatarMediaId(mediaUrl);
             }
 
