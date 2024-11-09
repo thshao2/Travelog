@@ -99,7 +99,7 @@ export default function ProfilePage() {
 
       fetchStats();
     } else {
-      console.log(`HERE IS TOKEN: ${loginContext.accessToken}`)
+      console.log(`HERE IS TOKEN: ${loginContext.accessToken}`);
       // navigation.navigate("login");
     }
   }, [loginContext.accessToken]);
