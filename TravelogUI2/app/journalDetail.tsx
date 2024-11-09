@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert, Pressable } from "react-native";
+import { View, Platform, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { DatePickerInput } from "react-native-paper-dates";
 import { Journal } from "./popupMenu";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
@@ -78,7 +79,30 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
-      setSections([...sections, { type: "image", content: uri }]);
+      let base64 = "";
+
+      if (Platform.OS === "web") {
+        // Web: fetch the image and convert to Base64
+        const response = await fetch(uri);
+        const blob = await response.blob();
+  
+        // Convert blob to Base64
+        base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob); // Read the blob as a data URL
+        });
+      } else {
+        // Mobile: use FileSystem to get Base64 string
+        base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+      }
+
+      if (base64 !== "") {
+        setSections([...sections, { type: "image", content: base64 }]);
+      }
     }
   };
 
