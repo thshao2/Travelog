@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import JournalDetailModal from "./journalDetail";
@@ -39,7 +39,6 @@ interface PopupMenuProps {
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin }: PopupMenuProps) => {
   const loginContext = useLoginContext();
-  const token = loginContext.accessToken;
 
   const [memories, setMemories] = useState<Journal[]>([]);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
@@ -48,7 +47,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   const [error, setError] = useState<string | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
-  const fetchMemoriesData = async(pinId: number | null): Promise<void> => {
+  const fetchMemoriesData = async (pinId: number | null): Promise<void> => {
     setLoading(true);
     setError(null);
     
@@ -57,7 +56,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
       if (!response.ok) {
@@ -66,6 +65,9 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       
       const memoriesData: Journal[] = await response.json();
       setMemories(memoriesData);
+      console.log("NEW MEMORIES: ------");
+      console.log(memoriesData[0].captionText);
+      console.log("------");
     } catch (err) {
       console.error(err);
       setError("Failed to fetch memories.");
@@ -97,7 +99,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
   
@@ -124,7 +126,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${loginContext.accessToken}`,
       },
       body: JSON.stringify(updatedJournal),
     });
@@ -132,7 +134,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
-    fetchMemoriesData(selectedPin.pinId); 
+    await fetchMemoriesData(selectedPin.pinId);
   };
 
   // Function to delete the pin
@@ -162,6 +164,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         <Text style={styles.errorText}>{error}</Text>
       ) : memories.length > 0 ? (
         <FlatList
+          key = {JSON.stringify(memories)}
           data={memories}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
