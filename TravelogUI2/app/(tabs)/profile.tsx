@@ -51,9 +51,11 @@ export default function ProfilePage() {
       if (response.ok) {
         const data = await response.json();
         // Set the fetched user data as default values in the state
+        console.log(data);
         setName(data.username || "Travelog User");
         setBio(data.bio || "My Travelog bio!");
-        setProfilePic(data.mediaUrl || "assets/images/default-pfp.png");
+        setProfilePic(data.avatarMediaId);
+        console.log(data.avatarMediaId);
       } else {
         console.error("Error fetching profile:", response.statusText);
       }

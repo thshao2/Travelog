@@ -53,12 +53,6 @@ public class UserController {
             }
             System.out.println("User profile: " + userProfile);
 
-            // need to do these calls but dont work for some reason
-            // ResponseEntity<UserDTO> response = restTemplate.getForEntity(apiUrl + "/auth/user?userId=" + userId,
-            // UserDTO.class);
-            // ResponseEntity<String> mediaResponse = restTemplate.getForEntity(apiUrl + "/media/profile?mediaId=" +
-            // userProfile.getAvatarMediaId(), String.class);
-
             // Fetch the user using user ID
             ResponseEntity<UserDTO> response =
                     restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
@@ -66,16 +60,9 @@ public class UserController {
 
             String mediaUrl = null;
             if (userProfile.getAvatarMediaId() != null) {
-                // Fetch the media profile using media ID
-                ResponseEntity<String> mediaResponse = restTemplate.getForEntity(
-                        "http://media-service:3010/media/profile?mediaId=" + userProfile.getAvatarMediaId(),
-                        String.class);
-                System.out.println("Media response: " + mediaResponse);
-                if (mediaResponse.getStatusCode().is2xxSuccessful()) {
-                    mediaUrl = mediaResponse.getBody();
-                } else {
-                    System.out.println("Failed to fetch media");
-                }
+                mediaUrl = userProfile.getAvatarMediaId();
+            } else {
+                mediaUrl = "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png";
             }
 
             if (response.getStatusCode().is2xxSuccessful()) {
@@ -85,13 +72,11 @@ public class UserController {
                 // Create a response DTO combining user and user profile
                 UserProfileResponse userProfileResponse = new UserProfileResponse();
                 if (userDTO != null) {
-                    userProfileResponse.setUsername(userProfile.getUsername());
                     userProfileResponse.setEmail(userDTO.getEmail());
                 }
+                userProfileResponse.setUsername(userProfile.getUsername());
                 userProfileResponse.setBio(userProfile.getBio());
-                if (mediaUrl != null) {
-                    userProfileResponse.setAvatarMediaId(mediaUrl);
-                }
+                userProfileResponse.setAvatarMediaId(mediaUrl);
                 System.out.println("Returning user profile response: " + userProfileResponse);
                 return ResponseEntity.ok(userProfileResponse);
             } else {
