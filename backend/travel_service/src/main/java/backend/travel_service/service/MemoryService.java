@@ -3,6 +3,8 @@ package backend.travel_service.service;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,17 @@ import backend.travel_service.repository.PinRepository;
 import backend.travel_service.utils.CountryContinentMapping;
 import backend.travel_service.service.GeocodingService;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import java.io.IOException;
+import java.util.Base64;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+
 
 @Service
 public class MemoryService {
@@ -28,6 +41,9 @@ public class MemoryService {
 
     @Autowired
     private GeocodingService geocodingService;
+
+    @Autowired
+    private S3Client s3Client;
 
     public List<Memory> getMemoriesByUserId(Long userId) {
         return memoryRepository.findByUserIdOrderByEndDateDesc(userId);
@@ -50,7 +66,51 @@ public class MemoryService {
     }
 
     public Memory postMemory(Memory memory) {
+        
+        System.out.println(memory.getCaptionText());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Parse captionText as a List of Maps
+            List<Map<String, String>> captionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+    
+            for (Map<String, String> section : captionSections) {
+                String type = section.get("type");
+                String content = section.get("content");
+    
+                if ("image".equals(type)) {
+                    String S3URL = uploadToS3(content, memory.getTitle());
+                    section.put("content", S3URL);
+                } else if ("text".equals(type)) {
+                    System.out.println("Text content: " + content);
+                }
+            }
+            memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return memoryRepository.save(memory);
+    }
+
+    private String uploadToS3(String base64Image, String title) {
+        byte[] decodedImage = Base64.getDecoder().decode(base64Image);
+        String bucketName = "travelog-media";
+        String uniqueFileName = UUID.randomUUID() + "-" + title + ".png";
+    
+        try {
+            s3Client.putObject(
+                PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(uniqueFileName)
+                    .build(),
+                RequestBody.fromBytes(decodedImage)
+            );
+            return "https://" + bucketName + ".s3.amazonaws.com/" + uniqueFileName;
+        } catch (S3Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to upload file to S3");
+        }
     }
 
     public void deleteMemoryById(Long memoryId) {

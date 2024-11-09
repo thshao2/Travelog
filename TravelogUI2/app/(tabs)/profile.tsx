@@ -173,11 +173,6 @@ export default function ProfilePage() {
       console.log(result);
       setProfilePic(uri);
 
-      // // Convert the image to a Base64 string
-      // const base64 = await FileSystem.readAsStringAsync(uri, {
-      //   encoding: FileSystem.EncodingType.Base64,
-      // });
-
       let base64 = "";
 
       if (Platform.OS === "web") {

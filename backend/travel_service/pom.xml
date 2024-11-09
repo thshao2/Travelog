@@ -28,6 +28,7 @@
     </scm>
     <properties>
         <java.version>17</java.version>
+        <aws.sdk.version>2.20.100</aws.sdk.version>
     </properties>
     <dependencies>
         <!-- Spring Boot Starter Web (for controllers) -->
@@ -75,7 +76,25 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
-
+        <!-- Jackson Databind for ObjectMapper and TypeReference -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.0</version> <!-- Use the latest stable version -->
+        </dependency>
+        
+        <!-- (Optional) Additional Jackson modules if needed -->
+        <!-- Jackson Core for JSON parsing support -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+         <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

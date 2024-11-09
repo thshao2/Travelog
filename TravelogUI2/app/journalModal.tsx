@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable } from "react-native";
+import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable, Platform } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { Picker } from "@react-native-picker/picker";
 import { useLoginContext } from "./context/LoginContext";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
 
 import config from "./config";
 
@@ -26,7 +27,6 @@ interface JournalModalProps {
 
 function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmitJournal }: JournalModalProps) {
   const loginContext = useLoginContext();
-  const token = loginContext.accessToken;
   const [journalTitle, setJournalTitle] = useState("");
   const [journalCategory, setJournalCategory] = useState("");
   const [journalLocation, setJournalLocation] = useState("");
@@ -34,6 +34,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   const [initDate, setInitDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [sections, setSections] = useState([{ type: "text", content: "" }]);
+  const [encodedSections, setEncodedSections] = useState([{ type: "text", content: "" }]);
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -54,7 +55,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         category: journalCategory,
         loc: journalLocation,
         condition: condition,
-        captionText: JSON.stringify(sections),
+        captionText: JSON.stringify(encodedSections),
         initDate: initDate,
         endDate: endDate,
         mediaIds: [1, 2, 3],  // Replace with actual media IDs
@@ -65,7 +66,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         body: JSON.stringify(memoryData),
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
 
@@ -85,6 +86,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
 
   const addTextSection = () => {
     setSections([...sections, { type: "text", content: "" }]);
+    setEncodedSections([...encodedSections, { type: "text", content: "" }]);
   };
 
   const addImageSection = async() => {
@@ -103,6 +105,31 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       const { uri } = result.assets[0];
       setSections([...sections, { type: "image", content: uri }]);
       console.log(sections);
+
+      let base64 = "";
+
+      if (Platform.OS === "web") {
+        // Web: fetch the image and convert to Base64
+        const response = await fetch(uri);
+        const blob = await response.blob();
+  
+        // Convert blob to Base64
+        base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob); // Read the blob as a data URL
+        });
+      } else {
+        // Mobile: use FileSystem to get Base64 string
+        base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+      }
+
+      if (base64 !== "") {
+        setEncodedSections([...encodedSections, { type: "image", content: base64 }]);
+      }
     }
   };
 
@@ -110,11 +137,18 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     const newSections = [...sections];
     newSections[index].content = content;
     setSections(newSections);
+
+    const newEncodedSections = [...encodedSections];
+    newEncodedSections[index].content = content;
+    setEncodedSections(newEncodedSections);
   };
 
   const deleteSection = (index: number) => {
     const newSections = sections.filter((_, i) => i !== index);
     setSections(newSections);
+
+    const newEncodedSections = encodedSections.filter((_, i) => i !== index);
+    setEncodedSections(newEncodedSections);
   };
 
   const clearForm = () => {
@@ -125,6 +159,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setInitDate(new Date());
     setEndDate(new Date());
     setSections([{ type: "text", content: "" }]);
+    setEncodedSections([{ type: "text", content: "" }]);
   };
 
   return (

@@ -33,4 +33,19 @@ public class MediaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving the media");
         }
     }
+
+    // @PostMapping("/travel")
+    // public ResponseEntity<String> createImageS3Link(@RequestParam String base64) {
+    //     try {
+    //         Media media = mediaService.getMediaById(mediaId);
+    //         if (media != null) {
+    //             return ResponseEntity.ok(media.getMediaUrl());
+    //         } else {
+    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Media not found");
+    //         }
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while retrieving the media");
+    //     }
+    }
+
 }
