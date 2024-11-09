@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, FlatList, ActivityIndicator, Pressable, Image } from "react-native";
+import { Text, View, StyleSheet, ActivityIndicator, Image, ImageBackground } from "react-native";
+import Timeline from "react-native-timeline-flatlist";
+import { Ionicons } from "@expo/vector-icons";
 import { useLoginContext } from "./context/LoginContext";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { Journal } from "./popupMenu";
@@ -20,12 +22,7 @@ export default function CategoryMemPage() {
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<{ [key: number]: boolean }>({});
   const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
-
-  const toggleExpand = (id: number) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const fetchMemoriesByCategory = async() => {
     try {
@@ -136,141 +133,140 @@ export default function CategoryMemPage() {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.statsContainer}>
-        <Text style={styles.title}>{category}</Text>
-        <Text style={styles.statText}>
-          Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)
-        </Text>
-      </View>
-      <FlatList
-        data={memories}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.memoryItem}>
-            <Text style={styles.memoryTitle}>{item.title}</Text>
-            <Text>Location: {item.loc}</Text>
-            <Text>Status: {item.condition}</Text>
-            <Text>From: {new Date(item.initDate).toLocaleDateString()}</Text>
-            <Text>To: {new Date(item.endDate).toLocaleDateString()}</Text>
-            <View>
-              {JSON.parse(item.captionText).slice(0, expanded[item.id] ? undefined : 1).map((section: any, index: number) => (
-                <View key={index} style={styles.sectionContainer}>
-                  {section.type === "text" ? (
-                    <Text numberOfLines={expanded[item.id] ? undefined : 3} ellipsizeMode="tail">
-                      {section.content}
-                    </Text>
-                  ) : (
-                    <Image source={{ uri: section.content }} style={styles.image} />
-                  )}
-                </View>
-              ))}
-            </View>
-            <Pressable onPress={() => toggleExpand(item.id)}>
-              <Text style={styles.expandButton}>
-                {expanded[item.id] ? "Show Less" : "Show More"}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={styles.editButton}
-              onPress={() =>
-                openJournalDetail({
-                  id: item.id,
-                  userId: item.userId,
-                  pinId: item.pinId,
-                  title: item.title,
-                  category: item.category,
-                  condition: item.condition,
-                  loc: item.loc,
-                  initDate: new Date(item.initDate),
-                  endDate: new Date(item.endDate),
-                  captionText: item.captionText,
-                })
-              }
-            >
-              <Text>Edit</Text>
-            </Pressable>
-          </View>
-        )}
-      />
+  const timelineData = memories.map((memory) => {
+    return {
+      id: memory.id,
+      userId: memory.userId,
+      pinId: memory.pinId,
+      title: memory.title,
+      category: memory.category,
+      condition: memory.condition,
+      loc: memory.loc,
+      time: new Date(memory.endDate).toLocaleDateString(),
+      initDate: memory.initDate,
+      endDate: memory.endDate,
+      captionText: memory.captionText,
+      imageUrl: JSON.parse(memory.captionText).find((section: any) => section.type === "image")?.content || null, // use the 1st img from captionText if available
+    };
+  });
 
-      {/* Journal Detail Modal */}
-      {selectedJournal && (
-        <JournalDetailModal
-          isDetailVisible={isDetailVisible}
-          setIsDetailVisible={setIsDetailVisible}
-          journal={selectedJournal}
-          onClose={closeJournalDetail}
-          onDelete={handleDeleteJournal}
-          onEdit={handleEditJournal}
+  return (
+    <ImageBackground
+      source={require("@/assets/images/travelog-bg.jpeg")}
+      style={styles.background}
+      imageStyle={{ 
+        resizeMode: "cover",
+      }}
+    >
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <View style={{ flexDirection: "row" }}>
+            <Ionicons name={"airplane-outline"} size={50} color={"#132087"} />
+            <View style={styles.content}>
+              <Text style={styles.title}>{category}</Text>
+              <Text style={styles.stat}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Text>
+            </View>
+          </View>
+        </View>
+      
+        <Timeline
+          data={timelineData}
+          circleSize={20}
+          circleColor="#132087"
+          lineColor="#132087"
+          innerCircle={"icon"}
+          timeContainerStyle={{ minWidth: 80, marginTop: 5 }}
+          timeStyle={{
+            textAlign: "center",
+            backgroundColor: "#132087",
+            color: "white",
+            padding: 5,
+            borderRadius: 13,
+          }}
+          onEventPress={(rowData: any) => {
+            openJournalDetail({
+              id: rowData.id,
+              userId: rowData.userId,
+              pinId: rowData.pinId,
+              title: rowData.title,
+              category: rowData.category,
+              condition: rowData.condition,
+              loc: rowData.loc,
+              initDate: rowData.initDate,
+              endDate: rowData.endDate,
+              captionText: rowData.captionText,
+            });
+          }}
+          renderDetail={(rowData) => (
+            <View style={{ flexDirection: "row", marginLeft: 10 }}>
+              <Image
+                source={{ uri: rowData.imageUrl || "assets/images/pfp-background.jpg" }}
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 10,
+                  marginBottom: 8,
+                }}
+              />
+              <View style={{ flexDirection: "column", marginLeft: 15 }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>{rowData.title}</Text>
+                <View style={{ flexDirection: "row", marginTop: 10 }}>
+                  <Ionicons name={"location-sharp"} size={16} color={"#132087"} />
+                  <Text style={{ fontSize: 16, color: "#424242", marginLeft: 5 }}>{rowData.loc}</Text>
+                </View>
+              </View>
+            </View>
+          )}
         />
-      )}
-    </View>
+
+        {/* Journal Detail Modal */}
+        {selectedJournal && (
+          <JournalDetailModal
+            isDetailVisible={isDetailVisible}
+            setIsDetailVisible={setIsDetailVisible}
+            journal={selectedJournal}
+            onClose={closeJournalDetail}
+            onDelete={handleDeleteJournal}
+            onEdit={handleEditJournal}
+          />
+        )}
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  statsContainer: {
-    marginBottom: 16,
+  card: {
+    borderColor: "#132087",
+    borderWidth: 2,
     padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-  },
-  statText: {
-    fontSize: 16,
-    color: "#333",
+    borderRadius: 10,
+    alignItems: "center",
+    margin: 10,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "600",
     marginBottom: 10,
+  },
+  content: {
+    alignItems: "center",
+  },
+  stat: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  container: {
+    flex: 1,
+    padding: 10,
   },
   errorText: {
     color: "red",
     fontSize: 16,
-  },
-  memoryItem: {
-    padding: 15,
-    backgroundColor: "#fff",
-    borderRadius: 5,
-    margin: 10,
-    marginBottom: 10,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    position: "relative",
-  },
-  memoryTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  expandButton: {
-    color: "blue",
-    marginTop: 5,
-  },
-  editButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "#f0f0f0",
-    padding: 5,
-    borderRadius: 5,
-  },
-  editButtonText: {
-    color: "#007bff",
-    fontWeight: "bold",
-  },
-  sectionContainer: {
-    marginBottom: 10,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
   },
 });
