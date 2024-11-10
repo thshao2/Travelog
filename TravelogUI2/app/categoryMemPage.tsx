@@ -15,8 +15,6 @@ export default function CategoryMemPage() {
   const route = useRoute<RouteProp<RootStackParamList, "categoryMemPage">>();
   const { category } = route.params;
   const loginContext = useLoginContext();
-  const token = loginContext.accessToken;
-
   const [memories, setMemories] = useState<Journal[]>([]);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
@@ -35,7 +33,7 @@ export default function CategoryMemPage() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
   
@@ -80,7 +78,7 @@ export default function CategoryMemPage() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
   
@@ -111,7 +109,7 @@ export default function CategoryMemPage() {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${loginContext.accessToken}`,
       },
       body: JSON.stringify(updatedJournal),
     });
@@ -159,14 +157,14 @@ export default function CategoryMemPage() {
       }}
     >
       <View style={styles.container}>
-        <View style={styles.card}>
-          <View style={{ flexDirection: "row" }}>
-            <Ionicons name={"airplane-outline"} size={50} color={"#132087"} />
-            <View style={styles.content}>
-              <Text style={styles.title}>{category}</Text>
-              <Text style={styles.stat}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Text>
-            </View>
-          </View>
+        <View style={styles.categoryButton}>
+          <Ionicons
+            name="airplane-outline"
+            size={120}
+            style={styles.iconBackground}
+          />
+          <Text style={styles.categoryButtonText}>{category}</Text>
+          <Text style={styles.categoryButtonText}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Text>
         </View>
       
         <Timeline
@@ -236,26 +234,6 @@ export default function CategoryMemPage() {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderColor: "#132087",
-    borderWidth: 2,
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    margin: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  content: {
-    alignItems: "center",
-  },
-  stat: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
   background: {
     flex: 1,
     width: "100%",
@@ -268,5 +246,24 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     fontSize: 16,
+  },
+  iconBackground: {
+    position: "absolute",
+    color: "rgba(255, 255, 255, 0.2)",
+    margin: -15,
+    zIndex: 0,
+  },
+  categoryButton: {
+    padding: 20,
+    backgroundColor: "#4E5BA6",
+    borderRadius: 10,
+    marginBottom: 15,
+    overflow: "hidden",
+  },
+  categoryButtonText: {
+    fontSize: 18,
+    color: "#fff",
+    textAlign: "center",
+    zIndex: 1,
   },
 });

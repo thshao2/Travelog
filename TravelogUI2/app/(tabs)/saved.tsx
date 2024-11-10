@@ -1,25 +1,28 @@
 import React, { useState, useCallback } from "react";
-import { Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import config from "../config";
 import { useLoginContext } from "../context/LoginContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const { API_URL } = config;
+
+interface CategoryButtonProps {
+  label: string;
+}
 
 export default function SavedPage() {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
-  const token = loginContext.accessToken;
-
   const [categories, setCategories] = useState<string[]>([]);
 
-  const fetchCategories = async(token: string) => {
+  const fetchCategories = async() => {
     try {
       const response = await fetch(`${API_URL}/travel/memory/categories`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
       if (response.ok) {
@@ -36,33 +39,34 @@ export default function SavedPage() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCategories(token);
-    }, [token]),
+      fetchCategories();
+    }, [loginContext.accessToken]),
   );
 
   const handleCategoryPress = (category: string) => {
     navigation.navigate("categoryMemPage", { category });
   };
 
+  const CategoryButton: React.FC<CategoryButtonProps> = ({ label }) => (
+    <Pressable style={styles.categoryButton} onPress={() => handleCategoryPress(label)}>
+      <Ionicons
+        name="earth-outline"
+        size={150}
+        style={styles.iconBackground}
+      />
+      <Text style={styles.categoryButtonText}>{label}</Text>
+    </Pressable>
+  );
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>My Lists</Text>
-      <Pressable
-        key={"All"}
-        style={styles.categoryButton}
-        onPress={() => handleCategoryPress("All")}
-      >
-        <Text style={styles.categoryButtonText}>All</Text>
-      </Pressable>
-      {categories.map((category) => (
-        <Pressable
-          key={category}
-          style={styles.categoryButton}
-          onPress={() => handleCategoryPress(category)}
-        >
-          <Text style={styles.categoryButtonText}>{category}</Text>
-        </Pressable>
-      ))}
+      <View style={styles.gridContainer}>
+        <CategoryButton key={"All"} label="All" />
+        {categories.map((category) => (
+          <CategoryButton key={category} label={category} />
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -70,24 +74,37 @@ export default function SavedPage() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  categoryButton: {
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "grey",
-    backgroundColor: "white",
-    borderRadius: 5,
-    marginBottom: 10,
     alignItems: "center",
   },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: "95%",
+    justifyContent: "space-between",
+  },
+  categoryButton: {
+    width: "48%",
+    padding: 20,
+    backgroundColor: "#4E5BA6",
+    borderRadius: 10,
+    marginBottom: 15,
+    overflow: "hidden",
+  },
+  iconBackground: {
+    position: "absolute",
+    color: "rgba(255, 255, 255, 0.2)",
+    margin: -20,
+    zIndex: 0,
+  },
   categoryButtonText: {
-    color: "black",
-    fontSize: 16,
+    fontSize: 18,
+    color: "#fff",
+    textAlign: "center",
+    zIndex: 1,
   },
 });
