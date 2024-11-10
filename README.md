@@ -20,7 +20,7 @@ npm run installs
 ## Deployment
 
 ```bash
+cd /app/Travelog
 npm run restart-backend-prod
-npm run installs
-npm run build-frontend
+npm run deploy-frontend
 ```
