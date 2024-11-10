@@ -14,9 +14,10 @@ export interface JournalDetailProps {
   onClose: () => void,
   onDelete: (journalId: number) => void,
   onEdit: (updatedJournal: Journal) => void,
+  refresh: () => void,
 }
 
-function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
+function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit, refresh }: JournalDetailProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
@@ -57,6 +58,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
     });
 
     setIsEditMode(false);
+    refresh();
   };
 
   const addTextSection = () => {

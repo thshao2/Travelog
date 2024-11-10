@@ -62,7 +62,7 @@ function Map() {
 
   const [memories, setMemories] = useState<Journal[]>([]);
 
-  const fetchMemories = async(pinId: number | null) => {
+  const fetchMemories = async (pinId: number | null) => {
     if (!pinId) {
       return;
     }
@@ -346,12 +346,19 @@ function Map() {
       </button>
       <div id='map-container' ref={mapContainerRef} />
 
+      {/* 
+      PopupMenu ->  
+        JournalDetail
+        PopupMenuList
+      
+      JournalModal
+      */}
       {selectedPin?.marker && selectedPin.position && (
         <PopupMenu
           selectedPin={selectedPin}
           onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
           onAddJournal={() => setIsModalVisible(true)}
-          onDeletePin={async() => handleDeletePin(loginContext.accessToken)}
+          onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
           key={memories.length}
         />
       )}

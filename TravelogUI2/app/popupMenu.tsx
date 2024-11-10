@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import JournalDetailModal from "./journalDetail";
 import { useLoginContext } from "./context/LoginContext";
 
 import config from "./config";
 import DeleteConfirmationModal from "./deleteConfirmationModal";
+
+import PopupMenuList from "./popMenuList";
 
 const { API_URL } = config;
 
@@ -79,11 +81,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   useEffect(() => {
     fetchMemoriesData(selectedPin.pinId);
   }, [selectedPin.pinId]);
-
-  const openJournalDetail = (journal: Journal) => {
-    setSelectedJournal(journal);
-    setIsDetailVisible(true);
-  };
 
   const closeJournalDetail = () => {
     setSelectedJournal(null);
@@ -163,33 +160,10 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : memories.length > 0 ? (
-        <FlatList
-          key = {JSON.stringify(memories)}
-          data={memories}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View>
-              <Pressable
-                style={styles.journalButton}
-                onPress={() =>
-                  openJournalDetail({
-                    id: item.id,
-                    userId: item.userId,
-                    pinId: item.pinId,
-                    title: item.title,
-                    category: item.category,
-                    condition: item.condition,
-                    loc: item.loc,
-                    initDate: new Date(item.initDate),
-                    endDate: new Date(item.endDate),
-                    captionText: item.captionText,
-                  })
-                }
-              >
-                <Text style={styles.journalButtonText}>{item.title}</Text>
-              </Pressable>
-            </View>
-          )}
+        <PopupMenuList
+          memories = {JSON.stringify(memories)}
+          setSelectedJournal={setSelectedJournal}
+          setIsDetailVisible={setIsDetailVisible}
         />
       ) : (
         <Text style={styles.noMemoriesText}>No previous journals found.</Text>
@@ -204,6 +178,9 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
           onClose={closeJournalDetail}
           onDelete={handleDeleteJournal}
           onEdit={handleEditJournal}
+          refresh={async () => {
+            await fetchMemoriesData(selectedJournal.pinId);
+          }}
         />
       )}
 
