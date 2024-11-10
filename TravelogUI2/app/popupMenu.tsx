@@ -178,9 +178,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
           onClose={closeJournalDetail}
           onDelete={handleDeleteJournal}
           onEdit={handleEditJournal}
-          refresh={async () => {
-            await fetchMemoriesData(selectedJournal.pinId);
-          }}
         />
       )}
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import { Journal } from "./popupMenu";
 
@@ -14,14 +14,6 @@ export default function PopupMenuList({ memories, setSelectedJournal, setIsDetai
     setSelectedJournal(journal);
     setIsDetailVisible(true);
   };
-
-  const [refresh, setRefresh] = useState(0);
-
-  useEffect(() => {
-    setRefresh((prev) => prev + 1);
-    console.log(refresh);
-    console.log(memories);
-  }, [memories]);
 
   return (
     <FlatList
