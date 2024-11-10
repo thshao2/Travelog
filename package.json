@@ -3,6 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "start": "npm run backend && npm run frontend && npm run stop-backend",
+        "deploy-frontend": "npm run installs && npm build-frontend",
+        "deploy-logs": "cd backend && sudo docker compose logs -f",
         "frontend": "cd TravelogUI2 && npm run start",
         "frontend-web": "cd TravelogUI2 && npm run web",
         "frontend-ios": "cd TravelogUI2 && npm run ios",
@@ -14,9 +16,7 @@
         "stop-backend": "cd backend && docker compose down",
         "installs": "npm install && cd TravelogUI2 && npm install",
         "build-frontend": "cd TravelogUI2 && npm run build",
-        "build-frontend-prod": "cd TravelogUI2 && source .env.production && npm run build",
         "serve-frontend": "cd TravelogUI2 && npm run serve",
-        "serve-frontend-prod": "cd TravelogUI2 && source .env.production && npm run serve",
         "lint": "expo lint",
         "lint:fix": "eslint . --fix"
     },
