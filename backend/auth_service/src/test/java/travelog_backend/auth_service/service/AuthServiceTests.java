@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-// import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -43,6 +41,42 @@ public class AuthServiceTests {
     }
 
     @Test
+    void testFetchUser_Sucess() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        assertNotNull(user);
+        assertEquals(user.getEmail(), "test@example.com");
+        assertEquals(user.getPassword(), "password123");
+        System.out.println("Passed test fetch user"); // check debug console
+    }
+
+    @Test 
+    void testValidatePassword_Success() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", user.getPassword())).thenReturn(true);
+        boolean result = authService.validatePassword(user, "password123");
+        assertEquals(true, result);
+        System.out.println("Passed test validate password"); // check debug console
+    }
+
+    @Test
+    void testValidatePassword_Failure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", user.getPassword())).thenReturn(false);
+        boolean result = authService.validatePassword(user, "not correct password");
+        assertEquals(false, result);
+        System.out.println("Passed test validate password failure"); // check debug console
+    }
+
+    @Test
+    void testUpdatePassword() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
+        authService.updateUserPassword(user, "newPassword");
+        assertEquals("encodedPassword", user.getPassword());
+        System.out.println("Passed test update password"); // check debug console
+    }
+
+    @Test
     void testSaveUser_Success() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
@@ -53,11 +87,9 @@ public class AuthServiceTests {
         verify(userRepository, times(1)).save(user);
         assertEquals("encodedPassword", user.getPassword());
         assertNotNull(user.getId());
-        System.out.println("HERE"); // check debug console
+        System.out.println("test save user success"); // check debug console
     }
    
-
-    // @Test
 
     
 }

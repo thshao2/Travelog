@@ -15,7 +15,9 @@
     "lint:fix": "npx eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "testEnvironment": "jsdom",
+    "setupFiles": ["./jest_setup.js"]
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",

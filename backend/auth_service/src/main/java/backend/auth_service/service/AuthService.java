@@ -99,22 +99,22 @@ public class AuthService {
         return existingUser.get();
     }
 
-    public User updateUserPassword(Optional<User> existingUser, String password) {
+    public User updateUserPassword(User existingUser, String password) {
         System.out.println("Updating user password: " + password);
         // update user password
         if (password != null) {
-            existingUser.get().setPassword(passwordEncoder.encode(password));
+            existingUser.setPassword(passwordEncoder.encode(password));
         }
-        System.out.println("Updated user password: " + existingUser.get().getPassword());
-        repository.save(existingUser.get());
-        return existingUser.get();
+        System.out.println("Updated user password: " + existingUser.getPassword());
+        repository.save(existingUser);
+        return existingUser;
     }
 
-    public Boolean validatePassword(Optional<User> existingUser, String password) {
+    public Boolean validatePassword(User existingUser, String password) {
         System.out.println("Verifying user password: " + password);
         // verify user password
         if (password != null) {
-            if (passwordEncoder.matches(password, existingUser.get().getPassword())) {
+            if (passwordEncoder.matches(password, existingUser.getPassword())) {
                 System.out.println("Password matches");
                 return true;
             }

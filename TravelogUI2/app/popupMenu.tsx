@@ -149,8 +149,8 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       ]}
     >
       <Text style={styles.popupTitle}>Memories</Text>
-      <Pressable onPress={onClose} style={styles.closeButton}>
-        <MaterialIcons name="close" size={18} color="black" />
+      <Pressable onPress={onClose} style={styles.closeButton} role="button" aria-label='close-icon'>
+        <MaterialIcons name="close" size={18} color="black"/>
       </Pressable>
 
       {/* Display the list of previous journal entries (memories) */}
@@ -181,7 +181,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         />
       )}
 
-      <Pressable style={styles.menuButton} onPress={onAddJournal}>
+      <Pressable style={styles.menuButton} onPress={onAddJournal} testID="add-journal-button">
         <Text style={styles.menuButtonText}>Add Journal</Text>
       </Pressable>
 
