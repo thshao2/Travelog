@@ -110,7 +110,7 @@ public class UserControllerTests {
 
     @Test
     public void testUpdateUserProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now());
+        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
         UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
@@ -144,7 +144,7 @@ public class UserControllerTests {
 
     @Test
     public void testUpdateUserProfile_Exception() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now());
+        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
         UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
