@@ -184,7 +184,7 @@ public class AuthController {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid current password");
                 }
                 System.out.println("Password validated");
-                User updatedUser = authService.updateUserPassword(existingUser, updatePasswordRequest.getNewPassword());
+                User updatedUser = authService.updateUserPassword(existingUser.get(), updatePasswordRequest.getNewPassword());
                 System.out.println("User password updated: " + updatedUser);
                 return ResponseEntity.ok(updatedUser);
             } else {

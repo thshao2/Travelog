@@ -68,6 +68,15 @@ public class AuthServiceTests {
     }
 
     @Test
+    void testUpdatePassword() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
+        authService.updateUserPassword(user, "newPassword");
+        assertEquals("encodedPassword", user.getPassword());
+        System.out.println("Passed test update password"); // check debug console
+    }
+
+    @Test
     void testSaveUser_Success() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
