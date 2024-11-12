@@ -54,7 +54,7 @@ public class UserControllerTests {
 
     @Test
     public void testGetCurrentUserProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now());
+        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
         UserDTO userDTO = new UserDTO(1L, "testuser", "password", "test@example.com");
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
@@ -83,7 +83,7 @@ public class UserControllerTests {
 
     @Test
     public void testGetCurrentUserProfile_FetchUserFailed() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now());
+        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
         when(restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=1", UserDTO.class))
