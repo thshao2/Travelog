@@ -80,3 +80,11 @@ docker exec -it <container name or id> mvn compile
 - To figure out the container name or id, run `docker ps`
 
 After The command successfully runs, your changes will be reflected in the application!
+
+# Testing Instructions
+### VSCode:
+- Install "Test Runner for Java" extension
+- Testing files should have a green "start" button - click the one at the top to run all tests in the file, or run a test individually by clicking the button at the top of each test.
+
+### Command line:
+- 

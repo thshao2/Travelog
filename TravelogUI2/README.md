@@ -35,3 +35,9 @@ and to automatically fix linting errors, run:
 ```
 npm run lint:fix
 ```
+
+## Testing
+To run the unit tests, run
+```
+npm run test
+```
