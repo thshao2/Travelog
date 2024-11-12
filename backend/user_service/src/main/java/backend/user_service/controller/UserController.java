@@ -59,7 +59,7 @@ public class UserController {
 
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateUserProfile(
+    public ResponseEntity<UserProfile> updateUserProfile(
         @RequestHeader("X-User-Id") Long userId,
         @ModelAttribute UserProfileUpdateRequest profileUpdateRequest) {
         try {
@@ -97,7 +97,7 @@ public class UserController {
             }
 
             userProfileRepository.save(userProfile);
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(userProfile);
 
         } catch (Exception e) {
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
