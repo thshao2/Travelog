@@ -110,11 +110,11 @@ public class AuthService {
         return existingUser.get();
     }
 
-    public Boolean validatePassword(Optional<User> existingUser, String password) {
+    public Boolean validatePassword(User existingUser, String password) {
         System.out.println("Verifying user password: " + password);
         // verify user password
         if (password != null) {
-            if (passwordEncoder.matches(password, existingUser.get().getPassword())) {
+            if (passwordEncoder.matches(password, existingUser.getPassword())) {
                 System.out.println("Password matches");
                 return true;
             }

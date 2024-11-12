@@ -41,12 +41,30 @@ public class AuthServiceTests {
     }
 
     @Test
-    void testFetchUser() {
+    void testFetchUser_Sucess() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         assertNotNull(user);
         assertEquals(user.getEmail(), "test@example.com");
         assertEquals(user.getPassword(), "password123");
         System.out.println("Passed test fetch user"); // check debug console
+    }
+
+    @Test 
+    void testValidatePassword_Success() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", user.getPassword())).thenReturn(true);
+        boolean result = authService.validatePassword(user, "password123");
+        assertEquals(true, result);
+        System.out.println("Passed test validate password"); // check debug console
+    }
+
+    @Test
+    void testValidatePassword_Failure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", user.getPassword())).thenReturn(false);
+        boolean result = authService.validatePassword(user, "not correct password");
+        assertEquals(false, result);
+        System.out.println("Passed test validate password failure"); // check debug console
     }
 
     @Test
@@ -63,7 +81,6 @@ public class AuthServiceTests {
         System.out.println("test save user success"); // check debug console
     }
    
-
 
     
 }
