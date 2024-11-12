@@ -77,6 +77,11 @@ public class UserController {
                 userProfileResponse.setUsername(userProfile.getUsername());
                 userProfileResponse.setBio(userProfile.getBio());
                 userProfileResponse.setAvatarMediaId(mediaUrl);
+                // add stats
+                userProfileResponse.setCitiesVisited(userProfile.getStatistics().getCitiesVisited());
+                userProfileResponse.setCountriesVisited(userProfile.getStatistics().getCountriesVisited());
+                userProfileResponse.setContinentsVisited(userProfile.getStatistics().getContinentsVisited());
+                
                 System.out.println("Returning user profile response: " + userProfileResponse);
                 return ResponseEntity.ok(userProfileResponse);
             } else {

@@ -1,4 +1,4 @@
-package backend.user_service.dto;
+package backend.travel_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

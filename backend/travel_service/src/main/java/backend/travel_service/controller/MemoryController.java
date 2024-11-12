@@ -18,10 +18,6 @@ import backend.travel_service.dto.MemoryDto;
 import backend.travel_service.dto.VisitedStatsDto;
 import backend.travel_service.entity.Memory;
 import backend.travel_service.service.MemoryService;
-import backend.travel_service.service.GeocodingService;
-
-// // TEMP FOR TESTING
-// import org.springframework.web.bind.annotation.CrossOrigin;
 
 // @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -30,9 +26,6 @@ public class MemoryController {
 
     @Autowired
     private MemoryService memoryService;
-
-    @Autowired
-    private GeocodingService geocodingService;
 
     @Autowired
     public MemoryController(MemoryService memoryService) {

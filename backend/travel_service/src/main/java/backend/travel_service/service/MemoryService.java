@@ -10,9 +10,15 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.RestTemplate;
 
 import backend.travel_service.dto.MemoryDto;
 import backend.travel_service.dto.VisitedStatsDto;
+import backend.travel_service.dto.UserProfileResponse;
 import backend.travel_service.entity.Memory;
 import backend.travel_service.entity.Location;
 import backend.travel_service.repository.MemoryRepository;
@@ -31,7 +37,6 @@ import java.io.IOException;
 import java.util.Base64;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
-
 @Service
 public class MemoryService {
 
@@ -46,6 +51,9 @@ public class MemoryService {
 
     @Autowired
     private S3Client s3Client;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     public List<Memory> getMemoriesByUserId(Long userId) {
         return memoryRepository.findByUserIdOrderByEndDateDesc(userId);
@@ -214,6 +222,46 @@ public class MemoryService {
     }
 
     public VisitedStatsDto getVisitedStats(Long userId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Id", String.valueOf(userId));
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<UserProfileResponse> response = restTemplate.exchange(
+                "http://user-service:3010/user/profile",
+                HttpMethod.GET,
+                entity,
+                UserProfileResponse.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                // userprofileresponse
+                UserProfileResponse userProfileResponse = response.getBody();
+
+                if (userProfileResponse == null) {
+                    System.out.println("memoryservice - getvisited stats, null user profile");
+                    return null;
+                }
+                // put stats into visitedStatsDto
+                VisitedStatsDto visitedStatsDto = new VisitedStatsDto();
+                visitedStatsDto.setVisitedContinentCount(userProfileResponse.getContinentsVisited());
+                visitedStatsDto.setVisitedCountryCount(userProfileResponse.getCountriesVisited());
+                visitedStatsDto.setVisitedCityCount(userProfileResponse.getCitiesVisited());
+
+                return visitedStatsDto;
+            } else {
+                System.out.println("IN MEMORY SERVICE -- GETVISITEDSTATS ERROR");
+                return null;
+            }
+            // return new VisitedStatsDto(continents.size(), countries.size(), cities.size());
+        } catch (Exception e) {
+            System.out.println("An error occured while fectching visited stats: " + e);
+            return null;
+        }
+    }
+
+    public VisitedStatsDto recalculateVisitedStats(Long userId) {
+        // TODO: when pin adds/deletes
         // get list of visited locations
         List<Location> visitedLocations = getVisitedLocations(userId);
 

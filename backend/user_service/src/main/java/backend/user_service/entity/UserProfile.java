@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,4 +42,17 @@ public class UserProfile {
 
     @Column(nullable = false)
     private LocalDate joinedAt;
+
+    @Embedded
+    private Statistics statistics = new Statistics(-1, 0, -1);
+
+    @Embeddable
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Statistics {
+        private Integer citiesVisited;
+        private Integer countriesVisited;
+        private Integer continentsVisited;
+    }
 }
