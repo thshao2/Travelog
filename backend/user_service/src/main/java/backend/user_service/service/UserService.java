@@ -1,25 +1,24 @@
 package backend.user_service.service;
 
+import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import backend.user_service.dto.UserDTO;
+import backend.user_service.dto.UserProfileResponse;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
-
-import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import java.io.IOException;
-import java.util.UUID;
-
-import org.springframework.web.multipart.MultipartFile;
-import java.util.Base64;
-
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 
 @Service
@@ -44,6 +43,53 @@ public class UserService {
         newUserProfile.setAvatarMediaId(profile.getAvatarMediaId());
         user_repository.save(newUserProfile); // Save the user profile
         return true;
+    }
+
+    public ResponseEntity<UserProfileResponse> getCurrentUserProfile(Long userId) {
+        try {
+            System.out.println("Fetching user profile for user ID: " + userId);
+
+            // Fetch the user profile using the user ID
+            UserProfile userProfile = user_repository.findByuserId(userId);
+            if (userProfile == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            System.out.println("User profile: " + userProfile);
+
+            // Fetch the user using user ID
+            ResponseEntity<UserDTO> response =
+                    restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
+            System.out.println("User response: " + response);
+
+            String mediaUrl = null;
+            if (userProfile.getAvatarMediaId() != null) {
+                mediaUrl = userProfile.getAvatarMediaId();
+            } else {
+                mediaUrl = "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png";
+            }
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("Fetched user successfully");
+                UserDTO userDTO = response.getBody();
+
+                // Create a response DTO combining user and user profile
+                UserProfileResponse userProfileResponse = new UserProfileResponse();
+                if (userDTO != null) {
+                    userProfileResponse.setEmail(userDTO.getEmail());
+                }
+                userProfileResponse.setUsername(userProfile.getUsername());
+                userProfileResponse.setBio(userProfile.getBio());
+                userProfileResponse.setAvatarMediaId(mediaUrl);
+                System.out.println("Returning user profile response: " + userProfileResponse);
+                return ResponseEntity.ok(userProfileResponse);
+            } else {
+                System.out.println("Failed to fetch user");
+                return ResponseEntity.status(response.getStatusCode()).body(null);
+            }
+        } catch (Exception e) {
+            System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     public UserProfile updateUserProfile(Long userId, String newUsername, String newBio) {

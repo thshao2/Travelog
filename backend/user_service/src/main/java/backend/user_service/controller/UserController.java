@@ -1,31 +1,23 @@
 package backend.user_service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import backend.user_service.dto.UserDTO;
-import backend.user_service.dto.UserProfileUpdateRequest;
-
 import backend.user_service.dto.UserProfileResponse;
+import backend.user_service.dto.UserProfileUpdateRequest;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 import backend.user_service.service.UserService;
-
-import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -43,50 +35,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile(@RequestHeader("X-User-Id") Long userId) {
-        try {
-            System.out.println("Fetching user profile for user ID: " + userId);
-
-            // Fetch the user profile using the user ID
-            UserProfile userProfile = userProfileRepository.findByuserId(userId);
-            if (userProfile == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            System.out.println("User profile: " + userProfile);
-
-            // Fetch the user using user ID
-            ResponseEntity<UserDTO> response =
-                    restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=" + userId, UserDTO.class);
-            System.out.println("User response: " + response);
-
-            String mediaUrl = null;
-            if (userProfile.getAvatarMediaId() != null) {
-                mediaUrl = userProfile.getAvatarMediaId();
-            } else {
-                mediaUrl = "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png";
-            }
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                System.out.println("Fetched user successfully");
-                UserDTO userDTO = response.getBody();
-
-                // Create a response DTO combining user and user profile
-                UserProfileResponse userProfileResponse = new UserProfileResponse();
-                if (userDTO != null) {
-                    userProfileResponse.setEmail(userDTO.getEmail());
-                }
-                userProfileResponse.setUsername(userProfile.getUsername());
-                userProfileResponse.setBio(userProfile.getBio());
-                userProfileResponse.setAvatarMediaId(mediaUrl);
-                System.out.println("Returning user profile response: " + userProfileResponse);
-                return ResponseEntity.ok(userProfileResponse);
-            } else {
-                System.out.println("Failed to fetch user");
-                return ResponseEntity.status(response.getStatusCode()).body(null);
-            }
-        } catch (Exception e) {
-            System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return userService.getCurrentUserProfile(userId);
     }
 
     @PostMapping("/create")
