@@ -1,4 +1,5 @@
 import React from "react";
+import "react-native";
 import { render, fireEvent, screen } from "@testing-library/react-native"; // Use '@testing-library/react-native' for React Native
 import DeleteConfirmationModal from "../../app/deleteConfirmationModal";
 
