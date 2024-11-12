@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import backend.travel_service.dto.MemoryDto;
 import backend.travel_service.dto.VisitedStatsDto;
 import backend.travel_service.dto.UserProfileResponse;
+import backend.travel_service.dto.UserProfileUpdateRequest;
 import backend.travel_service.entity.Memory;
 import backend.travel_service.entity.Location;
 import backend.travel_service.repository.MemoryRepository;
@@ -222,6 +225,7 @@ public class MemoryService {
     }
 
     public VisitedStatsDto getVisitedStats(Long userId) {
+        // initialize with (0,0,0) when user profile created
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-User-Id", String.valueOf(userId));
@@ -244,6 +248,10 @@ public class MemoryService {
                 }
                 // put stats into visitedStatsDto
                 VisitedStatsDto visitedStatsDto = new VisitedStatsDto();
+                System.out.println("FROM USER PROFILE RESPONSE: " + userProfileResponse.getContinentsVisited());
+                System.out.println(userProfileResponse.getCountriesVisited());
+                System.out.println(userProfileResponse.getContinentsVisited());
+                System.out.println("======================");
                 visitedStatsDto.setVisitedContinentCount(userProfileResponse.getContinentsVisited());
                 visitedStatsDto.setVisitedCountryCount(userProfileResponse.getCountriesVisited());
                 visitedStatsDto.setVisitedCityCount(userProfileResponse.getCitiesVisited());
@@ -260,8 +268,9 @@ public class MemoryService {
         }
     }
 
-    public VisitedStatsDto recalculateVisitedStats(Long userId) {
+    public VisitedStatsDto updateVisitedStats(Long userId) {
         // TODO: when pin adds/deletes
+
         // get list of visited locations
         List<Location> visitedLocations = getVisitedLocations(userId);
 
@@ -298,8 +307,40 @@ public class MemoryService {
             System.out.println(city);
         }
 
-        // Return the stats as a DTO
-        return new VisitedStatsDto(continents.size(), countries.size(), cities.size());
+        // TODO: set userProfile.stats to continents.size(), countries.size(), cities.size()
+        //      ^^ by writing request to updateProfile endpoint
+        UserProfileUpdateRequest userProfileUpdateRequest = new UserProfileUpdateRequest();
+        userProfileUpdateRequest.setCitiesVisited(cities.size());
+        userProfileUpdateRequest.setCountriesVisited(countries.size());
+        userProfileUpdateRequest.setContinentsVisited(continents.size());
+        System.out.println("--------- checking memoryservice.java profileupdaterequest dto --------");
+        System.out.println(userProfileUpdateRequest);
+        System.out.println("-----------------------------------------------------------------------");
+        // make the actual request to update stats in user profile 
+
+        // Prepare the form data to send in the request body
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("citiesVisited", String.valueOf(userProfileUpdateRequest.getCitiesVisited()));
+        map.add("countriesVisited", String.valueOf(userProfileUpdateRequest.getCountriesVisited()));
+        map.add("continentsVisited", String.valueOf(userProfileUpdateRequest.getContinentsVisited()));
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-User-Id", String.valueOf(userId));
+            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+
+            restTemplate.exchange(
+                "http://user-service:3010/user/update",
+                HttpMethod.PUT,
+                entity,
+                Void.class
+            );
+        } catch (Exception e) {
+            System.err.println("An error occurred while updating the user profile: " + e);
+        }
+        // and then put into a VisitedStatsDto by calling getVisitedStats, then return that VisitedStatsDto
+        // return new VisitedStats(continents.size(), countries.size(), cities.size());
+        return getVisitedStats(userId);
     }
 
 }

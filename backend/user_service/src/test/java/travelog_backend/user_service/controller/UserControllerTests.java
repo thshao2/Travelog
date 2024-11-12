@@ -111,7 +111,7 @@ public class UserControllerTests {
     @Test
     public void testUpdateUserProfile_Success() throws Exception {
         UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
-        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null);
+        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null, 0, 0, 0);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
         when(userProfileRepository.save(userProfile)).thenReturn(userProfile);
@@ -129,7 +129,7 @@ public class UserControllerTests {
 
     @Test
     public void testUpdateUserProfile_UserNotFound() throws Exception {
-        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null);
+        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null, 0, 0, 0);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(null);
 
@@ -145,7 +145,7 @@ public class UserControllerTests {
     @Test
     public void testUpdateUserProfile_Exception() throws Exception {
         UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
-        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null);
+        UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null, 0, 0, 0);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
         doThrow(new RuntimeException("Database error")).when(userProfileRepository).save(userProfile);

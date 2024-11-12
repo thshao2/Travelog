@@ -94,4 +94,11 @@ public class MemoryController {
         VisitedStatsDto stats = memoryService.getVisitedStats(userId);
         return ResponseEntity.ok(stats);
     }
+
+    @PostMapping("/update-stats")
+    public ResponseEntity<VisitedStatsDto> updateVisitedStats(@RequestHeader("X-User-Id") Long userId) {
+        System.out.println("AM GOING TO UPDATE STATS !!!");
+        VisitedStatsDto stats = memoryService.updateVisitedStats(userId);
+        return ResponseEntity.ok(stats);
+    }
 }

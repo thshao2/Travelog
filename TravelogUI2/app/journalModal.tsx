@@ -75,6 +75,10 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         console.log("API Response: ", data);
         setIsModalVisible(false);
         onSubmitJournal();
+        if (condition === "Visited") {
+          console.log("CONDITION IS VISITED");
+          updateUserStats(loginContext.accessToken);
+        }
       } else {
         console.error("Failed to fetch from travel-service. Status: ", response.status);
       }
@@ -160,6 +164,26 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setEndDate(new Date());
     setSections([{ type: "text", content: "" }]);
     setEncodedSections([{ type: "text", content: "" }]);
+  };
+
+  const updateUserStats = async(token: string) => {
+    try {
+      console.log("about to post to update-stats");
+      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("updateUserStats - network response was not ok");
+      } else {
+        console.log("after post - user stats updated successfully !!!");
+      }
+    } catch (err) {
+      console.error("Error updating stats after posting pin to database: " + err);
+    }
   };
 
   return (

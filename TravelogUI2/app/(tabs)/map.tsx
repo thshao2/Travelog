@@ -190,6 +190,25 @@ function Map() {
     }
   };
 
+  // const updateUserStats = async(token: string) => {
+  //   try {
+  //     const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("updateUserStats - network response was not ok");
+  //     } else {
+  //       console.log("User stats updated successfully !!!");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error updating stats after posting pin to database: " + err);
+  //   }
+  // };
+
   const handleButtonClick = () => {
     mapRef.current?.flyTo({
       center: INITIAL_CENTER,
@@ -214,6 +233,7 @@ function Map() {
       console.log("About to post pin, token is", loginContext.accessToken);
       const token = loginContext.accessToken;
       const newPin = await postPinToDb(token, lng, lat);
+      // await updateUserStats(token);
       console.log("newPin is", newPin);
 
       // Add event listener for pin & set pin ID

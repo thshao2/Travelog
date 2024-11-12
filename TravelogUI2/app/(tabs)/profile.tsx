@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import config from "../config";
@@ -105,6 +105,13 @@ export default function ProfilePage() {
       // navigation.navigate("login");
     }
   }, [loginContext.accessToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("FETCHINNNN");
+      fetchStats();
+    }, [loginContext.accessToken]),
+  );
 
   const toggleEditing = () => {
     if (isEditing) {

@@ -78,6 +78,9 @@ public class UserController {
             String username = profileUpdateRequest.getUsername();
             String bio = profileUpdateRequest.getBio();
             String base64Image = profileUpdateRequest.getImage();
+            int citiesVisited = profileUpdateRequest.getCitiesVisited();
+            int countriesVisited = profileUpdateRequest.getCountriesVisited();
+            int continentsVisited = profileUpdateRequest.getContinentsVisited();   
             
             if (bio != null) {
                 userProfile.setBio(bio);
@@ -96,10 +99,23 @@ public class UserController {
                 userProfile.setAvatarMediaId(mediaUrl);
             }
 
+            if (citiesVisited >= 0) {
+                System.out.println("UPDATING CITIES");
+                userProfile.getStatistics().setCitiesVisited(citiesVisited);
+            }
+            if (countriesVisited >= 0) {
+                System.out.println("UPDATING COUNTRIES");
+                userProfile.getStatistics().setCountriesVisited(countriesVisited);
+            }
+            if (continentsVisited >= 0) {
+                System.out.println("UPDATING CONTINENTS");
+                userProfile.getStatistics().setContinentsVisited(continentsVisited);
+            }
             userProfileRepository.save(userProfile);
             return ResponseEntity.ok(userProfile);
 
         } catch (Exception e) {
+            System.out.println("IN USER CONTROLLER UPDATE PROFILE -- FAILED");
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
