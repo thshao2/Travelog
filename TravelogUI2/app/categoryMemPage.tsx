@@ -59,6 +59,26 @@ export default function CategoryMemPage() {
     setVisitedStats({ count: visited, percentage });
   };
 
+  const updateUserStats = async(token: string) => {
+    try {
+      console.log("about to post to update-stats");
+      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("updateUserStats - network response was not ok");
+      } else {
+        console.log("after post - user stats updated successfully !!!");
+      }
+    } catch (err) {
+      console.error("Error updating stats after posting pin to database: " + err);
+    }
+  };
+
   const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
     setIsDetailVisible(true);
@@ -95,6 +115,10 @@ export default function CategoryMemPage() {
         calculateVisitedStats(updatedMemories);
         return updatedMemories;
       });
+
+      // Update stats
+      updateUserStats(loginContext.accessToken);
+
     } catch (err) {
       console.error(err);
       setError("Failed to delete memory.");
@@ -117,7 +141,8 @@ export default function CategoryMemPage() {
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
-    fetchMemoriesByCategory(); 
+    fetchMemoriesByCategory();
+    updateUserStats(loginContext.accessToken);
   };
 
   useEffect(() => {
