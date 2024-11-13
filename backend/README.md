@@ -87,4 +87,5 @@ After The command successfully runs, your changes will be reflected in the appli
 - Testing files should have a green "start" button - click the one at the top to run all tests in the file, or run a test individually by clicking the button at the top of each test.
 
 ### Command line:
-- 
+- `docker exec -it <docker container name or id> mvn test`
+  - Find the container name / id by running `docker ps`, looking at docker-compose.yml, or on Docker Desktop
