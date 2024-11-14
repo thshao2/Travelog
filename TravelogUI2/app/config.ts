@@ -12,8 +12,8 @@ const config: Record<Environment, { API_URL: string }>  = {
     API_URL: "http://18.144.165.97:8080",
   },
   test: {
-    API_URL: "http://localhost:8080"
-  }
+    API_URL: "http://localhost:8080",
+  },
 };
 
 export default config[ENV || "development"];
