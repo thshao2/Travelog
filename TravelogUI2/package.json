@@ -17,7 +17,9 @@
   "jest": {
     "preset": "jest-expo",
     "testEnvironment": "jsdom",
-    "setupFiles": ["./jest_setup.js"]
+    "setupFiles": [
+      "./jest_setup.js"
+    ]
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",

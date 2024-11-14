@@ -1,11 +1,17 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl, { Map as MapboxMap, Marker } from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
-import { Platform, Text, Pressable, StyleSheet } from "react-native";
+import { Platform, Text, Pressable, StyleSheet, View } from "react-native";
 import JournalModal from "../journalModal";
 import PopupMenu from "../popupMenu";
 import config from "../config";
 import { useLoginContext } from "../context/LoginContext";
+
+import { BottomNavigation } from "react-native-paper";
+
+import { MaterialIcons } from "@expo/vector-icons";
+
+import Feather from "@expo/vector-icons/Feather";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
@@ -47,6 +53,9 @@ function Map() {
   const [pitch, setPitch] = useState<number>(INITIAL_PITCH);
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
+
+  const [selectedPreset, setSelectedPreset] = useState("day");
+
   // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
@@ -169,7 +178,7 @@ function Map() {
     }
   };
 
-  const postPinToDb = async(token: string | null, longitude: Double, latitude: Double) => {
+  const postPinToDb = async (token: string | null, longitude: Double, latitude: Double) => {
     try {
       console.log("Authorization token is " + token);
       const response = await fetch(`${API_URL}/travel/pin`, {
@@ -201,7 +210,7 @@ function Map() {
     setAddingPin(!addingPin); // Toggle pin drop mode
   };
 
-  const handleMapClick = async(e: mapboxgl.MapMouseEvent) => {
+  const handleMapClick = async (e: mapboxgl.MapMouseEvent) => {
     if (addingPin && mapRef.current) {
       const { lng, lat } = e.lngLat;
 
@@ -284,7 +293,7 @@ function Map() {
     }
   };
 
-  const handleDeletePin = async(token: string) => {
+  const handleDeletePin = async (token: string) => {
     console.log("handleDeletePin called in map.tsx");
     try {
       // Make API call to delete the pin
@@ -330,6 +339,23 @@ function Map() {
     };
   }, [addingPin]);
 
+  // const setLightingPreset = (preset: "dusk" | "dawn" | "day" | "night") => {
+  //   mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
+  // };
+  const setLightingPreset = (preset: "dawn" | "day" | "dusk" | "night") => {
+    setSelectedPreset(preset);
+    mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
+  };
+
+  const handleTabChange = (newPreset: string) => {
+    setLightingPreset(newPreset as "dawn" | "day" | "dusk" | "night");
+  };
+
+  // const setLightingPreset = (preset: "dawn" | "day" | "dusk" | "night") => {
+  //   setSelectedPreset(preset);
+  //   mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
+  // };
+
   return (
     <>
       {Platform.OS === "web" ? (
@@ -341,18 +367,30 @@ function Map() {
           <Text>Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)}</Text>
         </div>
       )}
-      <button className='reset-button' onClick={handleButtonClick}>
+      <button className="reset-button" onClick={handleButtonClick}>
         <Text>Reset</Text>
       </button>
-      <div id='map-container' ref={mapContainerRef} />
-
-      {/* 
-      PopupMenu ->  
-        JournalDetail
-        PopupMenuList
-      
-      JournalModal
-      */}
+      <div id="map-container" ref={mapContainerRef} />
+  
+      {/* Bottom Navigation for lighting presets */}
+      <View style={styles.bottomNavigationContainer}>
+        <BottomNavigation
+          navigationState={{
+            index: ["dawn", "day", "dusk", "night"].indexOf(selectedPreset),
+            routes: [
+              { key: "dawn", title: "Dawn", focusedIcon: () => <Feather name="sunrise" size={24} color="#ff6700" /> },
+              { key: "day", title: "Day", focusedIcon: () => <MaterialIcons name="wb-sunny" size={24} color="#fff962" /> },
+              { key: "dusk", title: "Dusk", focusedIcon: () => <MaterialIcons name="wb-twilight" size={24} color="orange" /> },
+              { key: "night", title: "Night", focusedIcon: () => <MaterialIcons name="nights-stay" size={24} color="black" /> },
+            ],
+          }}
+          onIndexChange={(index) => handleTabChange(["dawn", "day", "dusk", "night"][index])}
+          renderScene={() => null}
+          barStyle={styles.navBar}
+        />
+      </View>
+  
+      {/* PopupMenu and JournalModal components */}
       {selectedPin?.marker && selectedPin.position && (
         <PopupMenu
           selectedPin={selectedPin}
@@ -362,7 +400,7 @@ function Map() {
           key={memories.length}
         />
       )}
-
+  
       <JournalModal
         selectedPin={selectedPin}
         isModalVisible={isModalVisible}
@@ -372,7 +410,7 @@ function Map() {
           setIsModalVisible(false);
         }}
       />
-
+  
       {/* Plus button for dropping a pin */}
       {loginContext.accessToken.length > 0 && (
         <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
@@ -380,10 +418,21 @@ function Map() {
         </Pressable>
       )}
     </>
-  );
+  );  
 }
 
 const styles = StyleSheet.create({
+  bottomNavigationContainer: {
+    position: "absolute",
+    top: 100,
+    left: 10,
+  },
+  navBar: {
+    backgroundColor: "white",
+    borderRadius: 25,
+    height: 60,
+    marginBottom: 10, // Add padding to avoid text cut-off
+  },
   plusButton: {
     position: "absolute",
     bottom: 20,
