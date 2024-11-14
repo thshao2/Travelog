@@ -246,15 +246,15 @@ export default function ProfilePage() {
 
   return (
     <ScrollView contentContainerStyle={styles.profileContainer}>
-    <ImageBackground
+      <ImageBackground
         source={require("../../assets/images/pfp-bg.jpg")}
         style={styles.background}
         imageStyle={{ resizeMode: "cover" }}
-    >
+      >
 
         {/* Profile Picture and Info */}
         <View style={styles.profileInfo}>
-         {isEditing ? (
+          {isEditing ? (
             <Pressable onPress={pickImage}>
               <Image
                 source={{ uri: profilePic }}
@@ -267,17 +267,17 @@ export default function ProfilePage() {
               style={styles.profilePic}
             />
           )}
-            {isEditing ? (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Name"
-                  value={name}
-                  onChangeText={setName}
-                />
-              ) : (
-                <Text style={styles.profileName}>{name || "Name"}</Text>
-            )}
-            <View style={styles.bioContainer}>
+          {isEditing ? (
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+            />
+          ) : (
+            <Text style={styles.profileName}>{name || "Name"}</Text>
+          )}
+          <View style={styles.bioContainer}>
             {isEditing ? (
               <TextInput
                 style={styles.input}
@@ -291,28 +291,27 @@ export default function ProfilePage() {
                 {bio || "This is a short bio."}
               </Text>
             )}
-            </View>
+          </View>
         </View>
-        
 
         <View>
           {isEditing ? (
             <Pressable onPress={toggleEditing} style={styles.button}>
               <Text style={styles.buttonText}>Save</Text>
             </Pressable>
-            ) : (
-              <Pressable onPress={toggleEditing} style={styles.button}>
+          ) : (
+            <Pressable onPress={toggleEditing} style={styles.button}>
               <Text style={styles.buttonText}>Edit Profile</Text>
             </Pressable>
-            )}
+          )}
         </View>
 
         <View style={styles.passwordSection}>
-        <Pressable onPress={() => setShowPasswordForm(!showPasswordForm)} style={styles.button}>
-              <Text style={styles.buttonText}>{showPasswordForm
-                ? "Cancel Changes"
-                : "Change Password"}</Text>
-        </Pressable>
+          <Pressable onPress={() => setShowPasswordForm(!showPasswordForm)} style={styles.button}>
+            <Text style={styles.buttonText}>{showPasswordForm
+              ? "Cancel Changes"
+              : "Change Password"}</Text>
+          </Pressable>
           
           {showPasswordForm && (
             <View style={styles.passwordForm}>
@@ -355,72 +354,72 @@ export default function ProfilePage() {
         </View>
       </ImageBackground>
     
-    {/* Statistics */}
-    <View style={styles.statsContainer}>
+      {/* Statistics */}
+      <View style={styles.statsContainer}>
         <Text style={styles.statTitle}>Visited</Text>
         <View style={styles.stat}>
-            <Text style={styles.statValue}>{stats.continents}</Text>
-            <Text style={styles.statLabel}>continents</Text>
+          <Text style={styles.statValue}>{stats.continents}</Text>
+          <Text style={styles.statLabel}>continents</Text>
         </View>
         <View style={styles.stat}>
-            <Text style={styles.statValue}>{stats.countries}</Text>
-            <Text style={styles.statLabel}>countries</Text>
+          <Text style={styles.statValue}>{stats.countries}</Text>
+          <Text style={styles.statLabel}>countries</Text>
         </View>
         <View style={styles.stat}>
-            <Text style={styles.statValue}>{stats.cities}</Text>
-            <Text style={styles.statLabel}>cities</Text>
+          <Text style={styles.statValue}>{stats.cities}</Text>
+          <Text style={styles.statLabel}>cities</Text>
         </View>
-    </View>
+      </View>
 
-    <View style={styles.logoutContainer}>
+      <View style={styles.logoutContainer}>
         <Pressable onPress={logout} style={styles.button}>
           <Text style={styles.buttonText}>Logout</Text>
         </Pressable>
-    </View>
-</ScrollView>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   profileContainer: {
-      flexGrow: 1,
-      alignItems: "center",
-      backgroundColor: "#000000"
-      // justifyContent: "center",
+    flexGrow: 1,
+    alignItems: "center",
+    backgroundColor: "#000000",
+    // justifyContent: "center",
   },
   background: {
-      width: "100%",
-      height: "auto",
-      // height: "90%",
-      alignItems: "center",
+    width: "100%",
+    height: "auto",
+    // height: "90%",
+    alignItems: "center",
   },
   profileInfo: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
   },
-  profilePicContainer:{
+  profilePicContainer: {
     alignContent: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   profilePic: {
-    alignItems: 'center',
-      width: 120,
-      height: 120,
-      borderRadius: 50,
+    alignItems: "center",
+    width: 120,
+    height: 120,
+    borderRadius: 50,
   },
   profileName: {
-      color: "#ffffff",
-      fontSize: 24,
-      fontWeight: "bold",
-      marginVertical: 10,
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginVertical: 10,
   },
   bioContainer: {
-      marginBottom: 16,
+    marginBottom: 16,
   },
   bioText: {
-      fontSize: 16,
-      color: "#ffffff",
-      textAlign: "center",
+    fontSize: 16,
+    color: "#ffffff",
+    textAlign: "center",
   },
   icon: {
     color: "#ffffff",
@@ -470,52 +469,52 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   statsContainer: {
-      padding: 20,
-      width: "90%",
-      maxWidth: 500,
-      backgroundColor: "#2c2b3b",
-      borderRadius: 5,
-      margin: 10,
-      justifyContent: "center"
+    padding: 20,
+    width: "90%",
+    maxWidth: 500,
+    backgroundColor: "#2c2b3b",
+    borderRadius: 5,
+    margin: 10,
+    justifyContent: "center",
   },
   statTitle: {
-      fontSize: 18,
-      color: "#ffffff",
-      fontWeight: "bold",
-      textAlign: "center",
-      marginBottom: 10,
+    fontSize: 18,
+    color: "#ffffff",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
   },
   stat: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      color: "#ffffff",
-      paddingVertical: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    color: "#ffffff",
+    paddingVertical: 5,
   },
   statValue: {
-      fontSize: 20,
-      color: "#ffffff",
-      fontWeight: "bold",
+    fontSize: 20,
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   statLabel: {
-      fontSize: 16,
-      color: "#888",
+    fontSize: 16,
+    color: "#888",
   },
   logoutContainer: {
-    marginTop: 'auto',
+    marginTop: "auto",
   },
   logoutButton: {
     paddingVertical: 15,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
+    backgroundColor: "#ffffff",
+    alignItems: "center",
     borderRadius: 10,
     justifyContent: "center",
     padding: 20,
-    margin: 20
+    margin: 20,
   },
   logoutButtonText: {
-    color: '#000000',
+    color: "#000000",
     fontSize: 5,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   errorText: {
     color: "red",
