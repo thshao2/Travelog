@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable, ImageBackground } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import config from "./config";
@@ -80,86 +80,103 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      {!validateEmail(email) && email !== "" && (
-        <Text style={styles.errorText}>Please enter a valid email address.</Text>
-      )}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <Pressable
-        onPress={handleLogin}
-        disabled={!isFormValid}
-        style={[
-          styles.loginButton,
-          { backgroundColor: isFormValid ? "#4444ff" : "gray" },
-        ]}
-      >
-        <Text style={styles.loginButtonText}>Login</Text>
-      </Pressable>
-
-      <Text style={styles.text} >Don't have an account? <Pressable><Text style={styles.signUpText} onPress={() => navigation.navigate("signup")}>Click here to sign up!</Text></Pressable></Text>
-    </View>
+    <ImageBackground
+      source={require("../assets/images/login-bg.jpg")}
+      style={styles.background}
+      imageStyle={{ resizeMode: "cover" }}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Travelog</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        {!validateEmail(email) && email !== "" && (
+          <Text style={styles.errorText}>Please enter a valid email address.</Text>
+        )}
+  
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+  
+        <Pressable
+          onPress={handleLogin}
+          disabled={!isFormValid}
+          style={[
+            styles.loginButton,
+            { backgroundColor: isFormValid ? "#328ECB" : "gray" },
+          ]}
+        >
+          <Text style={styles.loginButtonText}>Login</Text>
+        </Pressable>
+  
+        <Text style={styles.text}>
+          Don't have an account?{" "}
+          <Pressable onPress={() => navigation.navigate("signup")}>
+            <Text style={styles.signUpText}>Click here to sign up!</Text>
+          </Pressable>
+        </Text>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
+    height: "100%",
+    width: "100%",
     justifyContent: "center",
-    padding: 16,
+    alignItems: "center",
+  },
+  container: {
+    width: "30%",
+    padding: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 10,
+    alignItems: "center",
   },
   title: {
-    color: "#4444ff",
     fontSize: 24,
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  text: {
-    color: "gray",
-    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   input: {
-    height: 40,
-    borderColor: "gray",
-    color: "gray",
+    width: "100%",
+    padding: 10,
+    marginVertical: 10,
+    borderColor: "#328ECB",
     borderWidth: 1,
-    marginBottom: 12,
-    paddingLeft: 8,
+    borderRadius: 5,
   },
   errorText: {
     color: "red",
     marginBottom: 10,
   },
-  signUpText: {
-    color: "#4444ff",
-  },
   loginButton: {
-    width: "20%",
-    paddingVertical: 10,
-    backgroundColor: "#4444ff",
+    width: "100%",
+    padding: 10,
+    borderRadius: 5,
     alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    borderRadius: 10,
-    marginBottom: 10,
+    marginVertical: 10,
   },
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  text: {
+    marginTop: 20,
+    textAlign: "center",
+  },
+  signUpText: {
+    color: "#996C96",
+    fontWeight: "bold",
   },
 });
 
