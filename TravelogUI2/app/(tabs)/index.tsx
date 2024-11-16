@@ -5,6 +5,8 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
+import CategoryList from "../categoryList";
+
 import applyGlobalPolyfills from "../decoder";
 applyGlobalPolyfills();
 
@@ -19,6 +21,8 @@ export default function HomeScreen() {
         />
       }
     >
+      <CategoryList/>
+      
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Hello World!</ThemedText>
         <HelloWave />

@@ -44,7 +44,7 @@ public class UserProfile {
     private LocalDate joinedAt;
 
     @Embedded
-    private Statistics statistics = new Statistics(-1, 0, -1);
+    private Statistics statistics = new Statistics(0, 0, 0);
 
     @Embeddable
     @Data
