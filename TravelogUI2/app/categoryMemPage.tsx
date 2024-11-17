@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, ActivityIndicator, ImageBackground } from "react-native";
+import { Text, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import { Grid, Typography } from "@mui/joy";
 import { useLoginContext } from "./context/LoginContext";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { Journal } from "./popupMenu";
-import JournalDetailModal from "./journalDetail";
 import { RootStackParamList } from "./types";
 import config from "./config";
 
-import MemoryGridCard from "./memoryGridCard";
+import MemoryCard from "./memoryCard";
 
 const { API_URL } = config;
 
@@ -16,8 +16,6 @@ export default function CategoryMemPage() {
   const { category } = route.params;
   const loginContext = useLoginContext();
   const [memories, setMemories] = useState<Journal[]>([]);
-  const [isDetailVisible, setIsDetailVisible] = useState(false);
-  const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
@@ -59,92 +57,6 @@ export default function CategoryMemPage() {
     setVisitedStats({ count: visited, percentage });
   };
 
-  const updateUserStats = async(token: string) => {
-    try {
-      console.log("about to post to update-stats");
-      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("updateUserStats - network response was not ok");
-      } else {
-        console.log("after post - user stats updated successfully !!!");
-      }
-    } catch (err) {
-      console.error("Error updating stats after posting pin to database: " + err);
-    }
-  };
-
-  const openJournalDetail = (journal: Journal) => {
-    setSelectedJournal(journal);
-    setIsDetailVisible(true);
-  };
-
-  const closeJournalDetail = () => {
-    setSelectedJournal(null);
-    setIsDetailVisible(false);
-  };
-
-  // Function to delete a memory by ID
-  const handleDeleteJournal = async(journalId: number) => {
-    setIsDetailVisible(false);
-    
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to delete memory.");
-      }
-  
-      const message = await response.text();
-      console.log(message);
-  
-      // Update the memories state to remove the deleted journal
-      setMemories((prevMemories) => {
-        const updatedMemories = prevMemories.filter(journal => journal.id !== journalId);
-        calculateVisitedStats(updatedMemories);
-        return updatedMemories;
-      });
-
-      // Update stats
-      updateUserStats(loginContext.accessToken);
-
-    } catch (err) {
-      console.error(err);
-      setError("Failed to delete memory.");
-    }
-  };
-
-  // Function to edit a memory by ID
-  const handleEditJournal = async(updatedJournal: Journal) => {
-    setIsDetailVisible(false);
-
-    const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${loginContext.accessToken}`,
-      },
-      body: JSON.stringify(updatedJournal),
-    });
-  
-    if (!response.ok) {
-      throw new Error("Failed to edit memory.");
-    }
-    fetchMemoriesByCategory();
-    updateUserStats(loginContext.accessToken);
-  };
-
   useEffect(() => {
     fetchMemoriesByCategory();
   }, [category]);
@@ -156,90 +68,34 @@ export default function CategoryMemPage() {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
-  const timelineData = memories.map((memory) => {
-    return {
-      id: memory.id,
-      userId: memory.userId,
-      pinId: memory.pinId,
-      title: memory.title,
-      category: memory.category,
-      condition: memory.condition,
-      loc: memory.loc,
-      time: new Date(memory.endDate).toLocaleDateString(),
-      initDate: memory.initDate,
-      endDate: memory.endDate,
-      captionText: memory.captionText,
-      imageUrl: JSON.parse(memory.captionText).find((section: any) => section.type === "image")?.content || null, // use the 1st img from captionText if available
-    };
-  });
-
   return (
-    <ImageBackground
-      source={require("@/assets/images/travelog-bg.jpeg")}
-      style={styles.background}
-      imageStyle={{ 
-        resizeMode: "cover",
-      }}
-    >
-      <View style={styles.memoryGridContainer}>
+    <ScrollView>
+      <Typography level="h3" sx={{
+        fontWeight: "bold",
+        paddingLeft: 2,
+        paddingTop: 2,
+      }}>{category}</Typography>
+      <Typography level="h4" sx={{
+        paddingLeft: 2,
+      }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
+      <Grid container spacing={2} sx={{ padding: 2 }}>
         {memories.map((journal) => (
-          <MemoryGridCard key={journal.id} journal={journal} />
+          <Grid
+            key={journal.id}
+            xs={12} sm={4} md={3}
+          >
+            <MemoryCard onRefetch={fetchMemoriesByCategory} journal={journal} />
+          </Grid>
         ))}
-      </View>
-
-      {/* Journal Detail Modal */}
-      {selectedJournal && (
-        <JournalDetailModal
-          isDetailVisible={isDetailVisible}
-          setIsDetailVisible={setIsDetailVisible}
-          journal={selectedJournal}
-          onClose={closeJournalDetail}
-          onDelete={handleDeleteJournal}
-          onEdit={handleEditJournal}
-        />
-      )}
-    </ImageBackground>
+      </Grid>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  memoryGridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  background: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  container: {
-    flex: 1,
-    padding: 10,
-  },
   errorText: {
     color: "red",
     fontSize: 16,
-  },
-  iconBackground: {
-    position: "absolute",
-    color: "rgba(255, 255, 255, 0.2)",
-    margin: -15,
-    zIndex: 0,
-  },
-  categoryButton: {
-    padding: 20,
-    backgroundColor: "#4E5BA6",
-    borderRadius: 10,
-    marginBottom: 15,
-    overflow: "hidden",
-  },
-  categoryButtonText: {
-    fontSize: 18,
-    color: "#fff",
-    textAlign: "center",
-    zIndex: 1,
   },
 });
 
