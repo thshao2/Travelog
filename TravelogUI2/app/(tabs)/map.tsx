@@ -1,10 +1,12 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl, { Map as MapboxMap, Marker } from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
-import { Platform, Text, Pressable, StyleSheet, View } from "react-native";
+import { Platform, Text, Pressable, View } from "react-native";
 import JournalModal from "../journalModal";
 import PopupMenu from "../popupMenu";
 import config from "../config";
+import { styles } from "./styles/map-styles";
+
 import { useLoginContext } from "../context/LoginContext";
 
 import { BottomNavigation } from "react-native-paper";
@@ -16,7 +18,7 @@ import Feather from "@expo/vector-icons/Feather";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-import "./Map.css";
+import "./styles/Map.css";
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
 const { API_URL } = config;
@@ -339,9 +341,6 @@ function Map() {
     };
   }, [addingPin]);
 
-  // const setLightingPreset = (preset: "dusk" | "dawn" | "day" | "night") => {
-  //   mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
-  // };
   const setLightingPreset = (preset: "dawn" | "day" | "dusk" | "night") => {
     setSelectedPreset(preset);
     mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
@@ -350,11 +349,6 @@ function Map() {
   const handleTabChange = (newPreset: string) => {
     setLightingPreset(newPreset as "dawn" | "day" | "dusk" | "night");
   };
-
-  // const setLightingPreset = (preset: "dawn" | "day" | "dusk" | "night") => {
-  //   setSelectedPreset(preset);
-  //   mapRef.current?.setConfigProperty("basemap", "lightPreset", preset);
-  // };
 
   return (
     <>
@@ -420,37 +414,6 @@ function Map() {
     </>
   );  
 }
-
-const styles = StyleSheet.create({
-  bottomNavigationContainer: {
-    position: "absolute",
-    top: 100,
-    left: 10,
-  },
-  navBar: {
-    backgroundColor: "white",
-    borderRadius: 25,
-    height: 60,
-    marginBottom: 10, // Add padding to avoid text cut-off
-  },
-  plusButton: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "#007aff",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1, // Ensures the button stays on top of the map
-  },
-  plusButtonText: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-});
 
 export default function map() {
   return (
