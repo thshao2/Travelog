@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    color: "#fff",
+    color: "black",
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   categoryButtonText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     top: 10,
     alignSelf: "center",
