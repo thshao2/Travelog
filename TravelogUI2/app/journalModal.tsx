@@ -64,7 +64,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   
     fetchCoordinates(); 
   }, [selectedPin]); 
-  
 
   const handleSubmit = async() => {
     console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, sections);
@@ -207,8 +206,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     }
   };
   
-
-  const getDefaultLocation = async(latitude: number, longitude: number, token: String) => {
+  const getDefaultLocation = async(latitude: number, longitude: number, token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/memory/default-loc?latitude=${latitude}&longitude=${longitude}`, {
         method: "GET",
@@ -229,7 +227,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     }
   };
 
-  const getSelectedPinCoordinates = async(pinId: number, token: String) => {
+  const getSelectedPinCoordinates = async(pinId: number, token: string) => {
     try {
       console.log("hehrehrhehreh");
       // const response = await fetch(`${API_URL}/travel/pin/get-coordinates/${pinId}`);
@@ -247,12 +245,12 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       const latitude = data[0];
       const longitude = data[1];
       console.log("getdefaultloc: (lat, long) = (" + latitude + ", " + longitude + ")");
-      return {latitude, longitude};
+      return { latitude, longitude };
     } catch (err) {
       console.error("Error fetching coordinates of pin: " + err);
     }
   };
-  
+
   return (
     <Modal
       visible={isModalVisible}

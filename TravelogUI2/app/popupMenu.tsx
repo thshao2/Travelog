@@ -165,7 +165,6 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     }
   };
 
-
   return (
     <View
       style={[
