@@ -61,7 +61,7 @@ function Map() {
   // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
-  // Managing seleted pin for pop up menu
+  // Managing selected pin for pop up menu
   const [selectedPin, setSelectedPin] = useState<{ pinId: number | null, marker: mapboxgl.Marker | null, position: { top: number, left: number } | null }>({
     pinId: null,
     marker: null,

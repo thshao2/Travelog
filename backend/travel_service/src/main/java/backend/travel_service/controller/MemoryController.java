@@ -101,4 +101,11 @@ public class MemoryController {
         VisitedStatsDto stats = memoryService.updateVisitedStats(userId);
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/default-loc")
+    public ResponseEntity<VisitedStatsDto> getDefaultLocation(double latitude, double longitude) {
+        System.out.println("AT DEFAULT LOC ENDPOINT IN MEMORY CONTROLLER");
+        VisitedStatsDto stats = memoryService.getDefaultLocation(latitude, longitude);
+        return ResponseEntity.ok(stats);
+    }
 }

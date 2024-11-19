@@ -35,4 +35,12 @@ public class PinController {
         pinService.deletePinById(id);
         return ResponseEntity.ok("Memory with ID " + id + " has been deleted / does not exist.");
     }
+
+    @GetMapping("/get-coordinates/{id}")
+    public ResponseEntity<List<Double>> getPinCoordinates(@PathVariable Long id) {
+        System.out.println("------HEHRHERHERHEHRERHE------");
+        List<Double> coordinates = pinService.getCoordinatesById(id);
+        System.out.println(coordinates);
+        return ResponseEntity.ok(coordinates);
+    }
 }

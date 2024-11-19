@@ -269,8 +269,6 @@ public class MemoryService {
     }
 
     public VisitedStatsDto updateVisitedStats(Long userId) {
-        // TODO: when pin adds/deletes
-
         // get list of visited locations
         List<Location> visitedLocations = getVisitedLocations(userId);
 
@@ -307,8 +305,6 @@ public class MemoryService {
             System.out.println(city);
         }
 
-        // TODO: set userProfile.stats to continents.size(), countries.size(), cities.size()
-        //      ^^ by writing request to updateProfile endpoint
         UserProfileUpdateRequest userProfileUpdateRequest = new UserProfileUpdateRequest();
         userProfileUpdateRequest.setCitiesVisited(cities.size());
         userProfileUpdateRequest.setCountriesVisited(countries.size());
@@ -341,6 +337,13 @@ public class MemoryService {
         // and then put into a VisitedStatsDto by calling getVisitedStats, then return that VisitedStatsDto
         // return new VisitedStats(continents.size(), countries.size(), cities.size());
         return getVisitedStats(userId);
+    }
+
+    public VisitedStatsDto getDefaultLocation(double latitude, double longitude) {
+        List<String> defaultLocation = geocodingService.getLocationData(latitude, longitude);
+        VisitedStatsDto visitedStatsDto = new VisitedStatsDto();
+        visitedStatsDto.setDefaultLocation(defaultLocation.get(2));
+        return visitedStatsDto;
     }
 
 }

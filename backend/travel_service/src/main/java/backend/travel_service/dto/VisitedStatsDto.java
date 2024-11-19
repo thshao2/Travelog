@@ -13,4 +13,5 @@ public class VisitedStatsDto {
     private int visitedContinentCount;
     private int visitedCountryCount;
     private int visitedCityCount;
+    private String defaultLocation;
 }

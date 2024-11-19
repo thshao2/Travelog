@@ -45,6 +45,27 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     }
   }, [journalTitle, journalLocation, condition, initDate, endDate]);
 
+  // for default location
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      if (selectedPin?.pinId) { // if pin exists:
+        try {
+          const coordinates = await getSelectedPinCoordinates(selectedPin.pinId, loginContext.accessToken); 
+          if (coordinates) {
+            console.log("coordinates are: ", coordinates);
+            getDefaultLocation(coordinates.latitude, coordinates.longitude, loginContext.accessToken);
+            // setJournalLocation(`${coordinates.latitude}, ${coordinates.longitude}`); 
+          }
+        } catch (err) {
+          console.error("Error fetching coordinates:", err);
+        }
+      }
+    };
+  
+    fetchCoordinates(); 
+  }, [selectedPin]); 
+  
+
   const handleSubmit = async() => {
     console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, sections);
     console.log("sections", sections);
@@ -185,7 +206,53 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       console.error("Error updating stats after posting pin to database: " + err);
     }
   };
+  
 
+  const getDefaultLocation = async(latitude: number, longitude: number, token: String) => {
+    try {
+      const response = await fetch(`${API_URL}/travel/memory/default-loc?latitude=${latitude}&longitude=${longitude}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("journalModal -- error getting default location");
+      }
+
+      const data = await response.json();
+      const defaultLocation = data.defaultLocation;
+
+      setJournalLocation(defaultLocation);
+    } catch (err) {
+      console.error("Error fetching default location for journal: " + err);
+    }
+  };
+
+  const getSelectedPinCoordinates = async(pinId: number, token: String) => {
+    try {
+      console.log("hehrehrhehreh");
+      // const response = await fetch(`${API_URL}/travel/pin/get-coordinates/${pinId}`);
+      const response = await fetch(`${API_URL}/travel/pin/get-coordinates/${pinId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      console.log("getdefaultlocation: " + response.status);
+      if (!response.ok) {
+        throw new Error("journalModal -- error getting pin coordinates" + response.text);
+      }
+      const data = await response.json();
+      const latitude = data[0];
+      const longitude = data[1];
+      console.log("getdefaultloc: (lat, long) = (" + latitude + ", " + longitude + ")");
+      return {latitude, longitude};
+    } catch (err) {
+      console.error("Error fetching coordinates of pin: " + err);
+    }
+  };
+  
   return (
     <Modal
       visible={isModalVisible}

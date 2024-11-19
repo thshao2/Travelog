@@ -26,7 +26,7 @@ public class GeocodingService {
 
     // get geocoding data
     public List<String> getLocationData(double latitude, double longitude) {
-        String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&types=place&access_token=" + apiKey;
+        String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&types=address&access_token=" + apiKey;
 
         String response = restTemplate.getForObject(url, String.class);
 
@@ -38,14 +38,15 @@ public class GeocodingService {
         try {
             JsonNode rootNode = objectMapper.readTree(response);
 
-            // System.out.println("-- PARSED JSON: -- " + rootNode.toString());
+            System.out.println("-- PARSED JSON: -- " + rootNode.toString());
 
             // extract place (city) and country name
-            JsonNode firstFeature = rootNode.path("features").get(0);
-            String city = firstFeature.path("properties").path("name").asText("Unknown city");
-            String country = firstFeature.path("properties").path("context").path("country").path("name").asText("Unknown country");
-
-            return Arrays.asList(city, country);
+            JsonNode addrNode = rootNode.path("features").get(0).path("properties");  // up until "properties"
+            String city = addrNode.path("context").path("place").path("name").asText("Unknown City");
+            String country = addrNode.path("context").path("country").path("name").asText("Unknown Country");
+            String defaultLoc = addrNode.path("full_address").asText("Enter location...");
+            System.out.println(defaultLoc);
+            return Arrays.asList(city, country, defaultLoc);
 
         } catch (Exception e) {
             e.printStackTrace();

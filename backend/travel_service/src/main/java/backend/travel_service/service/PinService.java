@@ -1,6 +1,7 @@
 package backend.travel_service.service;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,27 @@ public class PinService {
         } else {
             System.out.println("Pin with ID " + pinId + " does not exist.");
         }
+    }
+
+    public List<Double> getCoordinatesById(Long pinId) {
+        List<Double> coordinates = new ArrayList<>();
+
+        if (pinRepository.existsById(pinId)) {
+            // get pin
+            Pin pin = pinRepository.findById(pinId).orElse(null);
+    
+            // check if pin exists, get loc
+            if (pin != null && pin.getLocation() != null) {
+                // put lat and long into coordinates array
+                Double latitude = pin.getLocation().getLatitude();
+                Double longitude = pin.getLocation().getLongitude();
+    
+                coordinates.add(latitude);
+                coordinates.add(longitude);
+                System.out.println("IN GETCOORDINATES - PIN SERVICE" + latitude + " " + longitude);
+            }
+        }
+        System.out.println("--> coordinates is " + coordinates);
+        return coordinates;
     }
 }
