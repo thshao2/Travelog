@@ -102,7 +102,9 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   
       if (!response.ok) {
         throw new Error("Failed to delete memory.");
-      }
+      } 
+      // if (condition === "Visited")
+      updateUserStats(loginContext.accessToken);
   
       const message = await response.text();
       console.log(message);
@@ -131,6 +133,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
+    updateUserStats(loginContext.accessToken);
     await fetchMemoriesData(selectedPin.pinId);
   };
 
@@ -140,6 +143,28 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     console.log("Delete pin called!");
     onDeletePin();    
   };
+
+  // update user stats if status of memory changes, OR if memory is deleted
+  const updateUserStats = async(token: string) => {
+    try {
+      console.log("about to post to update-stats");
+      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("updateUserStats - network response was not ok");
+      } else {
+        console.log("after post - user stats updated successfully !!!");
+      }
+    } catch (err) {
+      console.error("Error updating stats after posting pin to database: " + err);
+    }
+  };
+
 
   return (
     <View
