@@ -8,7 +8,6 @@ import {
   ScrollView,
   Platform,
   Alert,
-  Dimensions,
   Text,
   Modal,
   Pressable,
@@ -55,8 +54,6 @@ const RichTextEditor = ({ onContentChange }) => {
   const scrollViewRef = useRef(null);
   
   const maxImageSize = 180; // Increased from 120 to 180
-  const screenWidth = Dimensions.get('window').width;
-  const imagesPerRow = Math.floor((screenWidth - 40) / (maxImageSize + 16));
 
   const getImageDimensions = (uri) => {
     return new Promise((resolve) => {
@@ -101,9 +98,9 @@ const RichTextEditor = ({ onContentChange }) => {
         return {
           uri: asset.uri,
           base64,
-          dimensions
+          dimensions,
         };
-      })
+      }),
     );
 
     return processedImages;
@@ -140,15 +137,14 @@ const RichTextEditor = ({ onContentChange }) => {
                   content: img.uri,
                   encodedContent: img.base64,
                   dimensions: img.dimensions,
-                }))
-              ]
+                })),
+              ],
             };
           }
           return section;
         });
 
-        setSections(newSections);
-        updateCallback(newSections);
+        updateSections(newSections);
       }
     } catch (error) {
       console.error("Image picker error:", error);
@@ -191,13 +187,11 @@ const RichTextEditor = ({ onContentChange }) => {
             {
               id: prevSection.id,
               type: "imageGrid",
-              images: mergedImages
+              images: mergedImages,
             },
-            ...sections.slice(currentIndex + 2)
+            ...sections.slice(currentIndex + 2),
           ];
-        }
-        // If last section is empty text, add to previous grid if it exists
-        else if (lastSection.type === "text" && lastSection.content === "" && 
+        } else if (lastSection.type === "text" && lastSection.content === "" && 
                 sections[sections.length - 2]?.type === "imageGrid") {
           newSections = [
             ...sections.slice(0, -2),
@@ -211,14 +205,12 @@ const RichTextEditor = ({ onContentChange }) => {
                   content: img.uri,
                   encodedContent: img.base64,
                   dimensions: img.dimensions,
-                }))
-              ]
+                })),
+              ],
             },
-            lastSection
+            lastSection,
           ];
-        }
-        // Otherwise create new grid
-        else {
+        } else {
           const gridId = Date.now().toString();
           const newTextSectionId = `${Date.now()}-text`;
           
@@ -233,16 +225,15 @@ const RichTextEditor = ({ onContentChange }) => {
                 content: img.uri,
                 encodedContent: img.base64,
                 dimensions: img.dimensions,
-              }))
+              })),
             },
             { id: newTextSectionId, type: "text", content: "" },
-            ...sections.slice(currentIndex + 1)
+            ...sections.slice(currentIndex + 1),
           ];
-		  console.log(sections);
+		  console.log(newSections, 'really');
         }
-
-        setSections(newSections);
-        updateCallback(newSections);
+		console.log(newSections, 'really 2');
+        updateSections(newSections);
 
         // Scroll to new content
         setTimeout(() => {
@@ -258,21 +249,10 @@ const RichTextEditor = ({ onContentChange }) => {
     }
   };
 
-  const updateCallback = (newSections) => {
-    const encodedSections = newSections.map(section => {
-      if (section.type === "imageGrid") {
-        return section.images.map(img => ({
-          type: "image",
-          content: img.encodedContent,
-        }));
-      }
-      return {
-        type: section.type,
-        content: section.content,
-      };
-    }).flat();
-
-    onContentChange(encodedSections);
+  const updateSections = (newSections) => {
+	console.log(newSections, 'really4');
+    setSections(newSections);
+    onContentChange(newSections);
   };
 
   const removeImage = (gridId, imageId) => {
@@ -285,9 +265,7 @@ const RichTextEditor = ({ onContentChange }) => {
     let newSections = [...sections];
     
     // If this was the last image in the grid
-	console.log(updatedImages.length);
     if (updatedImages.length === 0) {
-		console.log('inside');
       // Check for adjacent text sections
       const prevSection = gridIndex > 0 ? sections[gridIndex - 1] : null;
       const nextSection = gridIndex < sections.length - 1 ? sections[gridIndex + 1] : null;
@@ -299,9 +277,9 @@ const RichTextEditor = ({ onContentChange }) => {
           {
             id: prevSection.id,
             type: "text",
-            content: prevSection.content + nextSection.content
+            content: prevSection.content + nextSection.content,
           },
-          ...sections.slice(gridIndex + 2)
+          ...sections.slice(gridIndex + 2),
         ];
         
         // Focus the merged text section
@@ -312,26 +290,24 @@ const RichTextEditor = ({ onContentChange }) => {
         // Just remove the empty grid
         newSections = [
           ...sections.slice(0, gridIndex),
-          ...sections.slice(gridIndex + 1)
+          ...sections.slice(gridIndex + 1),
         ];
       }
     } else {
       // Update the grid with remaining images
       newSections = sections.map(section => 
-        section.id === gridId ? { ...section, images: updatedImages } : section
+        section.id === gridId ? { ...section, images: updatedImages } : section,
       );
     }
     
-    setSections(newSections);
-    updateCallback(newSections);
+    updateSections(newSections);
   };
 
   const handleTextChange = (id, text) => {
     const newSections = sections.map(section =>
-      section.id === id ? { ...section, content: text } : section
+      section.id === id ? { ...section, content: text } : section,
     );
-    setSections(newSections);
-    updateCallback(newSections);
+    updateSections(newSections);
   };
 
   const handleKeyPress = (e, id) => {
@@ -352,21 +328,16 @@ const RichTextEditor = ({ onContentChange }) => {
             newSections.splice(index - 1, 3, {
               id: previousSection.id,
               type: "imageGrid",
-              images: mergedImages
+              images: mergedImages,
             });
-          }
-          // If merging text sections
-          else if (previousSection?.type === "text" && nextSection?.type === "text") {
+          } else if (previousSection?.type === "text" && nextSection?.type === "text") {
             previousSection.content += nextSection.content;
             newSections.splice(index, 2);
-          }
-          // Otherwise just remove the empty section
-          else {
+          } else {
             newSections.splice(index, 1);
           }
           
-          setSections(newSections);
-          updateCallback(newSections);
+          updateSections(newSections);
           
           if (previousSection?.type === "text") {
             setTimeout(() => {
@@ -423,7 +394,7 @@ const RichTextEditor = ({ onContentChange }) => {
                             {
                               width: image.dimensions.width,
                               height: image.dimensions.height,
-                            }
+                            },
                           ]}
                         />
                       </TouchableOpacity>
@@ -494,16 +465,16 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   imageGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
     padding: 4,
   },
   imageWrapper: {
-    position: 'relative',
+    position: "relative",
     borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: '#f8f9fa',
+    overflow: "hidden",
+    backgroundColor: "#f8f9fa",
     margin: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -512,14 +483,14 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   gridImage: {
-    resizeMode: 'cover',
+    resizeMode: "cover",
     borderRadius: 8,
   },
   removeImageButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 4,
     right: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 12,
     padding: 4,
     zIndex: 1,
@@ -559,25 +530,25 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   previewImage: {
-    width: '90%',
-    height: '90%',
+    width: "90%",
+    height: "90%",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 20,
     padding: 8,
   },

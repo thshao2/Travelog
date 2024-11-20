@@ -31,7 +31,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   const [initDate, setInitDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [sections, setSections] = useState([{ type: "text", content: "" }]);
-  const [encodedSections, setEncodedSections] = useState([{ type: "text", content: "" }]);
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -66,7 +65,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         category: journalCategory,
         loc: journalLocation,
         condition: condition,
-        captionText: JSON.stringify(encodedSections),
+        captionText: JSON.stringify(sections),
         initDate: initDate,
         endDate: endDate,
         mediaIds: [1, 2, 3], // Replace with actual media IDs
@@ -106,7 +105,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setInitDate(new Date());
     setEndDate(new Date());
     setSections([{ type: "text", content: "" }]);
-    setEncodedSections([{ type: "text", content: "" }]);
   };
 
   const updateUserStats = async (token: string) => {
@@ -262,13 +260,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                 <RichTextEditor
                   onContentChange={(newSections) => {
                     setSections(newSections);
-                    const encodedSections = newSections.map(section => ({
-                      type: section.type,
-                      content: section.type === "image" ? section.encodedContent : section.content,
-                    }));
-                    setEncodedSections(encodedSections);
-                    console.log(encodedSections);
-                    console.log(newSections, 'newSections');
+                    console.log(newSections, "newSections");
                   }}
                 />
               </View>

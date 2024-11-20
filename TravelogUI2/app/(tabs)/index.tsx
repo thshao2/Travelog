@@ -3,8 +3,6 @@ import Slider from "react-slick";
 import { Box } from "@mui/material";
 import CategoryList from "../categoryList";
 
-import { AspectRatio } from "@mui/joy";
-
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
