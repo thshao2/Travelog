@@ -268,6 +268,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                     }));
                     setEncodedSections(encodedSections);
                     console.log(encodedSections);
+                    console.log(newSections, 'newSections');
                   }}
                 />
               </View>

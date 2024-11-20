@@ -54,9 +54,9 @@ const RichTextEditor = ({ onContentChange }) => {
   const inputRefs = useRef({});
   const scrollViewRef = useRef(null);
   
-  const maxImageSize = 120; // Smaller image size for grid
+  const maxImageSize = 180; // Increased from 120 to 180
   const screenWidth = Dimensions.get('window').width;
-  const imagesPerRow = Math.floor((screenWidth - 40) / (maxImageSize + 16)); // Calculate images per row
+  const imagesPerRow = Math.floor((screenWidth - 40) / (maxImageSize + 16));
 
   const getImageDimensions = (uri) => {
     return new Promise((resolve) => {
@@ -109,6 +109,52 @@ const RichTextEditor = ({ onContentChange }) => {
     return processedImages;
   };
 
+  const addImagesToGrid = async (gridId) => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission Required", "Please allow access to your photo library to add images.");
+      return;
+    }
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 0.8,
+        allowsMultipleSelection: true,
+        selectionLimit: 10,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        const processedImages = await processImages(result.assets);
+        
+        const newSections = sections.map(section => {
+          if (section.id === gridId && section.type === "imageGrid") {
+            return {
+              ...section,
+              images: [
+                ...section.images,
+                ...processedImages.map((img, idx) => ({
+                  id: `${gridId}-${Date.now()}-${idx}`,
+                  type: "image",
+                  content: img.uri,
+                  encodedContent: img.base64,
+                  dimensions: img.dimensions,
+                }))
+              ]
+            };
+          }
+          return section;
+        });
+
+        setSections(newSections);
+        updateCallback(newSections);
+      }
+    } catch (error) {
+      console.error("Image picker error:", error);
+    }
+  };
+
   const addImages = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
@@ -128,54 +174,105 @@ const RichTextEditor = ({ onContentChange }) => {
       if (!result.canceled && result.assets.length > 0) {
         const currentIndex = sections.findIndex(section => section.id === focusedSectionId);
         const processedImages = await processImages(result.assets);
-        const gridId = Date.now().toString();
-        const newTextSectionId = `${Date.now()}-text`;
-
-        // Create new sections array with the grid
-        const newSections = [
-          ...sections.slice(0, currentIndex + 1),
-          {
-            id: gridId,
-            type: "imageGrid",
-            images: processedImages.map((img, idx) => ({
-              id: `${gridId}-${idx}`,
-              type: "image",
-              content: img.uri,
-              encodedContent: img.base64,
-              dimensions: img.dimensions,
-            }))
-          },
-          { id: newTextSectionId, type: "text", content: "" },
-          ...sections.slice(currentIndex + 1)
-        ];
+        
+        // Check if we should add to an existing grid
+        const lastSection = sections[sections.length - 1];
+        const prevSection = currentIndex > 0 ? sections[currentIndex - 1] : null;
+        const nextSection = currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null;
+        
+        let newSections = [...sections];
+        
+        // If current section is empty text and between two image grids, merge them
+        if (prevSection?.type === "imageGrid" && nextSection?.type === "imageGrid" && 
+            sections[currentIndex].type === "text" && sections[currentIndex].content === "") {
+          const mergedImages = [...prevSection.images, ...nextSection.images];
+          newSections = [
+            ...sections.slice(0, currentIndex - 1),
+            {
+              id: prevSection.id,
+              type: "imageGrid",
+              images: mergedImages
+            },
+            ...sections.slice(currentIndex + 2)
+          ];
+        }
+        // If last section is empty text, add to previous grid if it exists
+        else if (lastSection.type === "text" && lastSection.content === "" && 
+                sections[sections.length - 2]?.type === "imageGrid") {
+          newSections = [
+            ...sections.slice(0, -2),
+            {
+              ...sections[sections.length - 2],
+              images: [
+                ...sections[sections.length - 2].images,
+                ...processedImages.map((img, idx) => ({
+                  id: `${sections[sections.length - 2].id}-${Date.now()}-${idx}`,
+                  type: "image",
+                  content: img.uri,
+                  encodedContent: img.base64,
+                  dimensions: img.dimensions,
+                }))
+              ]
+            },
+            lastSection
+          ];
+        }
+        // Otherwise create new grid
+        else {
+          const gridId = Date.now().toString();
+          const newTextSectionId = `${Date.now()}-text`;
+          
+          newSections = [
+            ...sections.slice(0, currentIndex + 1),
+            {
+              id: gridId,
+              type: "imageGrid",
+              images: processedImages.map((img, idx) => ({
+                id: `${gridId}-${idx}`,
+                type: "image",
+                content: img.uri,
+                encodedContent: img.base64,
+                dimensions: img.dimensions,
+              }))
+            },
+            { id: newTextSectionId, type: "text", content: "" },
+            ...sections.slice(currentIndex + 1)
+          ];
+		  console.log(sections);
+        }
 
         setSections(newSections);
-
-        // Transform sections for the callback to match your expected format
-        const encodedSections = newSections.map(section => {
-          if (section.type === "imageGrid") {
-            return section.images.map(img => ({
-              type: "image",
-              content: img.encodedContent,
-            }));
-          }
-          return {
-            type: section.type,
-            content: section.content,
-          };
-        }).flat();
-
-        onContentChange(encodedSections);
+        updateCallback(newSections);
 
         // Scroll to new content
         setTimeout(() => {
           scrollViewRef.current?.scrollToEnd({ animated: true });
-          inputRefs.current[newTextSectionId]?.focus();
+          const lastTextSection = newSections.filter(s => s.type === "text").pop();
+          if (lastTextSection) {
+            inputRefs.current[lastTextSection.id]?.focus();
+          }
         }, 100);
       }
     } catch (error) {
       console.error("Image picker error:", error);
     }
+  };
+
+  const updateCallback = (newSections) => {
+    const encodedSections = newSections.map(section => {
+      if (section.type === "imageGrid") {
+        return section.images.map(img => ({
+          type: "image",
+          content: img.encodedContent,
+        }));
+      }
+      return {
+        type: section.type,
+        content: section.content,
+      };
+    }).flat();
+
+    onContentChange(encodedSections);
   };
 
   const removeImage = (gridId, imageId) => {
@@ -188,22 +285,7 @@ const RichTextEditor = ({ onContentChange }) => {
     }).filter(Boolean);
 
     setSections(newSections);
-
-    // Transform sections for the callback
-    const encodedSections = newSections.map(section => {
-      if (section.type === "imageGrid") {
-        return section.images.map(img => ({
-          type: "image",
-          content: img.encodedContent,
-        }));
-      }
-      return {
-        type: section.type,
-        content: section.content,
-      };
-    }).flat();
-
-    onContentChange(encodedSections);
+    updateCallback(newSections);
   };
 
   const handleTextChange = (id, text) => {
@@ -211,22 +293,7 @@ const RichTextEditor = ({ onContentChange }) => {
       section.id === id ? { ...section, content: text } : section
     );
     setSections(newSections);
-
-    // Transform sections for the callback
-    const encodedSections = newSections.map(section => {
-      if (section.type === "imageGrid") {
-        return section.images.map(img => ({
-          type: "image",
-          content: img.encodedContent,
-        }));
-      }
-      return {
-        type: section.type,
-        content: section.content,
-      };
-    }).flat();
-
-    onContentChange(encodedSections);
+    updateCallback(newSections);
   };
 
   const handleKeyPress = (e, id) => {
@@ -241,30 +308,27 @@ const RichTextEditor = ({ onContentChange }) => {
           const previousSection = newSections[index - 1];
           const nextSection = newSections[index + 1];
           
-          if (previousSection?.type === "text" && nextSection?.type === "text") {
+          // If deleting text between two image grids, merge them
+          if (previousSection?.type === "imageGrid" && nextSection?.type === "imageGrid") {
+            const mergedImages = [...previousSection.images, ...nextSection.images];
+            newSections.splice(index - 1, 3, {
+              id: previousSection.id,
+              type: "imageGrid",
+              images: mergedImages
+            });
+          }
+          // If merging text sections
+          else if (previousSection?.type === "text" && nextSection?.type === "text") {
             previousSection.content += nextSection.content;
             newSections.splice(index, 2);
-          } else {
+          }
+          // Otherwise just remove the empty section
+          else {
             newSections.splice(index, 1);
           }
           
           setSections(newSections);
-          
-          // Transform sections for the callback
-          const encodedSections = newSections.map(section => {
-            if (section.type === "imageGrid") {
-              return section.images.map(img => ({
-                type: "image",
-                content: img.encodedContent,
-              }));
-            }
-            return {
-              type: section.type,
-              content: section.content,
-            };
-          }).flat();
-
-          onContentChange(encodedSections);
+          updateCallback(newSections);
           
           if (previousSection?.type === "text") {
             setTimeout(() => {
@@ -307,31 +371,40 @@ const RichTextEditor = ({ onContentChange }) => {
                 textAlignVertical="top"
               />
             ) : section.type === "imageGrid" ? (
-              <View style={[styles.imageGrid, { gap: 8 }]}>
-                {section.images.map((image) => (
-                  <View key={image.id} style={styles.imageWrapper}>
-                    <TouchableOpacity
-                      onPress={() => setPreviewImage(image.content)}
-                    >
-                      <Image
-                        source={{ uri: image.content }}
-                        style={[
-                          styles.gridImage,
-                          {
-                            width: image.dimensions.width,
-                            height: image.dimensions.height,
-                          }
-                        ]}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.removeImageButton}
-                      onPress={() => removeImage(section.id, image.id)}
-                    >
-                      <MaterialIcons name="close" size={16} color="#fff" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+              <View style={styles.gridContainer}>
+                <View style={[styles.imageGrid, { gap: 8 }]}>
+                  {section.images.map((image) => (
+                    <View key={image.id} style={styles.imageWrapper}>
+                      <TouchableOpacity
+                        onPress={() => setPreviewImage(image.content)}
+                      >
+                        <Image
+                          source={{ uri: image.content }}
+                          style={[
+                            styles.gridImage,
+                            {
+                              width: image.dimensions.width,
+                              height: image.dimensions.height,
+                            }
+                          ]}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.removeImageButton}
+                        onPress={() => removeImage(section.id, image.id)}
+                      >
+                        <MaterialIcons name="close" size={16} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+                <TouchableOpacity
+                  style={styles.addToGridButton}
+                  onPress={() => addImagesToGrid(section.id)}
+                >
+                  <MaterialIcons name="add-photo-alternate" size={20} color="#4CAF50" />
+                  <Text style={styles.addToGridText}>Add to Grid</Text>
+                </TouchableOpacity>
               </View>
             ) : null}
           </View>
@@ -376,6 +449,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#f8f9fa",
   },
+  gridContainer: {
+    marginVertical: 8,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 8,
+    padding: 8,
+  },
   imageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -388,6 +467,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#f8f9fa',
     margin: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   gridImage: {
     resizeMode: 'cover',
@@ -416,6 +500,23 @@ const styles = StyleSheet.create({
   addImageText: {
     marginLeft: 8,
     color: "#4CAF50",
+    fontWeight: "500",
+  },
+  addToGridButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 8,
+    marginTop: 8,
+    borderRadius: 6,
+    backgroundColor: "#f0fdf4",
+    borderWidth: 1,
+    borderColor: "#86efac",
+  },
+  addToGridText: {
+    marginLeft: 4,
+    color: "#4CAF50",
+    fontSize: 14,
     fontWeight: "500",
   },
   modalOverlay: {
