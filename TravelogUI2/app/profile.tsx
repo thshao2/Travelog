@@ -3,9 +3,9 @@ import { Text, View, Image, Pressable, TextInput, Alert, ImageBackground, Scroll
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import config from "../config";
-import { getToken, removeToken } from "../utils/util";
-import { useLoginContext } from "../context/LoginContext";
+import config from "./config";
+import { getToken, removeToken } from "./utils/util";
+import { useLoginContext } from "./context/LoginContext";
 import { styles } from "./styles/profile-styles";
 
 const { API_URL } = config;
@@ -242,7 +242,7 @@ export default function ProfilePage() {
   return (
     <ScrollView contentContainerStyle={styles.profileContainer}>
       <ImageBackground
-        source={require("../../assets/images/pfp-bg.jpg")}
+        source={require("../assets/images/pfp-bg.jpg")}
         style={styles.background}
         imageStyle={{ resizeMode: "cover" }}
       >
