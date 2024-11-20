@@ -7,11 +7,13 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
+// import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
+// import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigation } from "@react-navigation/native";
-import { removeToken } from "../app/utils/util";
+import {removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -153,30 +155,30 @@ function NavBar() {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
 
-              <MenuItem key={'Logout'} onClick={handleCloseUserMenu}>
+              <MenuItem key={"Logout"} onClick={handleCloseUserMenu}>
                 <Button
                   sx={{
-                    textAlign: 'center',
-                    width: '100%',
-                    color: 'inherit', // Inherit color to match the app's theme
-                    justifyContent: 'center', // Centers the text inside the button
-                    textTransform: 'none', // Prevents text from being uppercased automatically
+                    textAlign: "center",
+                    width: "100%",
+                    color: "inherit", // Inherit color to match the app"s theme
+                    justifyContent: "center", // Centers the text inside the button
+                    textTransform: "none", // Prevents text from being uppercased automatically
                   }}
                   onClick={logout}
                 >
