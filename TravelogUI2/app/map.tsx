@@ -20,6 +20,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import "./styles/Map.css";
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
+import { getToken } from "./utils/util";
 
 const { API_URL } = config;
 
@@ -79,11 +80,12 @@ function Map() {
     }
 
     try {
+      const token = await getToken();
       const response = await fetch(`${API_URL}/travel/memory/${pinId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
       if (!response.ok) {

@@ -35,36 +35,36 @@ export const LoginProvider = ({ children }: PropsWithChildren<{}>) => {
     fetchToken();
   }, []);
 
-  // Update token in storage whenever accessToken changes
-  useEffect(() => {
+  // // Update token in storage whenever accessToken changes
+  // useEffect(() => {
     
-    const checkValidToken = async () => {
-      const checkToken = await getToken();
-      try {
-        const response = await fetch(`${API_URL}/user/profile`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${checkToken}`,
-          },
-        });
-        console.log(response);
-        if (!response.ok) {
-          setAccessToken("");
-          setEmail("");
-          console.log("INVALID INVALID TOKEN");
-          navigation.navigate("login");
-          return false;
-        } 
-        storeToken(accessToken);
-        console.log("STORED TOKEN");
-      } catch (error) {
-        return false;
-      }
-    };
+  //   const checkValidToken = async () => {
+  //     const checkToken = await getToken();
+  //     try {
+  //       const response = await fetch(`${API_URL}/user/profile`, {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${checkToken}`,
+  //         },
+  //       });
+  //       console.log(response);
+  //       if (!response.ok) {
+  //         setAccessToken("");
+  //         setEmail("");
+  //         console.log("INVALID INVALID TOKEN");
+  //         navigation.navigate("login");
+  //         return false;
+  //       } 
+  //       storeToken(accessToken);
+  //       console.log("STORED TOKEN");
+  //     } catch (error) {
+  //       return false;
+  //     }
+  //   };
 
-    checkValidToken();
-  }, [accessToken]);
+  //   checkValidToken();
+  // }, [accessToken]);
 
   return (
     <LoginContext.Provider value = {{ email, setEmail, accessToken, setAccessToken }}>

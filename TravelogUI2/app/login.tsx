@@ -62,6 +62,7 @@ const LoginScreen = () => {
       if (response.ok) {
         console.log("I AM HERE");
         const data = await response.json();
+        console.log("Storing TOKEN");
         await storeToken(data.token);
         loginContext.setAccessToken(data.token);
         loginContext.setEmail(email);

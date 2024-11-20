@@ -47,6 +47,7 @@ function NavBar() {
   };
 
   const logout = async () => {
+    console.log("-----------------LOGOUT OF NAVBAR CALLED!!!!!!!!!!!!!!---------------------");
     await removeToken();
     loginContext.setEmail("");
     loginContext.setAccessToken("");

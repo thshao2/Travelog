@@ -29,11 +29,13 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
+      const token = await getToken();
+      console.log("inside fetchProfile of profile.tsx, token is", token);
       const response = await fetch(`${API_URL}/user/profile`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${loginContext.accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log("fetchProfile response: ", response);
