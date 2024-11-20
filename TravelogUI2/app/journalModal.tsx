@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, Button, Modal, StyleSheet, Image, Alert, ScrollView, Pressable, Platform } from "react-native";
+import { Text, View, TextInput, Button, Modal, StyleSheet, ScrollView } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { Picker } from "@react-native-picker/picker";
 import { useLoginContext } from "./context/LoginContext";
-import * as ImagePicker from "expo-image-picker";
-import { MaterialIcons } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
-
+import RichTextEditor from "./richTextEditor"; 
 import config from "./config";
 
 const { API_URL } = config;
@@ -45,29 +42,23 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     }
   }, [journalTitle, journalLocation, condition, initDate, endDate]);
 
-  // for default location
   useEffect(() => {
     const fetchCoordinates = async () => {
-      if (selectedPin?.pinId) { // if pin exists:
+      if (selectedPin?.pinId) {
         try {
-          const coordinates = await getSelectedPinCoordinates(selectedPin.pinId, loginContext.accessToken); 
+          const coordinates = await getSelectedPinCoordinates(selectedPin.pinId, loginContext.accessToken);
           if (coordinates) {
-            console.log("coordinates are: ", coordinates);
             getDefaultLocation(coordinates.latitude, coordinates.longitude, loginContext.accessToken);
-            // setJournalLocation(`${coordinates.latitude}, ${coordinates.longitude}`); 
           }
         } catch (err) {
           console.error("Error fetching coordinates:", err);
         }
       }
     };
-  
-    fetchCoordinates(); 
-  }, [selectedPin]); 
+    fetchCoordinates();
+  }, [selectedPin]);
 
-  const handleSubmit = async() => {
-    console.log("Submitting journal...", journalTitle, journalLocation, condition, journalCategory, initDate, endDate, sections);
-    console.log("sections", sections);
+  const handleSubmit = async () => {
     try {
       const memoryData = {
         pinId: selectedPin.pinId,
@@ -78,7 +69,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         captionText: JSON.stringify(encodedSections),
         initDate: initDate,
         endDate: endDate,
-        mediaIds: [1, 2, 3],  // Replace with actual media IDs
+        mediaIds: [1, 2, 3], // Replace with actual media IDs
       };
 
       let response = await fetch(`${API_URL}/travel/memory`, {
@@ -96,7 +87,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
         setIsModalVisible(false);
         onSubmitJournal();
         if (condition === "Visited") {
-          console.log("CONDITION IS VISITED");
           updateUserStats(loginContext.accessToken);
         }
       } else {
@@ -106,73 +96,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       console.error("Error calling travel-service: ", error);
     }
     clearForm();
-  };
-
-  const addTextSection = () => {
-    setSections([...sections, { type: "text", content: "" }]);
-    setEncodedSections([...encodedSections, { type: "text", content: "" }]);
-  };
-
-  const addImageSection = async() => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission to access camera roll is required!");
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      const { uri } = result.assets[0];
-      setSections([...sections, { type: "image", content: uri }]);
-      console.log(sections);
-
-      let base64 = "";
-
-      if (Platform.OS === "web") {
-        // Web: fetch the image and convert to Base64
-        const response = await fetch(uri);
-        const blob = await response.blob();
-  
-        // Convert blob to Base64
-        base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob); // Read the blob as a data URL
-        });
-      } else {
-        // Mobile: use FileSystem to get Base64 string
-        base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-      }
-
-      if (base64 !== "") {
-        setEncodedSections([...encodedSections, { type: "image", content: base64 }]);
-      }
-    }
-  };
-
-  const handleSectionChange = (index: number, content: string) => {
-    const newSections = [...sections];
-    newSections[index].content = content;
-    setSections(newSections);
-
-    const newEncodedSections = [...encodedSections];
-    newEncodedSections[index].content = content;
-    setEncodedSections(newEncodedSections);
-  };
-
-  const deleteSection = (index: number) => {
-    const newSections = sections.filter((_, i) => i !== index);
-    setSections(newSections);
-
-    const newEncodedSections = encodedSections.filter((_, i) => i !== index);
-    setEncodedSections(newEncodedSections);
   };
 
   const clearForm = () => {
@@ -186,9 +109,8 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setEncodedSections([{ type: "text", content: "" }]);
   };
 
-  const updateUserStats = async(token: string) => {
+  const updateUserStats = async (token: string) => {
     try {
-      console.log("about to post to update-stats");
       const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
         method: "POST",
         headers: {
@@ -198,15 +120,13 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       });
       if (!response.ok) {
         throw new Error("updateUserStats - network response was not ok");
-      } else {
-        console.log("after post - user stats updated successfully !!!");
       }
     } catch (err) {
       console.error("Error updating stats after posting pin to database: " + err);
     }
   };
-  
-  const getDefaultLocation = async(latitude: number, longitude: number, token: string) => {
+
+  const getDefaultLocation = async (latitude: number, longitude: number, token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/memory/default-loc?latitude=${latitude}&longitude=${longitude}`, {
         method: "GET",
@@ -220,34 +140,30 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
 
       const data = await response.json();
       const defaultLocation = data.defaultLocation;
-
       setJournalLocation(defaultLocation);
     } catch (err) {
       console.error("Error fetching default location for journal: " + err);
     }
   };
 
-  const getSelectedPinCoordinates = async(pinId: number, token: string) => {
+  const getSelectedPinCoordinates = async (pinId: number, token: string) => {
     try {
-      console.log("hehrehrhehreh");
-      // const response = await fetch(`${API_URL}/travel/pin/get-coordinates/${pinId}`);
       const response = await fetch(`${API_URL}/travel/pin/get-coordinates/${pinId}`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
         },
       });
-      console.log("getdefaultlocation: " + response.status);
       if (!response.ok) {
-        throw new Error("journalModal -- error getting pin coordinates" + response.text);
+        throw new Error("journalModal -- error getting pin coordinates");
       }
       const data = await response.json();
       const latitude = data[0];
       const longitude = data[1];
-      console.log("getdefaultloc: (lat, long) = (" + latitude + ", " + longitude + ")");
       return { latitude, longitude };
     } catch (err) {
       console.error("Error fetching coordinates of pin: " + err);
+      return null;
     }
   };
 
@@ -339,36 +255,22 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
               />
             </View>
 
-            {/* Sections for text and images */}
-            {sections.map((section, index) => (
-              <View key={index} style={styles.inputContainer}>
-                {section.type === "text" ? (
-                  <>
-                    <Text style={styles.label}>Journal</Text>
-                    <TextInput
-                      style={[styles.input, styles.journalInput]}
-                      placeholder="Write your journal here..."
-                      value={section.content}
-                      onChangeText={(text) => handleSectionChange(index, text)}
-                      multiline={true}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Text style={styles.label}>Image</Text>
-                    <Image source={{ uri: section.content }} style={styles.image} />
-                  </> 
-                )}
-                <Pressable onPress={() => deleteSection(index)} style={styles.deleteButton}>
-                  <MaterialIcons name="delete" size={24} color="red" />
-                </Pressable>
+            {/* Rich Text Editor */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Journal*</Text>
+              <View style={{ flex: 1 }}>
+                <RichTextEditor
+                  onContentChange={(newSections) => {
+                    setSections(newSections);
+                    const encodedSections = newSections.map(section => ({
+                      type: section.type,
+                      content: section.type === "image" ? section.encodedContent : section.content,
+                    }));
+                    setEncodedSections(encodedSections);
+                    console.log(encodedSections);
+                  }}
+                />
               </View>
-            ))}
-
-            {/* Buttons to add text or image sections */}
-            <View style={styles.buttonContainer}>
-              <Button title="Add Text" onPress={addTextSection} color="#007AFF" />
-              <Button title="Add Image" onPress={addImageSection} color="#007AFF" />
             </View>
 
             {/* Submit and cancel buttons */}
@@ -385,8 +287,6 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     </Modal>
   );
 }
-
-export default JournalModal;
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -412,16 +312,6 @@ const styles = StyleSheet.create({
   datePicker: {
     width: "100%",
     marginBottom: 15,
-  },
-  journalInput: {
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    height: 100,
-    fontSize: 16,
-    textAlignVertical: "top",
-    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -459,12 +349,6 @@ const styles = StyleSheet.create({
     height: 40,
     width: "100%",
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  deleteButton: {
-    marginLeft: 10,
-  },
 });
+
+export default JournalModal;
