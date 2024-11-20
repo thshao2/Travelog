@@ -17,16 +17,12 @@ import {removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-
-
-
 const pages = ["map", "saved", "profile"];
 const settings = ["Logout"];
 
 function NavBar() {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
-
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -146,7 +142,7 @@ function NavBar() {
                   color: "white",
                   display: "block",
                   marginLeft: 10,
-                  fontSize: "1.2rem"
+                  fontSize: "1.2rem",
                 }}
               >
                 {page}

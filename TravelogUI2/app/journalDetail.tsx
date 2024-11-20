@@ -6,6 +6,7 @@ import { Journal } from "./popupMenu";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import JournalDisplay from "./journalDisplay";
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
@@ -24,7 +25,38 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
-  const [sections, setSections] = useState(JSON.parse(journal.captionText));
+  const [sections, setSections] = useState(() => {
+	  const parsedSections = JSON.parse(journal.captionText);
+	  
+	  // Group consecutive images together into grids
+	  const groupedSections = [];
+	  let currentImageGroup = [];
+	  
+	  parsedSections.forEach((section, _) => {
+      if (section.type === "image") {
+		  currentImageGroup.push(section);
+      } else {
+		  if (currentImageGroup.length > 0) {
+          groupedSections.push({
+			  type: "imageGrid",
+			  images: currentImageGroup,
+          });
+          currentImageGroup = [];
+		  }
+		  groupedSections.push(section);
+      }
+	  });
+	  
+	  // Add any remaining images
+	  if (currentImageGroup.length > 0) {
+      groupedSections.push({
+		  type: "imageGrid",
+		  images: currentImageGroup,
+      });
+	  }
+	  
+	  return groupedSections;
+  });
   const [encodedSections, setEncodedSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -257,24 +289,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 </View>
               </View>
             ) : (
-              <View>
-                <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
-                <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
-                <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
-                <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
-                <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
-                <View style={styles.blogContainer}>
-                  {sections.map((section: any, index: number) => (
-                    <View key={index} style={styles.sectionContainer}>
-                      {section.type === "text" ? (
-                        <Text style={styles.journalBody}>{section.content}</Text>
-                      ) : (
-                        <Image source={{ uri: section.content }} style={styles.image} />
-                      )}
-                    </View>
-                  ))}
-                </View>
-              </View>
+              <JournalDisplay journal={journal} groupedSections={sections} />
             )}
           </View>
         </View>       
