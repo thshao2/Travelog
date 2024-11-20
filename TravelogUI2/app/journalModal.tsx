@@ -32,7 +32,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   const [endDate, setEndDate] = useState(new Date());
   const [sections, setSections] = useState([{ type: "text", content: "" }]);
   const [isFormValid, setIsFormValid] = useState(false);
-
+  const [reset, setReset] = useState("");
   useEffect(() => {
     if (journalTitle && journalLocation && condition && initDate && endDate) {
       setIsFormValid(true);
@@ -105,6 +105,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setInitDate(new Date());
     setEndDate(new Date());
     setSections([{ type: "text", content: "" }]);
+    setReset("");
   };
 
   const updateUserStats = async (token: string) => {
@@ -261,7 +262,8 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                   onContentChange={(newSections) => {
                     setSections(newSections);
                     console.log(newSections, "newSections");
-                  }}
+                  }
+                  } initialJournal={reset}
                 />
               </View>
             </View>
