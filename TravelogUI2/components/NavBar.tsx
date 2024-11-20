@@ -50,7 +50,7 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#4E5BA6" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} onClick={() => navigation.navigate("index")} />

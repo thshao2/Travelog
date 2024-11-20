@@ -119,7 +119,7 @@ const LoginScreen = () => {
         <Text style={styles.text}>
           Don't have an account?{" "}
           <Pressable onPress={() => navigation.navigate("signup")}>
-            <Text style={styles.signUpText}>Click here to sign up!</Text>
+            <Text key="clickToSignUp" style={styles.signUpText}>Click here to sign up!</Text>
           </Pressable>
         </Text>
       </View>
