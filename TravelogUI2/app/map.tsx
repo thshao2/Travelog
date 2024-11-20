@@ -2,12 +2,12 @@ import { useRef, useEffect, useState } from "react";
 import mapboxgl, { Map as MapboxMap, Marker } from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import { Platform, Text, Pressable, View } from "react-native";
-import JournalModal from "../journalModal";
-import PopupMenu from "../popupMenu";
-import config from "../config";
+import JournalModal from "./journalModal";
+import PopupMenu from "./popupMenu";
+import config from "./config";
 import { styles } from "./styles/map-styles";
 
-import { useLoginContext } from "../context/LoginContext";
+import { useLoginContext } from "./context/LoginContext";
 
 import { BottomNavigation } from "react-native-paper";
 

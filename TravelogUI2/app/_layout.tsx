@@ -2,6 +2,7 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
+  
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -13,6 +14,7 @@ import applyGlobalPolyfills from "./decoder";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { LoginProvider } from "./context/LoginContext";
+import NavBar from "../components/NavBar";
 applyGlobalPolyfills();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -34,12 +36,22 @@ export default function RootLayout() {
     return null;
   }
 
+  const showNavBar = ["/map", "/saved", "/", "/categoryMemPage", "", "/profile"].includes(location.pathname);
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      
       <LoginProvider>
+        {/* Conditionally render NavBar */}
+        { showNavBar && <NavBar />}  {/* Only show the NavBar if it's not login, signup, or not-found */}
+
         <Stack>
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="signup" options={{ headerShown: false }} />
+          <Stack.Screen name="map" options={{ headerShown: false }} />
+          <Stack.Screen name="saved" options={{ headerShown: false }} />
+          <Stack.Screen name="profile" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false, title: '' }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="categoryMemPage" />

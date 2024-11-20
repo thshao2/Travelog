@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import config from "../config";
-import { useLoginContext } from "../context/LoginContext";
+import config from "./config";
+import { useLoginContext } from "./context/LoginContext";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles/saved-styles";
 
