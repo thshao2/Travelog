@@ -15,6 +15,8 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigation } from "@react-navigation/native";
 import {removeToken } from "../app/utils/util";
 import { useLoginContext } from '@/app/context/LoginContext';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 
 
 
@@ -151,7 +153,7 @@ function NavBar() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
+            {/* <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
@@ -172,11 +174,7 @@ function NavBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {/* {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                </MenuItem>
-              ))} */}
+
               <MenuItem key={'Logout'} onClick={handleCloseUserMenu}>
                 <Button
                   sx={{
@@ -191,7 +189,19 @@ function NavBar() {
                   Logout
                 </Button>
               </MenuItem>
-            </Menu>
+            </Menu> */}
+            <IconButton
+              onClick={logout}
+              sx={{
+                position: 'absolute', // Position it absolutely to the right
+                right: 16, // Adjust the value as needed for padding
+                top: '50%', // Center vertically
+                transform: 'translateY(-50%)', // Adjust the vertical alignment
+                color: 'inherit', // Inherit color to match the theme
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
           </Box>
         </Toolbar>
       </Container>
