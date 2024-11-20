@@ -276,14 +276,52 @@ const RichTextEditor = ({ onContentChange }) => {
   };
 
   const removeImage = (gridId, imageId) => {
-    const newSections = sections.map(section => {
-      if (section.id === gridId && section.type === "imageGrid") {
-        const updatedImages = section.images.filter(img => img.id !== imageId);
-        return updatedImages.length === 0 ? null : { ...section, images: updatedImages };
+    const gridIndex = sections.findIndex(section => section.id === gridId);
+    const currentGrid = sections[gridIndex];
+    
+    // Remove the specified image
+    const updatedImages = currentGrid.images.filter(img => img.id !== imageId);
+    
+    let newSections = [...sections];
+    
+    // If this was the last image in the grid
+	console.log(updatedImages.length);
+    if (updatedImages.length === 0) {
+		console.log('inside');
+      // Check for adjacent text sections
+      const prevSection = gridIndex > 0 ? sections[gridIndex - 1] : null;
+      const nextSection = gridIndex < sections.length - 1 ? sections[gridIndex + 1] : null;
+      
+      // If we have text sections on both sides, merge them
+      if (prevSection?.type === "text" && nextSection?.type === "text") {
+        newSections = [
+          ...sections.slice(0, gridIndex - 1),
+          {
+            id: prevSection.id,
+            type: "text",
+            content: prevSection.content + nextSection.content
+          },
+          ...sections.slice(gridIndex + 2)
+        ];
+        
+        // Focus the merged text section
+        setTimeout(() => {
+          inputRefs.current[prevSection.id]?.focus();
+        }, 0);
+      } else {
+        // Just remove the empty grid
+        newSections = [
+          ...sections.slice(0, gridIndex),
+          ...sections.slice(gridIndex + 1)
+        ];
       }
-      return section;
-    }).filter(Boolean);
-
+    } else {
+      // Update the grid with remaining images
+      newSections = sections.map(section => 
+        section.id === gridId ? { ...section, images: updatedImages } : section
+      );
+    }
+    
     setSections(newSections);
     updateCallback(newSections);
   };
