@@ -51,7 +51,7 @@ export default function RootLayout() {
           <Stack.Screen name="map" options={{ headerShown: false }} />
           <Stack.Screen name="saved" options={{ headerShown: false }} />
           <Stack.Screen name="profile" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false, title: '' }} />
+          <Stack.Screen name="index" options={{ headerShown: false, title: "" }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="categoryMemPage" />

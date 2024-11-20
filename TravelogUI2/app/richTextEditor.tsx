@@ -230,9 +230,9 @@ const RichTextEditor = ({ onContentChange }) => {
             { id: newTextSectionId, type: "text", content: "" },
             ...sections.slice(currentIndex + 1),
           ];
-		  console.log(newSections, 'really');
+		  console.log(newSections, "really");
         }
-		console.log(newSections, 'really 2');
+        console.log(newSections, "really 2");
         updateSections(newSections);
 
         // Scroll to new content
@@ -250,7 +250,7 @@ const RichTextEditor = ({ onContentChange }) => {
   };
 
   const updateSections = (newSections) => {
-	console.log(newSections, 'really4');
+    console.log(newSections, "really4");
     setSections(newSections);
     onContentChange(newSections);
   };

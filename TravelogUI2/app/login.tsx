@@ -69,7 +69,7 @@ const LoginScreen = () => {
         // await storeToken(data.token, response.headers.get('X-User-Id'));
         console.log("API Response: ", data);
         console.log(typeof(data));
-        navigation.navigate("(tabs)");
+        navigation.navigate("");
       } else {
         console.error("Failed to fetch from auth-service. Status: ", response.status);
       }
