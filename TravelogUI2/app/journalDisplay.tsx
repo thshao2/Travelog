@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 const JournalDisplay = ({ journal, groupedSections }) => {
   const maxImageSize = 200; // Medium size for images
-  const [sections, setSections] = useState(groupedSections);
+  const [sections, setSections] = useState(groupedSections ? groupedSections : []);
   
   // Calculate image dimensions while maintaining aspect ratio
   const getImageDimensions = (uri) => {
@@ -28,7 +28,7 @@ const JournalDisplay = ({ journal, groupedSections }) => {
   const [imageDimensions, setImageDimensions] = useState({});
 
   useEffect(() => {
-    setSections(groupedSections);
+    setSections(groupedSections ? groupedSections : []);
   }, [groupedSections]);
 
   // Load image dimensions on mount

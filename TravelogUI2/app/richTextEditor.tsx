@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -46,8 +46,8 @@ const ImagePreview = ({ isVisible, imageUri, onClose }) => {
   );
 };
 
-const RichTextEditor = ({ onContentChange }) => {
-  const [sections, setSections] = useState([{ id: "1", type: "text", content: "" }]);
+const RichTextEditor = ({ onContentChange, initialContent }) => {
+  const [sections, setSections] = useState(initialContent ? JSON.parse(initialContent) : [{ id: "1", type: "text", content: "" }]);
   const [focusedSectionId, setFocusedSectionId] = useState("1");
   const [previewImage, setPreviewImage] = useState(null);
   const inputRefs = useRef({});
@@ -230,9 +230,7 @@ const RichTextEditor = ({ onContentChange }) => {
             { id: newTextSectionId, type: "text", content: "" },
             ...sections.slice(currentIndex + 1),
           ];
-		  console.log(newSections, "really");
         }
-        console.log(newSections, "really 2");
         updateSections(newSections);
 
         // Scroll to new content
@@ -250,7 +248,6 @@ const RichTextEditor = ({ onContentChange }) => {
   };
 
   const updateSections = (newSections) => {
-    console.log(newSections, "really4");
     setSections(newSections);
     onContentChange(newSections);
   };
