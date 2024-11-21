@@ -151,7 +151,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                 ...processedImages.map((img, idx) => ({
                   id: `${gridId}-${Date.now()}-${idx}`,
                   type: "image",
-                  content: img.uri,
+                  content: img.base64,
                   encodedContent: img.base64,
                   dimensions: img.dimensions,
                 })),
@@ -219,7 +219,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                 ...processedImages.map((img, idx) => ({
                   id: `${sections[sections.length - 2].id}-${Date.now()}-${idx}`,
                   type: "image",
-                  content: img.uri,
+                  content: img.base64,
                   encodedContent: img.base64,
                   dimensions: img.dimensions,
                 })),
@@ -239,7 +239,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
               images: processedImages.map((img, idx) => ({
                 id: `${gridId}-${idx}`,
                 type: "image",
-                content: img.uri,
+                content: img.base64,
                 encodedContent: img.base64,
                 dimensions: img.dimensions,
               })),

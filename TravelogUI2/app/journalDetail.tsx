@@ -26,39 +26,39 @@ export type Section = {
 }
 
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
-  const journalDataTransform = (dataString: string) => {
-    const parsedSections = JSON.parse(dataString);
-    if (!parsedSections) {
-      return [];
-    }
-    // Group consecutive images together into grids
-    const groupedSections = [];
-    let currentImageGroup: Section[] = [];
-    parsedSections.forEach((section: Section, _: number) => {
-      if (section.type === "image") {
-        currentImageGroup.push(section);
-      } else {
-        if (currentImageGroup.length > 0) {
-          groupedSections.push({
-            type: "imageGrid",
-            images: currentImageGroup,
-          });
-          currentImageGroup = [];
-        }
-        groupedSections.push(section);
-      }
-    });
+  // const journalDataTransform = (dataString: string) => {
+  //   const parsedSections = JSON.parse(dataString);
+  //   if (!parsedSections) {
+  //     return [];
+  //   }
+  //   // Group consecutive images together into grids
+  //   const groupedSections = [];
+  //   let currentImageGroup: Section[] = [];
+  //   parsedSections.forEach((section: Section, _: number) => {
+  //     if (section.type === "image") {
+  //       currentImageGroup.push(section);
+  //     } else {
+  //       if (currentImageGroup.length > 0) {
+  //         groupedSections.push({
+  //           type: "imageGrid",
+  //           images: currentImageGroup,
+  //         });
+  //         currentImageGroup = [];
+  //       }
+  //       groupedSections.push(section);
+  //     }
+  //   });
     
-    // Add any remaining images
-    if (currentImageGroup.length > 0) {
-      groupedSections.push({
-        type: "imageGrid",
-        images: currentImageGroup,
-      });
-    }
+  //   // Add any remaining images
+  //   if (currentImageGroup.length > 0) {
+  //     groupedSections.push({
+  //       type: "imageGrid",
+  //       images: currentImageGroup,
+  //     });
+  //   }
     
-    return groupedSections;
-  };
+  //   return groupedSections;
+  // };
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
@@ -66,7 +66,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
-  const [sections, setSections] = useState(journalDataTransform(journal.captionText));
+  const [sections, setSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -78,7 +78,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   }, [editedJournalTitle, editedJournalLocation, editedJournalCondition, editedInitDate, editedEndDate]);
 
   useEffect(() => {
-    setSections(journalDataTransform(journal.captionText));
+    console.log("SEctions:" + JSON.stringify(sections));
+    setSections(JSON.parse(journal.captionText));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSections, journal.captionText]);
 
@@ -204,7 +205,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 </View>
               </View>
             ) : (
-              <JournalDisplay journal={journal} groupedSections={sections} />
+              <JournalDisplay key = {JSON.stringify(sections)} journal={journal} groupedSections={sections} />
             )}
           </View>
         </View>       

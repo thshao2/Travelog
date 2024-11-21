@@ -57,4 +57,9 @@ export const styles = StyleSheet.create({
     resizeMode: "cover",
     borderRadius: 8,
   },
+  image: {
+    width: 600,
+    height: 500,
+    borderRadius: 8,
+  },
 });
