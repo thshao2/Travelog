@@ -17,30 +17,31 @@ import { removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-const pages = ["map", "saved", "profile"];
-const settings = ["Logout"];
+// const pages = ["map", "saved", "profile"];
+const pages = ["map", "profile"];
+// const settings = ["Logout"];
 
 function NavBar() {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  // const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElUser(event.currentTarget);
+  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  // const handleCloseUserMenu = () => {
+  //   setAnchorElUser(null);
+  // };
 
   const logout = async () => {
     await removeToken();
@@ -128,7 +129,7 @@ function NavBar() {
             TRAVELOG
           </Button>
           
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", marginLeft: 80 } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: 120 } }}>
             {pages.map((page) => (
               <Button
                 key={page}
@@ -140,7 +141,7 @@ function NavBar() {
                   my: 2,
                   color: "white",
                   display: "block",
-                  marginLeft: 10,
+                  marginLeft: 6,
                   fontSize: "1.2rem",
                 }}
               >
