@@ -73,7 +73,7 @@ function NavBar() {
             Travelog
           </Button>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          {loginContext.accessToken && <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -109,7 +109,7 @@ function NavBar() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box> }
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
           
           {/* Wrapping Typography in Button for proper click handling (mobile view) */}
@@ -130,7 +130,7 @@ function NavBar() {
           </Button>
           
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: 120 } }}>
-            {pages.map((page) => (
+            {loginContext.accessToken && pages.map((page) => (
               <Button
                 key={page}
                 onClick={() => {
@@ -187,18 +187,18 @@ function NavBar() {
                 </Button>
               </MenuItem>
             </Menu> */}
-            <IconButton
-              onClick={logout}
-              sx={{
-                position: "absolute", // Position it absolutely to the right
-                right: 16, // Adjust the value as needed for padding
-                top: "50%", // Center vertically
-                transform: "translateY(-50%)", // Adjust the vertical alignment
-                color: "inherit", // Inherit color to match the theme
-              }}
-            >
-              <LogoutIcon />
-            </IconButton>
+          { loginContext.accessToken && <IconButton
+            onClick={logout}
+            sx={{
+              position: "absolute", // Position it absolutely to the right
+              right: 16, // Adjust the value as needed for padding
+              top: "50%", // Center vertically
+              transform: "translateY(-50%)", // Adjust the vertical alignment
+              color: "inherit", // Inherit color to match the theme
+            }}
+          >
+            <LogoutIcon />
+          </IconButton> }
           </Box>
         </Toolbar>
       </Container>
