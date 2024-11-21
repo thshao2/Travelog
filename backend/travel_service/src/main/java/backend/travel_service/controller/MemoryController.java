@@ -108,4 +108,10 @@ public class MemoryController {
         VisitedStatsDto stats = memoryService.getDefaultLocation(latitude, longitude);
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/category-overview/{category}")
+    public ResponseEntity<List<String>> getOverviewByCategory(@RequestHeader("X-User-Id") Long userId, @PathVariable String category) {
+        List<String> urls = memoryService.getOverviewUrls(userId, category);
+        return ResponseEntity.ok(urls);
+    }
 }

@@ -1,6 +1,7 @@
 package backend.travel_service.service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class MemoryService {
 
     public Memory postMemory(Memory memory) {
         
-        System.out.println(memory.getCaptionText());
+        // System.out.println(memory.getCaptionText());
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -94,12 +95,14 @@ public class MemoryService {
                 if ("image".equals(type)) {
                     String S3URL = uploadToS3(content, memory.getTitle());
                     section.put("content", S3URL);
+                    System.out.println("HERE IN POSTMEMORY, MEMORYSERVICE.JAVA");
                 } else if ("text".equals(type)) {
                     System.out.println("Text content: " + content);
                 }
             }
             memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
         } catch (Exception e) {
+            System.out.println("HERE -- PRINTING STACK TRACE");
             e.printStackTrace();
         }
 
@@ -107,6 +110,7 @@ public class MemoryService {
     }
 
     private String uploadToS3(String base64Image, String title) {
+        System.out.println("HERE IN UPLAODTOS3");
         byte[] decodedImage = Base64.getDecoder().decode(base64Image);
         String bucketName = "travelog-media";
         String uniqueFileName = UUID.randomUUID() + "-" + title + ".png";
@@ -346,4 +350,19 @@ public class MemoryService {
         return visitedStatsDto;
     }
 
+    // FOR LATER: 
+    // get array of s3 urls for overview slideshow
+    public List<String> getOverviewUrls(Long userId, String category) {
+        // get all memories
+        List<Memory> memories = memoryRepository.findByCategory(userId, category);
+
+        // for each memory, add to list of s3 urls
+        List<String> urls = new ArrayList<>();
+        for (Memory memory : memories) {
+        //     TODO: GET S3 URL FOR EACH MEMORY
+        //     urls.add(S3URL);
+        }
+        return urls;
+
+    }
 }
