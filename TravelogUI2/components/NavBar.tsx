@@ -17,30 +17,31 @@ import { removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-const pages = ["map", "saved", "profile"];
-const settings = ["Logout"];
+// const pages = ["map", "saved", "profile"];
+const pages = ["map", "profile"];
+// const settings = ["Logout"];
 
 function NavBar() {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  // const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElUser(event.currentTarget);
+  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  // const handleCloseUserMenu = () => {
+  //   setAnchorElUser(null);
+  // };
 
   const logout = async () => {
     await removeToken();
@@ -49,15 +50,26 @@ function NavBar() {
     navigation.navigate("login");
   };
 
+  // Navigate to home only if user is logged in - otherwise stay in login / signup
+  const navigateToHome = async () => {
+    if (loginContext.accessToken) {
+      navigation.navigate("index");
+    }
+  }
+
   return (
     <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
+          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+            disabled={!loginContext.accessToken}
+            onClick={() => navigateToHome} 
+          />
           
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
-            onClick={() => navigation.navigate("index")}
+            onClick={() => navigateToHome}
+            // disabled={!loginContext.accessToken}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -72,7 +84,7 @@ function NavBar() {
             Travelog
           </Button>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          {loginContext.accessToken && <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -108,7 +120,7 @@ function NavBar() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box> }
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
           
           {/* Wrapping Typography in Button for proper click handling (mobile view) */}
@@ -128,8 +140,8 @@ function NavBar() {
             TRAVELOG
           </Button>
           
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", marginLeft: 80 } }}>
-            {pages.map((page) => (
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: 120 } }}>
+            {loginContext.accessToken && pages.map((page) => (
               <Button
                 key={page}
                 onClick={() => {
@@ -140,7 +152,7 @@ function NavBar() {
                   my: 2,
                   color: "white",
                   display: "block",
-                  marginLeft: 10,
+                  marginLeft: 6,
                   fontSize: "1.2rem",
                 }}
               >
@@ -186,18 +198,18 @@ function NavBar() {
                 </Button>
               </MenuItem>
             </Menu> */}
-            <IconButton
-              onClick={logout}
-              sx={{
-                position: "absolute", // Position it absolutely to the right
-                right: 16, // Adjust the value as needed for padding
-                top: "50%", // Center vertically
-                transform: "translateY(-50%)", // Adjust the vertical alignment
-                color: "inherit", // Inherit color to match the theme
-              }}
-            >
-              <LogoutIcon />
-            </IconButton>
+          { loginContext.accessToken && <IconButton
+            onClick={logout}
+            sx={{
+              position: "absolute", // Position it absolutely to the right
+              right: 16, // Adjust the value as needed for padding
+              top: "50%", // Center vertically
+              transform: "translateY(-50%)", // Adjust the vertical alignment
+              color: "inherit", // Inherit color to match the theme
+            }}
+          >
+            <LogoutIcon />
+          </IconButton> }
           </Box>
         </Toolbar>
       </Container>
