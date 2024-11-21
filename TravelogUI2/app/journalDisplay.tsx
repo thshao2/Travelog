@@ -1,12 +1,20 @@
-import { Text, View, Image, StyleSheet } from "react-native";
+import { Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 
-const JournalDisplay = ({ journal, groupedSections }) => {
+import { styles } from "./styles/journal-display-styles";
+import { Journal } from "./popupMenu";
+
+interface JournalDisplayProps {
+	journal: Journal,
+	groupedSections: any, // change
+}
+
+const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   const maxImageSize = 200; // Medium size for images
   const [sections, setSections] = useState(groupedSections ? groupedSections : []);
   
   // Calculate image dimensions while maintaining aspect ratio
-  const getImageDimensions = (uri) => {
+  const getImageDimensions = (uri: string) => {
 	  return new Promise((resolve) => {
       Image.getSize(uri, (width, height) => {
 		  const aspectRatio = width / height;
@@ -89,64 +97,5 @@ const JournalDisplay = ({ journal, groupedSections }) => {
 	  </View>
   );
 };
-  
-const styles = StyleSheet.create({
-  container: {
-	  flex: 1,
-	  padding: 16,
-  },
-  detailsSection: {
-	  marginBottom: 16,
-	  padding: 12,
-	  backgroundColor: "#f8f9fa",
-	  borderRadius: 8,
-  },
-  detailLabel: {
-	  fontSize: 16,
-	  fontWeight: "600",
-	  marginBottom: 8,
-	  color: "#4a5568",
-  },
-  detailText: {
-	  fontWeight: "400",
-	  color: "#2d3748",
-  },
-  blogContainer: {
-	  flex: 1,
-  },
-  sectionContainer: {
-	  marginBottom: 16,
-  },
-  journalBody: {
-	  fontSize: 16,
-	  lineHeight: 24,
-	  color: "#2d3748",
-	  marginVertical: 8,
-  },
-  imageGrid: {
-	  flexDirection: "row",
-	  flexWrap: "wrap",
-	  justifyContent: "flex-start",
-	  gap: 8,
-	  padding: 4,
-	  backgroundColor: "#f8f9fa",
-	  borderRadius: 8,
-  },
-  imageWrapper: {
-	  borderRadius: 8,
-	  overflow: "hidden",
-	  backgroundColor: "#f8f9fa",
-	  margin: 4,
-	  shadowColor: "#000",
-	  shadowOffset: { width: 0, height: 2 },
-	  shadowOpacity: 0.1,
-	  shadowRadius: 4,
-	  elevation: 2,
-  },
-  gridImage: {
-	  resizeMode: "cover",
-	  borderRadius: 8,
-  },
-});
-  
+
 export default JournalDisplay;
