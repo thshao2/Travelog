@@ -24,6 +24,8 @@ const images = [
   "https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 ];
 
+// const [images, setImages] = useState([]);
+
 const sliderSettings = {
   dots: true,
   infinite: true,
@@ -74,25 +76,32 @@ export default function CategoryMemPage() {
     }
   };
 
-  const fetchOverviewUrls = async() => {
-    try {
-      // get slideshow urls:
-      const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${route.params}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
-        },
-      });
-      if (!url_response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const url_data = await url_response.json();
-    } catch (err) {
-      setError("Error fetching slideshow urls.");
-      console.error(err);
-    }
-  };
+  // KEEP - FRONTEND FOR OVERVIEW
+  // useEffect(() => {
+  //   fetchOverviewUrls();
+  // }, []);
+  // 
+  // const fetchOverviewUrls = async() => {
+  //   try {
+  //     // get slideshow urls:
+  //     const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${route.params}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${loginContext.accessToken}`,
+  //       },
+  //     });
+  //     if (!url_response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     const url_data = await url_response.json();
+  //     setImages(url_data);
+
+  //   } catch (err) {
+  //     setError("Error fetching slideshow urls.");
+  //     console.error(err);
+  //   }
+  // };
 
   const calculateVisitedStats = (memories: Journal[]) => {
     const visited = memories.filter((memory) => memory.condition === "Visited").length;
