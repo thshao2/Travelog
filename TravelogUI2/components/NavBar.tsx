@@ -55,7 +55,7 @@ function NavBar() {
     if (loginContext.accessToken) {
       navigation.navigate("index");
     }
-  }
+  };
 
   return (
     <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
@@ -198,18 +198,18 @@ function NavBar() {
                 </Button>
               </MenuItem>
             </Menu> */}
-          { loginContext.accessToken && <IconButton
-            onClick={logout}
-            sx={{
-              position: "absolute", // Position it absolutely to the right
-              right: 16, // Adjust the value as needed for padding
-              top: "50%", // Center vertically
-              transform: "translateY(-50%)", // Adjust the vertical alignment
-              color: "inherit", // Inherit color to match the theme
-            }}
-          >
-            <LogoutIcon />
-          </IconButton> }
+            { loginContext.accessToken && <IconButton
+              onClick={logout}
+              sx={{
+                position: "absolute", // Position it absolutely to the right
+                right: 16, // Adjust the value as needed for padding
+                top: "50%", // Center vertically
+                transform: "translateY(-50%)", // Adjust the vertical alignment
+                color: "inherit", // Inherit color to match the theme
+              }}
+            >
+              <LogoutIcon />
+            </IconButton> }
           </Box>
         </Toolbar>
       </Container>
