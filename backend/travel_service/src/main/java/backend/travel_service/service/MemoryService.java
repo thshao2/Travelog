@@ -79,32 +79,81 @@ public class MemoryService {
     }
 
     public Memory postMemory(Memory memory) {
-        
-        System.out.println(memory.getCaptionText());
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Parse captionText as a List of Maps
-            List<Map<String, String>> captionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+            // Parse captionText as a List of Maps with Object values
+            List<Map<String, Object>> captionSections = objectMapper.readValue(
+                memory.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
     
-            for (Map<String, String> section : captionSections) {
-                String type = section.get("type");
-                String content = section.get("content");
+            for (Map<String, Object> section : captionSections) {
+                String type = (String) section.get("type");
     
                 if ("image".equals(type)) {
+                    // Handle single image
+                    String content = (String) section.get("content");
                     String S3URL = uploadToS3(content, memory.getTitle());
                     section.put("content", S3URL);
+    
                 } else if ("text".equals(type)) {
+                    // Handle text content
+                    String content = (String) section.get("content");
                     System.out.println("Text content: " + content);
+    
+                } else if ("imageGrid".equals(type)) {
+                    // Handle imageGrid: parse 'images' key as a list
+                    Object imagesObject = section.get("images");
+                    if (imagesObject instanceof String) {
+                        // If 'images' is a String, parse it as a List of Maps
+                        List<Map<String, String>> images = objectMapper.readValue(
+                            (String) imagesObject,
+                            new TypeReference<List<Map<String, String>>>() {}
+                        );
+    
+                        for (Map<String, String> image : images) {
+                            String uri = image.get("content");
+                            if (uri != null) {
+                                String S3URL = uploadToS3(uri, memory.getTitle());
+                                image.put("content", S3URL); // Replace with S3 URL
+                            }
+                        }
+    
+                        // Update the 'images' field with processed images
+                        section.put("images", images);
+                    } else if (imagesObject instanceof List) {
+                        System.out.println("I AM HERE");
+                        // If 'images' is already a List, cast and process directly
+                        // @SuppressWarnings("unchecked")
+                        List<Map<String, String>> images = (List<Map<String, String>>) imagesObject;
+    
+                        for (Map<String, String> image : images) {
+                            String uri = image.get("content");
+                            System.out.println(uri);
+                            if (uri != null) {
+                                String S3URL = uploadToS3(uri, memory.getTitle());
+                                image.put("content", S3URL); // Replace with S3 URL
+                                System.out.println("I AM HERE");
+                                System.out.println(S3URL);
+                            }
+                        }
+                        section.put("images", images);
+                        
+                    }
                 }
             }
+    
+            // Serialize updated captionSections back to JSON
             memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+            // System.out.println(memory.getCaptionText());
+    
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+    
         return memoryRepository.save(memory);
     }
+    
 
     private String uploadToS3(String base64Image, String title) {
         byte[] decodedImage = Base64.getDecoder().decode(base64Image);

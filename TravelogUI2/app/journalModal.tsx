@@ -60,6 +60,8 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
   }, [selectedPin]);
 
   const handleSubmit = async () => {
+    console.log("very sad");
+    console.log(sections);
     try {
       const memoryData = {
         pinId: selectedPin.pinId,

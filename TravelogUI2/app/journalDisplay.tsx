@@ -54,7 +54,7 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
 
   useEffect(() => {
     setSections(groupedSections ? groupedSections : []);
-  }, [groupedSections]);
+  }, [groupedSections, journal.captionText]);
 
   // Load image dimensions on mount
   useEffect(() => {
@@ -73,6 +73,12 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
     loadDimensions();
   }, []);
 
+  // useEffect(() => {
+  //   setSections()
+  // }.[])
+
+  console.log("SECTIONS");
+  console.log(sections);
   return (
     <View style={styles.container}>
       <View style={styles.detailsSection}>
@@ -83,6 +89,10 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
         <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
       </View>
 
+      {/* <img
+        src={sections[1].images[0].content}>
+      </img> */}
+
       <View style={styles.blogContainer}>
         {sections.map((section: Section, index: number) => (
           <View key={index} style={styles.sectionContainer}>
@@ -92,7 +102,20 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
               <View style={styles.imageGrid}>
                 {section.images.map((image, imgIndex) => (
                   <View key={imgIndex} style={styles.imageWrapper}>
-                    {imageDimensions[image.content] && (
+                    <Image
+                      source={{ uri: image.content }}
+                      style = {
+                        styles.image
+                      }
+                      // style={[
+                      //   styles.gridImage,
+                      //   {
+                      //     width: imageDimensions[image.content].width,
+                      //     height: imageDimensions[image.content].height,
+                      //   },
+                      // ]}
+                    />
+                    {/* {imageDimensions[image.content] && (
                       <Image
                         source={{ uri: image.content }}
                         style={[
@@ -103,11 +126,11 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
                           },
                         ]}
                       />
-                    )}
+                    )} */}
                   </View>
                 ))}
               </View>
-            ) : null}
+            ) : "Hello"}
           </View>
         ))}
       </View>
