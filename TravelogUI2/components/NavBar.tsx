@@ -50,15 +50,26 @@ function NavBar() {
     navigation.navigate("login");
   };
 
+  // Navigate to home only if user is logged in - otherwise stay in login / signup
+  const navigateToHome = async () => {
+    if (loginContext.accessToken) {
+      navigation.navigate("index");
+    }
+  }
+
   return (
     <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
+          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+            disabled={!loginContext.accessToken}
+            onClick={() => navigateToHome} 
+          />
           
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
-            onClick={() => navigation.navigate("index")}
+            onClick={() => navigateToHome}
+            // disabled={!loginContext.accessToken}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
