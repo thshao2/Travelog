@@ -24,7 +24,7 @@ interface ImagePreviewProps {
 
 interface RichTextEditorProps {
   onContentChange: (newSections: any) => void,
-  initialContent: 
+  initialContent: any,
 }
 
 const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
