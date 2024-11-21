@@ -34,7 +34,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
     // Group consecutive images together into grids
     const groupedSections = [];
     let currentImageGroup: Section[] = [];
-    parsedSections.forEach((section: Section, _) => {
+    parsedSections.forEach((section: Section, _: number) => {
       if (section.type === "image") {
         currentImageGroup.push(section);
       } else {
@@ -66,9 +66,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
-  const [sections, setSections] = useState(() => {
-	  journalDataTransform(journal.captionText);
-  });
+  const [sections, setSections] = useState(journalDataTransform(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
