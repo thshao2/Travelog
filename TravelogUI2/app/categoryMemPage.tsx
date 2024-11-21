@@ -15,9 +15,13 @@ const { API_URL } = config;
 
 // REPLACE W FETCHED S3 URLS
 const images = [
-  "https://images8.alphacoders.com/103/1039011.jpg",
-  "https://wallpapers.com/images/featured/vegas-4k-9gsywswzyt0y5l6f.jpg",
-  "https://images.alphacoders.com/905/thumb-1920-905423.jpg",
+  // "https://images8.alphacoders.com/103/1039011.jpg",
+  // "https://wallpapers.com/images/featured/vegas-4k-9gsywswzyt0y5l6f.jpg",
+  // "https://images.alphacoders.com/905/thumb-1920-905423.jpg",
+  "https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 ];
 
 const sliderSettings = {
@@ -157,9 +161,11 @@ export default function CategoryMemPage() {
                 component="img"
                 src={image}
                 alt={`Slide ${index + 1}`}
-                sx={{
-                  width: "50%",      
+                sx={{     
                   height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               />
             ))}
