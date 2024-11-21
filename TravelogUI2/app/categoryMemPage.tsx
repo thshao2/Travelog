@@ -71,12 +71,12 @@ export default function CategoryMemPage() {
   return (
     <ScrollView>
       <Typography level="h3" sx={{
+        alignSelf: "center",
         fontWeight: "bold",
-        paddingLeft: 2,
         paddingTop: 2,
       }}>{category}</Typography>
       <Typography level="h4" sx={{
-        paddingLeft: 2,
+        alignSelf: "center",
       }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
       <Grid container spacing={2} sx={{ padding: 2 }}>
         {memories.map((journal) => (

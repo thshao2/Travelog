@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // import { Card, Divider, Typography, Box } from "@mui/material";
 import { Box, Typography, Card, Divider } from "@mui/joy";
+// Import the photo icon
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";
@@ -16,6 +17,7 @@ interface MemoryCardProps {
 }
 
 export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
+  console.log(journal.captionText);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
@@ -141,28 +143,48 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
           flexDirection: "column",
         }}
       >
+
         {/* Image Section */}
         <Box
           component="img"
-          src={"../assets/images/pfp-bg.jpg"}
+          src={
+            JSON.parse(journal.captionText).find((section: any) => section.type === "image")?.content ||
+    JSON.parse(journal.captionText)
+      .find((section: any) => section.type === "imageGrid")
+      ?.images[0]?.content ||
+    "../assets/images/default-pic.jpg"
+          }
           alt="Journal Image"
           sx={{
             width: "100%",
-            height: "70%",
+            height: "200px",
             objectFit: "cover",
+            borderRadius: "8px",
+            overflow: "hidden",
           }}
         />
 
         {/* Content Section */}
         <div style={{ flex: 1 }}>
-          <Typography level="h4">{journal.title}</Typography>
+          <Typography level="h4" sx={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          >{journal.title}</Typography>
           <div style={{ display: "flex", alignItems: "center" }}>
             <Ionicons
               name="location"
               size={20}
               color={"#E18CA0"}
             />
-            <Typography level="inherit" style={{ marginLeft: "8px" }}>
+            <Typography level="inherit" sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              color: "gray",
+            }}
+            style={{ marginLeft: "8px" }}>
               {journal.loc}
             </Typography>
           </div>
