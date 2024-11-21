@@ -354,7 +354,7 @@ function Map() {
     <>
       {Platform.OS === "web" ? (
         <div className="sidebar">
-          Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)} | zIndex: {mapRef.current?.getPitch()}
+          Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)} | zIndex: {mapRef.current?.getPitch().toFixed(2)}
         </div>
       ) : (
         <div className="sidebar">
