@@ -9,8 +9,6 @@ import { useLoginContext } from "./context/LoginContext";
 
 const { API_URL } = config;
 
-// const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
-
 const LoginScreen = () => {
   const navigation = useNavigation();
 

@@ -18,6 +18,12 @@ export interface JournalDetailProps {
   onEdit: (updatedJournal: Journal) => void,
 }
 
+export type Section = {
+  id: string,
+  type: string,
+  content: string,
+}
+
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
   const journalDataTransform = (dataString: string) => {
     const parsedSections = JSON.parse(dataString);
@@ -26,8 +32,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
     }
     // Group consecutive images together into grids
     const groupedSections = [];
-    let currentImageGroup = [];
-    parsedSections.forEach((section, _) => {
+    let currentImageGroup: Section[] = [];
+    parsedSections.forEach((section: Section, _) => {
       if (section.type === "image") {
         currentImageGroup.push(section);
       } else {
@@ -188,7 +194,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                   />
                 </View>
 
-                <RichTextEditor onContentChange={(newSections) => {
+                <RichTextEditor onContentChange={(newSections: Section[]) => {
                   setSections(newSections);
                   console.log(newSections, "newSections");
                 }} initialContent={journal.captionText} />

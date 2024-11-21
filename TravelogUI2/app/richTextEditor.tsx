@@ -4,7 +4,6 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Platform,
   Alert,
@@ -16,6 +15,10 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 
+import { styles } from "./styles/rich-text-editor-styles";
+
+import { Section } from "./journalDetail";
+
 interface ImagePreviewProps {
   isVisible: boolean,
   imageUri: string,
@@ -23,8 +26,8 @@ interface ImagePreviewProps {
 }
 
 interface RichTextEditorProps {
-  onContentChange: (newSections: any) => void,
-  initialContent: 
+  onContentChange: (newSections: Section[]) => void,
+  initialContent: string,
 }
 
 const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
@@ -57,8 +60,8 @@ const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
   );
 };
 
-const RichTextEditor = ({ onContentChange, initialContent }) => {
-  const [sections, setSections] = useState(initialContent ? JSON.parse(initialContent) : [{ id: "1", type: "text", content: "" }]);
+function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps) {
+  const [sections, setSections] = useState<Section[]>(initialContent ? JSON.parse(initialContent) : [{ id: "1", type: "text", content: "" }]);
   const [focusedSectionId, setFocusedSectionId] = useState("1");
   const [previewImage, setPreviewImage] = useState(null);
   const inputRefs = useRef({});
@@ -66,7 +69,7 @@ const RichTextEditor = ({ onContentChange, initialContent }) => {
   
   const maxImageSize = 180; // Increased from 120 to 180
 
-  const getImageDimensions = (uri) => {
+  const getImageDimensions = (uri: string) => {
     return new Promise((resolve) => {
       Image.getSize(uri, (width, height) => {
         const aspectRatio = width / height;
@@ -96,7 +99,7 @@ const RichTextEditor = ({ onContentChange, initialContent }) => {
           const blob = await response.blob();
           base64 = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(",")[1]);
+            reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
@@ -437,129 +440,5 @@ const RichTextEditor = ({ onContentChange, initialContent }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 15,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  editor: {
-    maxHeight: 400,
-  },
-  section: {
-    marginVertical: 8,
-  },
-  textInput: {
-    minHeight: 40,
-    fontSize: 16,
-    lineHeight: 24,
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#f8f9fa",
-  },
-  gridContainer: {
-    marginVertical: 8,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 8,
-  },
-  imageGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    padding: 4,
-  },
-  imageWrapper: {
-    position: "relative",
-    borderRadius: 8,
-    overflow: "hidden",
-    backgroundColor: "#f8f9fa",
-    margin: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  gridImage: {
-    resizeMode: "cover",
-    borderRadius: 8,
-  },
-  removeImageButton: {
-    position: "absolute",
-    top: 4,
-    right: 4,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 12,
-    padding: 4,
-    zIndex: 1,
-  },
-  addImageButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#f0fdf4",
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#86efac",
-  },
-  addImageText: {
-    marginLeft: 8,
-    color: "#4CAF50",
-    fontWeight: "500",
-  },
-  addToGridButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 8,
-    marginTop: 8,
-    borderRadius: 6,
-    backgroundColor: "#f0fdf4",
-    borderWidth: 1,
-    borderColor: "#86efac",
-  },
-  addToGridText: {
-    marginLeft: 4,
-    color: "#4CAF50",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  previewImage: {
-    width: "90%",
-    height: "90%",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 20,
-    padding: 8,
-  },
-});
 
 export default RichTextEditor;
