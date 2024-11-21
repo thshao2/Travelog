@@ -62,13 +62,13 @@ function NavBar() {
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-            disabled={!loginContext.accessToken}
-            onClick={() => navigateToHome} 
+            // disabled={!loginContext.accessToken}
+            onClick={() => navigateToHome()} 
           />
           
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
-            onClick={() => navigateToHome}
+            onClick={() => navigateToHome()}
             // disabled={!loginContext.accessToken}
             sx={{
               mr: 2,
