@@ -152,7 +152,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                   id: `${gridId}-${Date.now()}-${idx}`,
                   type: "image",
                   content: img.base64,
-                  encodedContent: img.base64,
+                  encodedContent: img.uri,
                   dimensions: img.dimensions,
                 })),
               ],
@@ -220,7 +220,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                   id: `${sections[sections.length - 2].id}-${Date.now()}-${idx}`,
                   type: "image",
                   content: img.base64,
-                  encodedContent: img.base64,
+                  encodedContent: img.uri,
                   dimensions: img.dimensions,
                 })),
               ],
@@ -240,7 +240,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                 id: `${gridId}-${idx}`,
                 type: "image",
                 content: img.base64,
-                encodedContent: img.base64,
+                encodedContent: img.uri,
                 dimensions: img.dimensions,
               })),
             },
@@ -402,7 +402,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
                         onPress={() => setPreviewImage(image.content)}
                       >
                         <Image
-                          source={{ uri: image.content }}
+                          source={{ uri: image.content.startsWith("http") ? image.content : image.encodedContent}}
                           style={[
                             styles.gridImage,
                             {
