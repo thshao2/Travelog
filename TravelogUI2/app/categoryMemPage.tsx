@@ -72,18 +72,18 @@ export default function CategoryMemPage() {
 
   const fetchOverviewUrls = async() => {
     try {
-     // get slideshow urls:
-     const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${route.params}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${loginContext.accessToken}`,
-      },
-    });
-    if (!url_response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const url_data = await url_response.json();
+      // get slideshow urls:
+      const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${route.params}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${loginContext.accessToken}`,
+        },
+      });
+      if (!url_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url_data = await url_response.json();
     } catch (err) {
       setError("Error fetching slideshow urls.");
       console.error(err);
