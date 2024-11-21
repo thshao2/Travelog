@@ -1,6 +1,7 @@
 import React from "react";
 import Slider from "react-slick";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { ScrollView } from "react-native";
 import CategoryList from "./categoryList";
 
 import "slick-carousel/slick/slick.css";
@@ -27,45 +28,93 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Box
-        sx={{
-          width: "100%",
-          height: "60vh", // Carousel takes up 50% of the screen height
-          // backgroundColor: "white", // Optional: fallback background color
-          position: "relative", // Needed for aspect ratio handling
-        }}
-      >
+      <ScrollView>
+        <Box
+          sx={{
+            width: "100%",
+            height: "70vh", // Carousel takes up 70% of the screen height
+            position: "relative", // Ensures overlay and text positioning
+          }}
+        >
+          <Slider {...sliderSettings}>
+            {images.map((image, index) => (
+              <Box
+                key={index}
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                  maxHeight: "70vh",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Image */}
+                <Box
+                  component="img"
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
 
-        <Slider {...sliderSettings}>
-          {images.map((image, index) => (
-            // <AspectRatio
-            //   ratio="1200/500" // Use your desired ratio
-            //   key={index}
-            //   sx={{
-            //     maxHeight: "60vh", // Limit height for responsiveness
-            //     width: "100%",
-            //     height: "100%",
-            //     minWidth: "100vh",
-            //     // overflow: "hidden", // Ensures no stretching
-            //   }}
-            // >
-            <Box
-              key={index}
-              component="img"
-              src={image}
-              alt={`Slide ${index + 1}`}
-              sx={{
-                width: "100%",
-                height: "100%",
-                maxHeight: "60vh",
-                objectFit: "cover", // Ensures the full image fits in the container
-              }}
-            />
-            // </AspectRatio>
-          ))}
-        </Slider>
-      </Box>
-      <CategoryList />
+                {/* Black Overlay */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  }}
+                />
+
+                {/* Inspiring Text */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    width: "70%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center",
+                    color: "white",
+                  }}
+                >
+                  <Typography
+                    variant="h3"
+                    sx={{ fontWeight: "bold", mb: 2 }}
+                  >
+                    Capture Memories, Explore the World!
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{ maxWidth: "600px", mx: "auto", mb: 4 }}
+                  >
+                    Life is about the adventures you take and the memories you make.
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      color: "#FCC7B5",
+                      px: 4,
+                      py: 2,
+                      fontWeight: "bold",
+                      display: "inline-block",
+                    }}
+                  >
+                    Let’s Go...
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Slider>
+        </Box>
+        <CategoryList />
+      </ScrollView>
     </>
   );
 }

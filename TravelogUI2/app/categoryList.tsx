@@ -149,7 +149,7 @@ export default function CategoryList() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lists</Text>
+      <Text style={styles.title}>LISTS</Text>
       <FlatList
         ref={flatListRef}
         // data={["All", ...categories]}
@@ -168,6 +168,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
+    padding: 30,
   },
   title: {
     color: "black",
