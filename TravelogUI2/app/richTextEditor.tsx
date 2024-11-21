@@ -16,7 +16,18 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 
-const ImagePreview = ({ isVisible, imageUri, onClose }) => {
+interface ImagePreviewProps {
+  isVisible: boolean,
+  imageUri: string,
+  onClose: () => void,
+}
+
+interface RichTextEditorProps {
+  onContentChange: (newSections: any) => void,
+  initialContent: 
+}
+
+const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
   return (
     <Modal
       animationType="fade"
