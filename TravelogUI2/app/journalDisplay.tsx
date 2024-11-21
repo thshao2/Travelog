@@ -6,35 +6,51 @@ import { Journal } from "./popupMenu";
 import { Section } from "./journalDetail";
 
 interface JournalDisplayProps {
-	journal: Journal,
-	groupedSections: any, // change
+  journal: Journal,
+  groupedSections: any, // change
 }
 
 const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   const maxImageSize = 200; // Medium size for images
   const [sections, setSections] = useState(groupedSections ? groupedSections : []);
-  
+
   // Calculate image dimensions while maintaining aspect ratio
   const getImageDimensions = (uri: string) => {
-	  return new Promise((resolve) => {
-      Image.getSize(uri, (width, height) => {
-		  const aspectRatio = width / height;
-		  let finalWidth, finalHeight;
-  
-		  if (width > height) {
-          finalWidth = maxImageSize;
-          finalHeight = maxImageSize / aspectRatio;
-		  } else {
-          finalHeight = maxImageSize;
-          finalWidth = maxImageSize * aspectRatio;
-		  }
-  
-		  resolve({ width: finalWidth, height: finalHeight });
-      });
-	  });
+    // return new Promise((resolve) => {
+    //   Image.getSize(uri, (width, height) => {
+    //     const aspectRatio = width / height;
+    //     let finalWidth, finalHeight;
+
+    //     if (width > height) {
+    //       finalWidth = maxImageSize;
+    //       finalHeight = maxImageSize / aspectRatio;
+    //     } else {
+    //       finalHeight = maxImageSize;
+    //       finalWidth = maxImageSize * aspectRatio;
+    //     }
+
+    //     resolve({ width: finalWidth, height: finalHeight });
+    //   });
+    // });
+    const obj = Image.getSize(uri, (width, height) => {
+      const aspectRatio = width / height;
+      let finalWidth, finalHeight;
+
+      if (width > height) {
+        finalWidth = maxImageSize;
+        finalHeight = maxImageSize / aspectRatio;
+      } else {
+        finalHeight = maxImageSize;
+        finalWidth = maxImageSize * aspectRatio;
+      }
+
+      return { width: finalWidth, height: finalHeight };
+    });
+
+    return obj;
   };
-  
-  const [imageDimensions, setImageDimensions] = useState({});
+
+  const [imageDimensions, setImageDimensions] = useState<Record<string, Record<string, number>>>({});
 
   useEffect(() => {
     setSections(groupedSections ? groupedSections : []);
@@ -42,60 +58,60 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
 
   // Load image dimensions on mount
   useEffect(() => {
-	  const loadDimensions = async () => {
-      const dimensions = {};
+    const loadDimensions = async () => {
+      const dimensions: Record<string, Record<string, number>> = {};
       for (const section of sections) {
-		  if (section.type === "imageGrid") {
+        if (section.type === "imageGrid") {
           for (const image of section.images) {
-			  dimensions[image.content] = await getImageDimensions(image.content);
+            dimensions[image.content] = getImageDimensions(image.content);
           }
-		  }
+        }
       }
       setImageDimensions(dimensions);
-	  };
-  
-	  loadDimensions();
+    };
+
+    loadDimensions();
   }, []);
-  
+
   return (
-	  <View style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.detailsSection}>
-		  <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
-		  <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
-		  <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
-		  <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
-		  <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
+        <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
+        <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
+        <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
+        <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
+        <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
       </View>
-  
+
       <View style={styles.blogContainer}>
-		  {sections.map((section: Section, index: number) => (
+        {sections.map((section: Section, index: number) => (
           <View key={index} style={styles.sectionContainer}>
-			  {section.type === "text" ? (
+            {section.type === "text" ? (
               <Text style={styles.journalBody}>{section.content}</Text>
-			  ) : section.type === "imageGrid" ? (
+            ) : section.type === "imageGrid" ? (
               <View style={styles.imageGrid}>
-				  {section.images.map((image, imgIndex) => (
+                {section.images.map((image, imgIndex) => (
                   <View key={imgIndex} style={styles.imageWrapper}>
-					  {imageDimensions[image.content] && (
+                    {imageDimensions[image.content] && (
                       <Image
-						  source={{ uri: image.content }}
-						  style={[
+                        source={{ uri: image.content }}
+                        style={[
                           styles.gridImage,
                           {
-							  width: imageDimensions[image.content].width,
-							  height: imageDimensions[image.content].height,
+                            width: imageDimensions[image.content].width,
+                            height: imageDimensions[image.content].height,
                           },
-						  ]}
+                        ]}
                       />
-					  )}
+                    )}
                   </View>
-				  ))}
+                ))}
               </View>
-			  ) : null}
+            ) : null}
           </View>
-		  ))}
+        ))}
       </View>
-	  </View>
+    </View>
   );
 };
 
