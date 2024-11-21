@@ -22,6 +22,7 @@ export type Section = {
   id: string,
   type: string,
   content: string,
+  images: Section[],
 }
 
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {

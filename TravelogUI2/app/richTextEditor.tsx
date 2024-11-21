@@ -88,9 +88,9 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
     });
   };
 
-  const processImages = async (assets) => {
+  const processImages = async (assets: any) => {
     const processedImages = await Promise.all(
-      assets.map(async (asset) => {
+      assets.map(async (asset: any) => {
         const dimensions = await getImageDimensions(asset.uri);
         let base64 = "";
 
@@ -120,7 +120,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
     return processedImages;
   };
 
-  const addImagesToGrid = async (gridId) => {
+  const addImagesToGrid = async (gridId: string) => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert("Permission Required", "Please allow access to your photo library to add images.");
@@ -138,6 +138,9 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
 
       if (!result.canceled && result.assets.length > 0) {
         const processedImages = await processImages(result.assets);
+
+        console.log("HERE IS IMAGES");
+        console.log(sections);
         
         const newSections = sections.map(section => {
           if (section.id === gridId && section.type === "imageGrid") {
@@ -261,12 +264,12 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
     }
   };
 
-  const updateSections = (newSections) => {
+  const updateSections = (newSections: Section[]) => {
     setSections(newSections);
     onContentChange(newSections);
   };
 
-  const removeImage = (gridId, imageId) => {
+  const removeImage = (gridId: string, imageId: string) => {
     const gridIndex = sections.findIndex(section => section.id === gridId);
     const currentGrid = sections[gridIndex];
     
@@ -314,14 +317,14 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
     updateSections(newSections);
   };
 
-  const handleTextChange = (id, text) => {
+  const handleTextChange = (id: string, text: string) => {
     const newSections = sections.map(section =>
       section.id === id ? { ...section, content: text } : section,
     );
     updateSections(newSections);
   };
 
-  const handleKeyPress = (e, id) => {
+  const handleKeyPress = (e, id: string) => {
     if (e.nativeEvent.key === "Backspace") {
       const section = sections.find(s => s.id === id);
       if (section?.content === "") {
@@ -439,6 +442,5 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
     </View>
   );
 };
-
 
 export default RichTextEditor;

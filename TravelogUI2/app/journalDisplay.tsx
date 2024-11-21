@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import { styles } from "./styles/journal-display-styles";
 import { Journal } from "./popupMenu";
+import { Section } from "./journalDetail";
 
 interface JournalDisplayProps {
 	journal: Journal,
@@ -67,7 +68,7 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
       </View>
   
       <View style={styles.blogContainer}>
-		  {sections.map((section, index) => (
+		  {sections.map((section: Section, index: number) => (
           <View key={index} style={styles.sectionContainer}>
 			  {section.type === "text" ? (
               <Text style={styles.journalBody}>{section.content}</Text>

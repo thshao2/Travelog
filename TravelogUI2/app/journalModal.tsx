@@ -265,7 +265,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                     setSections(newSections);
                     console.log(newSections, "newSections");
                   }
-                  } initialJournal={reset}
+                  } initialContent={reset}
                 />
               </View>
             </View>
