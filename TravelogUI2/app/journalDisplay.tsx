@@ -23,8 +23,8 @@ interface Journal {
   category: string;
   loc: string;
   condition: string;
-  initDate: string;
-  endDate: string;
+  initDate: Date;
+  endDate: Date;
   captionText?: string;
 }
 
