@@ -94,6 +94,8 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
     }
   };
 
+  calculateImageDimensions({ width: 200, height: 200 });
+
   return (
     <View style={styles.container}>
       <View style={styles.detailsSection}>
@@ -107,7 +109,7 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
       <Text style={styles.journalBody}>{sections[0].content}</Text>
       <View style={styles.blogContainer}>
         <ImageList sx={{ width: 1000, height: 900 }} cols={4} rowHeight={164}>
-          {sections.slice(1).map((section, index) => (
+          {(sections.slice(1) as ImageData[]).map((section, index) => (
             <View key={index} style={styles.sectionContainer}>
               <TouchableOpacity
                 onPress={() => setSelectedImage(section.content.startsWith("https") ? section.content : section.encodedContent)}
