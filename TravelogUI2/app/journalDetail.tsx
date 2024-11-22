@@ -19,46 +19,14 @@ export interface JournalDetailProps {
 }
 
 export type Section = {
-  id: string,
+  id?: string,
   type: string,
   content: string,
-  images: Section[],
+  encodedContent?: string,
+  dimensions?: {width: number, height: number}
 }
 
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
-  // const journalDataTransform = (dataString: string) => {
-  //   const parsedSections = JSON.parse(dataString);
-  //   if (!parsedSections) {
-  //     return [];
-  //   }
-  //   // Group consecutive images together into grids
-  //   const groupedSections = [];
-  //   let currentImageGroup: Section[] = [];
-  //   parsedSections.forEach((section: Section, _: number) => {
-  //     if (section.type === "image") {
-  //       currentImageGroup.push(section);
-  //     } else {
-  //       if (currentImageGroup.length > 0) {
-  //         groupedSections.push({
-  //           type: "imageGrid",
-  //           images: currentImageGroup,
-  //         });
-  //         currentImageGroup = [];
-  //       }
-  //       groupedSections.push(section);
-  //     }
-  //   });
-    
-  //   // Add any remaining images
-  //   if (currentImageGroup.length > 0) {
-  //     groupedSections.push({
-  //       type: "imageGrid",
-  //       images: currentImageGroup,
-  //     });
-  //   }
-    
-  //   return groupedSections;
-  // };
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);

@@ -15,6 +15,8 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { styles } from "./styles/rich-text-editor-styles";
+import { Section } from "./journalDetail";
+// import { Section } from "./journalDetail";
 
 interface ImageData {
   id: string;
@@ -36,6 +38,11 @@ interface ImagePreviewProps {
   isVisible: boolean;
   imageUri: string;
   onClose: () => void;
+}
+
+interface RichTextEditorProps {
+  onContentChange: (newSections: Section[]) => void,
+  initialContent: string
 }
 
 const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
@@ -246,7 +253,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
 
       <ImagePreview
         isVisible={!!previewImage}
-        imageUri={previewImage}
+        imageUri={previewImage || ""}
         onClose={() => setPreviewImage(null)}
       />
     </View>
