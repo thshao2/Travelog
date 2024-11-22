@@ -13,19 +13,6 @@ import MemoryCard from "./memoryCard";
 
 const { API_URL } = config;
 
-// REPLACE W FETCHED S3 URLS
-const images = [
-  // "https://images8.alphacoders.com/103/1039011.jpg",
-  // "https://wallpapers.com/images/featured/vegas-4k-9gsywswzyt0y5l6f.jpg",
-  // "https://images.alphacoders.com/905/thumb-1920-905423.jpg",
-  "https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-];
-
-// const [images, setImages] = useState([]);
-
 const sliderSettings = {
   dots: true,
   infinite: true,
@@ -44,6 +31,7 @@ export default function CategoryMemPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
+  const [images, setImages] = useState([]);
 
   const fetchMemoriesByCategory = async() => {
     try {
@@ -76,32 +64,27 @@ export default function CategoryMemPage() {
     }
   };
 
-  // KEEP - FRONTEND FOR OVERVIEW
-  // useEffect(() => {
-  //   fetchOverviewUrls();
-  // }, []);
-  // 
-  // const fetchOverviewUrls = async() => {
-  //   try {
-  //     // get slideshow urls:
-  //     const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${route.params}`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${loginContext.accessToken}`,
-  //       },
-  //     });
-  //     if (!url_response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     const url_data = await url_response.json();
-  //     setImages(url_data);
+  const fetchOverviewUrls = async() => {
+    try {
+      // get slideshow urls:
+      const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${category}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${loginContext.accessToken}`,
+        },
+      });
+      if (!url_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url_data = await url_response.json();
+      setImages(url_data);
 
-  //   } catch (err) {
-  //     setError("Error fetching slideshow urls.");
-  //     console.error(err);
-  //   }
-  // };
+    } catch (err) {
+      setError("Error fetching slideshow urls.");
+      console.error(err);
+    }
+  };
 
   const calculateVisitedStats = (memories: Journal[]) => {
     const visited = memories.filter((memory) => memory.condition === "Visited").length;
@@ -112,6 +95,7 @@ export default function CategoryMemPage() {
 
   useEffect(() => {
     fetchMemoriesByCategory();
+    fetchOverviewUrls();
   }, [category]);
 
   if (loading) {
@@ -120,7 +104,7 @@ export default function CategoryMemPage() {
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
-
+   
   return (
     <ScrollView>
       <Typography level="h3" sx={{
@@ -132,7 +116,7 @@ export default function CategoryMemPage() {
         alignSelf: "center",
       }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
       
-      <Box sx={{
+      <Box sx={{ 
         display: "flex",
         flexDirection: "row",
         gap: 4,
