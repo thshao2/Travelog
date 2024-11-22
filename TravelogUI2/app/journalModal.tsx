@@ -93,7 +93,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
           updateUserStats(loginContext.accessToken);
         }
       } else {
-        console.error("Failed to fetch from travel-service. Status: ", response.status);
+        console.error("Failed to fetch from travel-service. Status: ", response.body);
       }
     } catch (error) {
       console.error("Error calling travel-service: ", error);

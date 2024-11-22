@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { width: screenWidth } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
   container: {
@@ -6,20 +8,15 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   detailsSection: {
-    marginBottom: 16,
-    padding: 12,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
+    marginBottom: 20,
   },
   detailLabel: {
     fontSize: 16,
-    fontWeight: "600",
     marginBottom: 8,
-    color: "#4a5568",
+    fontWeight: "600",
   },
   detailText: {
     fontWeight: "400",
-    color: "#2d3748",
   },
   blogContainer: {
     flex: 1,
@@ -30,36 +27,38 @@ export const styles = StyleSheet.create({
   journalBody: {
     fontSize: 16,
     lineHeight: 24,
-    color: "#2d3748",
-    marginVertical: 8,
-  },
-  imageGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    gap: 8,
-    padding: 4,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
   },
   imageWrapper: {
-    borderRadius: 8,
-    overflow: "hidden",
-    backgroundColor: "#f8f9fa",
-    margin: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  gridImage: {
-    resizeMode: "cover",
-    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 8,
   },
   image: {
-    width: 600,
-    height: 500,
-    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewImage: {
+    width: screenWidth,
+    height: screenWidth,
+    resizeMode: "contain",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 20,
+    padding: 8,
   },
 });

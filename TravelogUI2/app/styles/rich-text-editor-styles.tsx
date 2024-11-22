@@ -22,12 +22,14 @@ export const styles = StyleSheet.create({
     marginVertical: 8,
   },
   textInput: {
-    minHeight: 40,
+    minHeight: 120, // Increased from 40 to 120
     fontSize: 16,
     lineHeight: 24,
-    padding: 8,
+    padding: 12, // Increased from 8 to 12
     borderRadius: 8,
     backgroundColor: "#f8f9fa",
+    marginBottom: 16, // Added margin bottom
+    textAlignVertical: "top", // Ensures text starts from top
   },
   gridContainer: {
     marginVertical: 8,
@@ -82,23 +84,6 @@ export const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "500",
   },
-  addToGridButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 8,
-    marginTop: 8,
-    borderRadius: 6,
-    backgroundColor: "#f0fdf4",
-    borderWidth: 1,
-    borderColor: "#86efac",
-  },
-  addToGridText: {
-    marginLeft: 4,
-    color: "#4CAF50",
-    fontSize: 14,
-    fontWeight: "500",
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -110,10 +95,12 @@ export const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+    position: "relative", // Added to ensure proper positioning
   },
   previewImage: {
     width: "90%",
     height: "90%",
+    resizeMode: "contain", // Changed to contain to show full image
   },
   closeButton: {
     position: "absolute",
@@ -122,5 +109,6 @@ export const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 20,
     padding: 8,
+    zIndex: 2, // Ensure it's above the image
   },
 });

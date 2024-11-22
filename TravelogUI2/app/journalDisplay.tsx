@@ -1,84 +1,98 @@
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, Modal, Pressable, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
-
+import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles/journal-display-styles";
-import { Journal } from "./popupMenu";
-import { Section } from "./journalDetail";
 
-interface JournalDisplayProps {
-  journal: Journal,
-  groupedSections: any, // change
+interface ImageData {
+  id: string;
+  type: "image";
+  content: string;
+  encodedContent: string;
+  dimensions: {
+    width: number;
+    height: number;
+  };
 }
 
+interface TextData {
+  type: "text";
+  content: string;
+}
+
+interface Journal {
+  category: string;
+  loc: string;
+  condition: string;
+  initDate: string;
+  endDate: string;
+  captionText?: string;
+}
+
+interface JournalDisplayProps {
+  journal: Journal;
+  groupedSections: (TextData | ImageData)[];
+}
+
+interface ImagePreviewProps {
+  isVisible: boolean;
+  imageUri: string;
+  onClose: () => void;
+}
+
+const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={isVisible}
+      onRequestClose={onClose}
+    >
+      <Pressable style={styles.modalOverlay} onPress={onClose}>
+        <View style={styles.modalContent}>
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.previewImage}
+            resizeMode="contain"
+          />
+          <TouchableOpacity 
+            style={styles.closeButton} 
+            onPress={onClose}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialIcons name="close" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+};
+
 const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
-  const maxImageSize = 200; // Medium size for images
-  const [sections, setSections] = useState(groupedSections ? groupedSections : []);
-
-  // Calculate image dimensions while maintaining aspect ratio
-  const getImageDimensions = (uri: string) => {
-    // return new Promise((resolve) => {
-    //   Image.getSize(uri, (width, height) => {
-    //     const aspectRatio = width / height;
-    //     let finalWidth, finalHeight;
-
-    //     if (width > height) {
-    //       finalWidth = maxImageSize;
-    //       finalHeight = maxImageSize / aspectRatio;
-    //     } else {
-    //       finalHeight = maxImageSize;
-    //       finalWidth = maxImageSize * aspectRatio;
-    //     }
-
-    //     resolve({ width: finalWidth, height: finalHeight });
-    //   });
-    // });
-    const obj = Image.getSize(uri, (width, height) => {
-      const aspectRatio = width / height;
-      let finalWidth, finalHeight;
-
-      if (width > height) {
-        finalWidth = maxImageSize;
-        finalHeight = maxImageSize / aspectRatio;
-      } else {
-        finalHeight = maxImageSize;
-        finalWidth = maxImageSize * aspectRatio;
-      }
-
-      return { width: finalWidth, height: finalHeight };
-    });
-
-    return obj;
-  };
-
-  const [imageDimensions, setImageDimensions] = useState<Record<string, Record<string, number>>>({});
+  const [sections, setSections] = useState<(TextData | ImageData)[]>(groupedSections || []);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const maxImageSize = 180; // Matching the creation modal's max size
 
   useEffect(() => {
-    setSections(groupedSections ? groupedSections : []);
+    setSections(groupedSections || []);
   }, [groupedSections, journal.captionText]);
 
-  // Load image dimensions on mount
-  useEffect(() => {
-    const loadDimensions = async () => {
-      const dimensions: Record<string, Record<string, number>> = {};
-      for (const section of sections) {
-        if (section.type === "imageGrid") {
-          for (const image of section.images) {
-            dimensions[image.content] = getImageDimensions(image.content);
-          }
-        }
-      }
-      setImageDimensions(dimensions);
-    };
+  const calculateImageDimensions = (dimensions: { width: number; height: number }) => {
+    const { width, height } = dimensions;
+    const aspectRatio = width / height;
+    
+    if (width > height) {
+      return {
+        width: maxImageSize,
+        height: maxImageSize / aspectRatio,
+      };
+    } else {
+      return {
+        width: maxImageSize * aspectRatio,
+        height: maxImageSize,
+      };
+    }
+  };
 
-    loadDimensions();
-  }, []);
-
-  // useEffect(() => {
-  //   setSections()
-  // }.[])
-
-  console.log("SECTIONS");
-  console.log(sections);
   return (
     <View style={styles.container}>
       <View style={styles.detailsSection}>
@@ -89,51 +103,35 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
         <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
       </View>
 
-      {/* <img
-        src={sections[1].images[0].content}>
-      </img> */}
-
       <View style={styles.blogContainer}>
-        {sections.map((section: Section, index: number) => (
+        {sections.map((section, index) => (
           <View key={index} style={styles.sectionContainer}>
             {section.type === "text" ? (
               <Text style={styles.journalBody}>{section.content}</Text>
-            ) : section.type === "imageGrid" ? (
-              <View style={styles.imageGrid}>
-                {section.images.map((image, imgIndex) => (
-                  <View key={imgIndex} style={styles.imageWrapper}>
-                    <Image
-                      source={{ uri: image.content }}
-                      style = {
-                        styles.image
-                      }
-                      // style={[
-                      //   styles.gridImage,
-                      //   {
-                      //     width: imageDimensions[image.content].width,
-                      //     height: imageDimensions[image.content].height,
-                      //   },
-                      // ]}
-                    />
-                    {/* {imageDimensions[image.content] && (
-                      <Image
-                        source={{ uri: image.content }}
-                        style={[
-                          styles.gridImage,
-                          {
-                            width: imageDimensions[image.content].width,
-                            height: imageDimensions[image.content].height,
-                          },
-                        ]}
-                      />
-                    )} */}
-                  </View>
-                ))}
-              </View>
-            ) : "Hello"}
+            ) : (
+              <TouchableOpacity
+                onPress={() => setSelectedImage(section.encodedContent)}
+                style={styles.imageWrapper}
+              >
+                <Image
+                  source={{ uri: section.encodedContent }}
+                  style={[
+                    styles.image,
+                    calculateImageDimensions(section.dimensions),
+                  ]}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
           </View>
         ))}
       </View>
+
+      <ImagePreview
+        isVisible={!!selectedImage}
+        imageUri={selectedImage || ""}
+        onClose={() => setSelectedImage(null)}
+      />
     </View>
   );
 };
