@@ -2,6 +2,7 @@ import { Text, View, Image, Modal, Pressable, TouchableOpacity } from "react-nat
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles/journal-display-styles";
+import { ImageList, ImageListItem } from "@mui/material";
 
 interface ImageData {
   id: string;
@@ -54,8 +55,8 @@ const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
             style={styles.previewImage}
             resizeMode="contain"
           />
-          <TouchableOpacity 
-            style={styles.closeButton} 
+          <TouchableOpacity
+            style={styles.closeButton}
             onPress={onClose}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
@@ -79,7 +80,7 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   const calculateImageDimensions = (dimensions: { width: number; height: number }) => {
     const { width, height } = dimensions;
     const aspectRatio = width / height;
-    
+
     if (width > height) {
       return {
         width: maxImageSize,
@@ -103,28 +104,43 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
         <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
       </View>
 
+      <Text style={styles.journalBody}>{sections[0].content}</Text>
       <View style={styles.blogContainer}>
-        {sections.map((section, index) => (
-          <View key={index} style={styles.sectionContainer}>
-            {section.type === "text" ? (
-              <Text style={styles.journalBody}>{section.content}</Text>
-            ) : (
+        <ImageList sx={{ width: 1000, height: 900 }} cols={4} rowHeight={164}>
+          {sections.slice(1).map((section, index) => (
+            <View key={index} style={styles.sectionContainer}>
               <TouchableOpacity
                 onPress={() => setSelectedImage(section.content.startsWith("https") ? section.content : section.encodedContent)}
                 style={styles.imageWrapper}
               >
-                <Image
-                  source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
-                  style={[
-                    styles.image,
-                    calculateImageDimensions(section.dimensions),
-                  ]}
-                  resizeMode="contain"
-                />
+                {/* <Image
+                    source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
+                    style={[
+                      styles.image,
+                      calculateImageDimensions(section.dimensions),
+                    ]}
+                    resizeMode="contain"
+                  /> */}
+                <ImageListItem key={section.id}>
+                  <img
+                    srcSet={`${section.content.startsWith("https") ? section.content : section.encodedContent}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                    src={`${section.content.startsWith("https") ? section.content : section.encodedContent}?w=164&h=164&fit=crop&auto=format`}
+                    alt={"image"}
+                    loading="lazy"
+                  />
+                  {/* <Image
+                    source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
+                    style={[
+                      styles.image,
+                      calculateImageDimensions(section.dimensions),
+                    ]}
+                    resizeMode="contain"
+                  /> */}
+                </ImageListItem>
               </TouchableOpacity>
-            )}
-          </View>
-        ))}
+            </View>
+          ))}
+        </ImageList>
       </View>
 
       <ImagePreview
