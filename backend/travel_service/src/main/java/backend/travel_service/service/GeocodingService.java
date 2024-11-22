@@ -26,8 +26,8 @@ public class GeocodingService {
 
     // get geocoding data
     public List<String> getLocationData(double latitude, double longitude) {
-        String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&types=address&access_token=" + apiKey;
-
+        String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&access_token=" + apiKey;
+        // String url = MAPBOX_URL + "longitude=" + longitude + "&latitude=" + latitude + "&types=address&access_token=" + apiKey;
         String response = restTemplate.getForObject(url, String.class);
 
         return parseLocationData(response);
