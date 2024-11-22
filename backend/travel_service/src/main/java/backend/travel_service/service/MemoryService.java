@@ -102,45 +102,6 @@ public class MemoryService {
                     String content = (String) section.get("content");
                     System.out.println("Text content: " + content);
     
-                } else if ("imageGrid".equals(type)) {
-                    // Handle imageGrid: parse 'images' key as a list
-                    Object imagesObject = section.get("images");
-                    if (imagesObject instanceof String) {
-                        // If 'images' is a String, parse it as a List of Maps
-                        List<Map<String, String>> images = objectMapper.readValue(
-                            (String) imagesObject,
-                            new TypeReference<List<Map<String, String>>>() {}
-                        );
-    
-                        for (Map<String, String> image : images) {
-                            String uri = image.get("content");
-                            if (uri != null) {
-                                String S3URL = uploadToS3(uri, memory.getTitle());
-                                image.put("content", S3URL); // Replace with S3 URL
-                            }
-                        }
-    
-                        // Update the 'images' field with processed images
-                        section.put("images", images);
-                    } else if (imagesObject instanceof List) {
-                        System.out.println("I AM HERE");
-                        // If 'images' is already a List, cast and process directly
-                        // @SuppressWarnings("unchecked")
-                        List<Map<String, String>> images = (List<Map<String, String>>) imagesObject;
-    
-                        for (Map<String, String> image : images) {
-                            String uri = image.get("content");
-                            System.out.println(uri);
-                            if (uri != null) {
-                                String S3URL = uploadToS3(uri, memory.getTitle());
-                                image.put("content", S3URL); // Replace with S3 URL
-                                System.out.println("I AM HERE");
-                                System.out.println(S3URL);
-                            }
-                        }
-                        section.put("images", images);
-                        
-                    }
                 }
             }
     
@@ -149,7 +110,6 @@ public class MemoryService {
             // System.out.println(memory.getCaptionText());
     
         } catch (Exception e) {
-            System.out.println("HERE -- PRINTING STACK TRACE");
             e.printStackTrace();
         }
     
@@ -207,6 +167,69 @@ public class MemoryService {
         }
     }
 
+    // public void updateMemory(Long memoryId, MemoryDto memoryDto) {
+    //     Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
+    //     memory.setTitle(memoryDto.getTitle());
+    //     memory.setCategory(memoryDto.getCategory());
+    //     memory.setLoc(memoryDto.getLoc());
+    //     memory.setCondition(memoryDto.getCondition());
+    //     memory.setInitDate(memoryDto.getInitDate());
+    //     memory.setEndDate(memoryDto.getEndDate());
+
+    //     ObjectMapper objectMapper = new ObjectMapper();
+    //     try {
+    //         // Parse captionText as a List of Maps with Object values
+    //         List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+    //         // List<Map<String, Object>> captionSections = objectMapper.readValue(
+    //         //     memoryDto.getCaptionText(),
+    //         //     new TypeReference<List<Map<String, Object>>>() {}
+    //         // );            
+    //         List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+    //         // List<Map<String, Object>> previousCaptionSections = objectMapper.readValue(
+    //         //     memory.getCaptionText(),
+    //         //     new TypeReference<List<Map<String, Object>>>() {}
+    //         // );
+
+    //         // Collect URLs of images in previous and current sections
+    //         Set<String> previousImageUrls = previousCaptionSections.stream()
+    //             .filter(section -> "image".equals(section.get("type")))
+    //             .map(section -> section.get("content"))
+    //             .collect(Collectors.toSet());
+
+    //         Set<String> currentImageUrls = captionSections.stream()
+    //             .filter(section -> "image".equals(section.get("type")))
+    //             .map(section -> section.get("content"))
+    //             .collect(Collectors.toSet());
+            
+    //         // Determine deleted images (in previous but not in current)
+    //         Set<String> deletedImages = new HashSet<>(previousImageUrls);
+    //         deletedImages.removeAll(currentImageUrls);
+    //         deletedImages.forEach(this::deleteFromS3);
+
+    //         // Determine added images (in current but not in previous)
+    //         Set<String> addedImages = new HashSet<>(currentImageUrls);
+    //         addedImages.removeAll(previousImageUrls);
+
+    //         for (Map<String, String> section : captionSections) {
+    //             String type = (String) section.get("type");
+    //             String content = (String) section.get("content");
+    
+    //             if ("image".equals(type) && addedImages.contains(content)) {
+    //                 // Upload new image to S3 and replace content with S3 URL
+    //                 String S3URL = uploadToS3(content, memory.getTitle());
+    //                 section.put("content", S3URL);
+    //             }
+    //         }
+    
+    //         // Update captionText with modified captionSections
+    //         memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+        
+    //     memoryRepository.save(memory);
+    // }
+
     public void updateMemory(Long memoryId, MemoryDto memoryDto) {
         Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
         memory.setTitle(memoryDto.getTitle());
@@ -215,36 +238,42 @@ public class MemoryService {
         memory.setCondition(memoryDto.getCondition());
         memory.setInitDate(memoryDto.getInitDate());
         memory.setEndDate(memoryDto.getEndDate());
-
+    
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Parse captionText as a List of Maps
-            List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
-            List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
-
+            // Parse captionText as a List of Maps with Object values
+            List<Map<String, Object>> captionSections = objectMapper.readValue(
+                memoryDto.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
+            List<Map<String, Object>> previousCaptionSections = objectMapper.readValue(
+                memory.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
+    
             // Collect URLs of images in previous and current sections
             Set<String> previousImageUrls = previousCaptionSections.stream()
                 .filter(section -> "image".equals(section.get("type")))
-                .map(section -> section.get("content"))
+                .map(section -> (String) section.get("content"))
                 .collect(Collectors.toSet());
-
+    
             Set<String> currentImageUrls = captionSections.stream()
                 .filter(section -> "image".equals(section.get("type")))
-                .map(section -> section.get("content"))
+                .map(section -> (String) section.get("content"))
                 .collect(Collectors.toSet());
-            
+    
             // Determine deleted images (in previous but not in current)
             Set<String> deletedImages = new HashSet<>(previousImageUrls);
             deletedImages.removeAll(currentImageUrls);
             deletedImages.forEach(this::deleteFromS3);
-
+    
             // Determine added images (in current but not in previous)
             Set<String> addedImages = new HashSet<>(currentImageUrls);
             addedImages.removeAll(previousImageUrls);
-
-            for (Map<String, String> section : captionSections) {
-                String type = section.get("type");
-                String content = section.get("content");
+    
+            for (Map<String, Object> section : captionSections) {
+                String type = (String) section.get("type");
+                String content = (String) section.get("content");
     
                 if ("image".equals(type) && addedImages.contains(content)) {
                     // Upload new image to S3 and replace content with S3 URL
@@ -258,9 +287,10 @@ public class MemoryService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+    
         memoryRepository.save(memory);
     }
+    
 
     public List<Location> getVisitedLocations(Long userId) {
         // get all 'visited' pins

@@ -110,11 +110,11 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
               <Text style={styles.journalBody}>{section.content}</Text>
             ) : (
               <TouchableOpacity
-                onPress={() => setSelectedImage(section.encodedContent)}
+                onPress={() => setSelectedImage(section.content.startsWith("https") ? section.content : section.encodedContent)}
                 style={styles.imageWrapper}
               >
                 <Image
-                  source={{ uri: section.encodedContent }}
+                  source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
                   style={[
                     styles.image,
                     calculateImageDimensions(section.dimensions),
