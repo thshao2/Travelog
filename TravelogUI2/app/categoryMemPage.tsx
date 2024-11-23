@@ -104,7 +104,13 @@ export default function CategoryMemPage() {
   if (error) {
     return <Text style={styles.errorText}>{error}</Text>;
   }
+
+  const handleRefetch = () => {
+    fetchMemoriesByCategory();
+    fetchOverviewUrls();
+  }
    
+
   return (
     <ScrollView>
       <Typography level="h3" sx={{
@@ -131,7 +137,7 @@ export default function CategoryMemPage() {
                 key={journal.id}
                 xs={12} sm={4} md={3}
               >
-                <MemoryCard onRefetch={fetchMemoriesByCategory} journal={journal} />
+                <MemoryCard onRefetch={handleRefetch} journal={journal} />
               </Grid>
             ))}
           </Grid>

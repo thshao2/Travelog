@@ -17,14 +17,12 @@ interface MemoryCardProps {
 }
 
 export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
-  console.log(journal.captionText);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
-
-  const [_memories, setMemories] = useState<Journal[]>([]);
-  const [_error, setError] = useState<string | null>(null);
-  const [_visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
+  const [memories, setMemories] = useState<Journal[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
 
   const formatDate = (date: Date) => {
     const d = new Date(date);
@@ -130,7 +128,9 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
+    console.log("about to refetch");
     onRefetch();
+    console.log("HERE IN EDITING JOURNAL");
     updateUserStats(loginContext.accessToken);
   };
 

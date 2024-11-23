@@ -87,7 +87,7 @@ public class MemoryService {
                 memory.getCaptionText(),
                 new TypeReference<List<Map<String, Object>>>() {}
             );
-    
+            System.out.println("ABOVE FOR LOOP IN POSTMEMORY");
             for (Map<String, Object> section : captionSections) {
                 String type = (String) section.get("type");
     
@@ -96,6 +96,7 @@ public class MemoryService {
                     String content = (String) section.get("content");
                     String S3URL = uploadToS3(content, memory.getTitle());
                     section.put("content", S3URL);
+                    System.out.println("S3URL: " + S3URL);
     
                 } else if ("text".equals(type)) {
                     // Handle text content
@@ -427,25 +428,42 @@ public class MemoryService {
         visitedStatsDto.setDefaultLocation(defaultLocation.get(2));
         return visitedStatsDto;
     }
-
-    // FOR LATER: 
     // get array of s3 urls for overview slideshow
     public List<String> getOverviewUrls(Long userId, String category) {
         // get all memories
         List<Memory> memories = memoryRepository.findByCategory(userId, category);
 
         // for each memory, add to list of s3 urls
-        List<String> urls = new ArrayList<>();
-        for (Memory memory : memories) {
-        //     TODO: GET S3 URL FOR EACH MEMORY
-        //     urls.add(S3URL);
-        }
-        urls.add("https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        urls.add("https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        urls.add("https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        urls.add("https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        System.out.println("HERE IN GETOVERVIEWURLS, URLS IS: " + urls);
-        return urls;
+        List<String> overviewUrls = new ArrayList<>();
 
+        for (Memory memory : memories) {
+            System.out.println("||||| in get overview urls |||||");
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                // Parse captionText as a List of Maps with Object values
+                List<Map<String, Object>> captionSections = objectMapper.readValue(
+                    memory.getCaptionText(),
+                    new TypeReference<List<Map<String, Object>>>() {}
+                );  
+                // Collect URLs of images in previous and current sections
+                Set<String> urls = captionSections.stream()
+                .filter(section -> "image".equals(section.get("type")))
+                .map(section -> (String) section.get("content"))
+                .collect(Collectors.toSet());  
+                
+                overviewUrls.addAll(urls);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // if urls is empty, add default imgs into urls
+        if (overviewUrls.isEmpty()) {
+            System.out.println("no images associated w category -- default imgs will be used");
+            overviewUrls.add("https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            overviewUrls.add("https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            overviewUrls.add("https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            overviewUrls.add("https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        }
+        return overviewUrls;
     }
 }
