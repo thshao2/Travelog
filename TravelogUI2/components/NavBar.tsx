@@ -17,8 +17,8 @@ import { removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-// const pages = ["map", "saved", "profile"];
-const pages = ["map", "profile"];
+const pages = ["map", "saved", "profile"];
+// const pages = ["map", "profile"];
 // const settings = ["Logout"];
 
 function NavBar() {
