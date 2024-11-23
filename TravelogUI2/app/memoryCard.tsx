@@ -130,7 +130,6 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
     }
     console.log("about to refetch");
     onRefetch();
-    console.log("HERE IN EDITING JOURNAL");
     updateUserStats(loginContext.accessToken);
   };
 

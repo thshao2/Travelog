@@ -108,9 +108,8 @@ export default function CategoryMemPage() {
   const handleRefetch = () => {
     fetchMemoriesByCategory();
     fetchOverviewUrls();
-  }
+  };
    
-
   return (
     <ScrollView>
       <Typography level="h3" sx={{
