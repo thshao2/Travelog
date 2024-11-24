@@ -152,22 +152,39 @@ export default function CategoryMemPage() {
             marginTop: "15px",     
           }}
         >
-          <Slider {...sliderSettings}>
-            {images.map((image, index) => (
-              <Box
-                key={index}
-                component="img"
-                src={image}
-                alt={`Slide ${index + 1}`}
-                sx={{     
-                  height: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              />
-            ))}
-          </Slider>
+          {images.length === 0 ? (
+            <Box
+              sx={{
+                backgroundColor: "rgba(0,0,0,0.75)",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "500px",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="h5">Add images to your memories to see them your overview!</Typography>
+            </Box>
+          ) : (
+            <Slider {...sliderSettings}>
+              {images.map((image, index) => (
+                <Box
+                  key={index}
+                  component="img"
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  sx={{     
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                />
+              ))}
+            </Slider>
+          )}
         </Box>
      
       </Box>
