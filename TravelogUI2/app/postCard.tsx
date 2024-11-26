@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { Box, Typography, Card, Divider, Chip } from "@mui/joy";
+import { Box, Card, Divider } from "@mui/material";
 import { View, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";
 import { useLoginContext } from "./context/LoginContext";
 import config from "./config";
 import JournalDetailModal from "./journalDetail";
-import { IconButton } from "@mui/joy";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ChevronRight from "@mui/icons-material/ChevronRight";
+
+import { Typography } from "@mui/joy";
 
 const { API_URL } = config;
 
@@ -18,12 +21,13 @@ interface PostCardProps {
 }
 
 export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
+  console.log(user);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
-  const [memories, setMemories] = useState<Journal[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
+  const [_memories, setMemories] = useState<Journal[]>([]);
+  const [_error, setError] = useState<string | null>(null);
+  const [_visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = JSON.parse(journal.captionText)
     .filter((section: any) => section.type === "image" || section.type === "imageGrid")
@@ -139,7 +143,6 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
   return (
     <View style={{ flex: 1, width: "95%" }}>
       <Card
-
         sx={{
           //   position: "relative",
           padding: 2,
@@ -178,7 +181,6 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
               }}
             />
 
-            {/* Left Arrow */}
             <IconButton
               onClick={showPrevImage}
               sx={{
@@ -194,7 +196,6 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
               <ChevronLeft />
             </IconButton>
 
-            {/* Right Arrow */}
             <IconButton
               onClick={showNextImage}
               sx={{
@@ -211,29 +212,10 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
             </IconButton>
           </Box>
           <Box sx={{ textAlign: "center", marginTop: "8px" }}>
-            <Typography variant="inherit">
+            <Typography level="inherit">
               {currentImageIndex + 1} / {images.length}
             </Typography>
           </Box>
-          {/* <Box
-          component="img"
-          src={
-            JSON.parse(journal.captionText).find((section: any) => section.type === "image")?.content
-            //  ||
-            // JSON.parse(journal.captionText)
-            //   .find((section: any) => section.type === "imageGrid")?.images[0]?.content
-               ||
-            "../assets/images/default-pic.jpg"
-          }
-          alt="Journal Image"
-          sx={{
-            width: "100%",
-            height: "auto",
-            // objectFit: "cover",
-            borderRadius: "8px",
-            // overflow: "hidden",
-          }}
-        /> */}
           <Typography
             level="inherit"
             sx={{
@@ -248,11 +230,9 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
           </Typography>
         </div>
 
-        {/* Content Section */}
         <div style={{ flex: 1, width: "30%" }}>
 
           <Typography level="h4">{journal.title}</Typography>
-          {/* <Chip label={user} /> */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <Ionicons name="location" size={20} color={"#E18CA0"} />
             <Typography level="inherit" style={{ color: "gray", marginLeft: "8px" }}>
@@ -274,9 +254,9 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
                     key={index}
                     level="inherit"
                     sx={{
-                      display: '-webkit-box',
-                      overflow: 'hidden',
-                      WebkitBoxOrient: 'vertical',
+                      display: "-webkit-box",
+                      overflow: "hidden",
+                      WebkitBoxOrient: "vertical",
                       WebkitLineClamp: 3,
                     }}
                   >
