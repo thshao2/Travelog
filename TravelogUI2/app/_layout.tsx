@@ -36,14 +36,13 @@ export default function RootLayout() {
     return null;
   }
 
-  const showNavBar = ["/map", "/saved", "/", "/categoryMemPage", "", "/profile"].includes(location.pathname);
+  // const showNavBar = ["/map", "/saved", "/", "/categoryMemPage", "", "/profile"].includes(location.pathname);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       
       <LoginProvider>
-        {/* Conditionally render NavBar */}
-        { showNavBar && <NavBar />}  {/* Only show the NavBar if it's not login, signup, or not-found */}
+        <NavBar/>
 
         <Stack>
           <Stack.Screen name="login" options={{ headerShown: false }} />
@@ -52,9 +51,9 @@ export default function RootLayout() {
           <Stack.Screen name="saved" options={{ headerShown: false }} />
           <Stack.Screen name="profile" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false, title: "" }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
           <Stack.Screen name="+not-found" />
-          <Stack.Screen name="categoryMemPage" />
+          <Stack.Screen name="categoryMemPage" options={{ headerShown: false }}/>
         </Stack>
       </LoginProvider>
     </ThemeProvider>

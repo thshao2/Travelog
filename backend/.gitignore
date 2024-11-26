@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets ###
+.env
+.env.d.ts
+**/*.env
+

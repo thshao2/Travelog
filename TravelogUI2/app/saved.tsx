@@ -1,29 +1,32 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import React, { useState, useContext } from "react";
+import { ActivityIndicator, ScrollView } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback } from "react";
+import { Box, Typography, Card, Grid } from "@mui/joy";
+import { LoginContext } from "./context/LoginContext";
 import config from "./config";
-import { useLoginContext } from "./context/LoginContext";
-import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./styles/saved-styles";
-
 const { API_URL } = config;
 
 interface CategoryButtonProps {
   label: string;
+  index: number;
 }
 
 export default function SavedPage() {
   const navigation = useNavigation();
-  const loginContext = useLoginContext();
   const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const loginContext = useContext(LoginContext);
 
-  const fetchCategories = async() => {
+  // Fetch categories from API
+  const fetchCategories = async () => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/travel/memory/categories`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
+          Authorization: `Bearer ${loginContext.accessToken}`,
         },
       });
       if (response.ok) {
@@ -31,44 +34,79 @@ export default function SavedPage() {
         setCategories(data);
       } else {
         console.error("Error fetching categories:", response.statusText);
-        navigation.navigate("login");
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Handle category press
+  const handleCategoryPress = (category: string) => {
+    navigation.navigate("categoryMemPage", { category });
+  };
+
+  // Refetch categories on screen focus
   useFocusEffect(
     useCallback(() => {
       fetchCategories();
     }, [loginContext.accessToken]),
   );
 
-  const handleCategoryPress = (category: string) => {
-    navigation.navigate("categoryMemPage", { category });
-  };
+  const themeColors = ["#996c96", "#e18ca0", "#328ecb", "#7AAACE", "#D0A496", "#9699D0", "#96D0B9", "#E3D187", "#D49292"];
 
-  const CategoryButton: React.FC<CategoryButtonProps> = ({ label }) => (
-    <Pressable style={styles.categoryButton} onPress={() => handleCategoryPress(label)}>
-      <Ionicons
-        name="earth-outline"
-        size={150}
-        style={styles.iconBackground}
-      />
-      <Text style={styles.categoryButtonText}>{label}</Text>
-    </Pressable>
+  const CategoryButton: React.FC<CategoryButtonProps> = ({ label, index }) => (
+    <Card
+      onClick={() => handleCategoryPress(label)}
+      sx={{
+        width: "90%",
+        height: "8em",
+        padding: 2,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "8px 0",
+        backgroundColor: themeColors[index % themeColors.length],
+        color: "white",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        textAlign: "center",
+      }}
+    >
+      <Typography level="h4" sx={{ color: "white" }}>
+        {label}
+      </Typography>
+    </Card>
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>My Lists</Text>
-      <View style={styles.gridContainer}>
-        <CategoryButton key={"All"} label="All" />
-        {categories.map((category) => (
-          <CategoryButton key={category} label={category} />
-        ))}
-      </View>
+    <ScrollView>
+      <Box sx={{ padding: 2 }}>
+        <Typography level="h3" sx={{ textAlign: "center", mb: 2 }}>
+        View by Categories
+        </Typography>
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+            }}
+          >
+            <ActivityIndicator size="large" />
+          </Box>
+        ) : (
+          <Grid container spacing={3}>
+            {["All", ...categories].map((category, index) => (
+              <Grid xs={12} sm={6} md={4} lg={3} key={category}>
+                <CategoryButton label={category} index={index} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
     </ScrollView>
   );
 }
-

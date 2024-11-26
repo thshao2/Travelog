@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Platform, TextInput, Button, Modal, Text, StyleSheet, ScrollView, Image, Alert, Pressable } from "react-native";
+import { View, TextInput, Modal, Text, ScrollView, Button } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { DatePickerInput } from "react-native-paper-dates";
 import { Journal } from "./popupMenu";
 import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
 import JournalDisplay from "./journalDisplay";
+import RichTextEditor from "./richTextEditor";
+
+import { styles } from "./styles/journal-detail-styles";
 
 export interface JournalDetailProps {
   isDetailVisible: boolean,
@@ -17,6 +18,14 @@ export interface JournalDetailProps {
   onEdit: (updatedJournal: Journal) => void,
 }
 
+export type Section = {
+  id?: string,
+  type: string,
+  content: string,
+  encodedContent?: string,
+  dimensions?: {width: number, height: number}
+}
+
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
@@ -25,39 +34,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedJournalCondition, setEditedJournalCondition] = useState(journal.condition);
   const [editedInitDate, setEditedInitDate] = useState(new Date(new Date(journal?.initDate).setHours(0, 0, 0, 0)));
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
-  const [sections, setSections] = useState(() => {
-	  const parsedSections = JSON.parse(journal.captionText);
-	  
-	  // Group consecutive images together into grids
-	  const groupedSections = [];
-	  let currentImageGroup = [];
-	  
-	  parsedSections.forEach((section, _) => {
-      if (section.type === "image") {
-		  currentImageGroup.push(section);
-      } else {
-		  if (currentImageGroup.length > 0) {
-          groupedSections.push({
-			  type: "imageGrid",
-			  images: currentImageGroup,
-          });
-          currentImageGroup = [];
-		  }
-		  groupedSections.push(section);
-      }
-	  });
-	  
-	  // Add any remaining images
-	  if (currentImageGroup.length > 0) {
-      groupedSections.push({
-		  type: "imageGrid",
-		  images: currentImageGroup,
-      });
-	  }
-	  
-	  return groupedSections;
-  });
-  const [encodedSections, setEncodedSections] = useState(JSON.parse(journal.captionText));
+  const [sections, setSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
@@ -69,7 +46,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   }, [editedJournalTitle, editedJournalLocation, editedJournalCondition, editedInitDate, editedEndDate]);
 
   useEffect(() => {
-    console.log("sections", sections);
+    console.log("SEctions:" + JSON.stringify(sections));
     setSections(JSON.parse(journal.captionText));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSections, journal.captionText]);
@@ -87,78 +64,10 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       condition: editedJournalCondition, 
       initDate: editedInitDate,
       endDate: editedEndDate,
-      captionText: JSON.stringify(encodedSections),
+      captionText: JSON.stringify(sections),
     });
 
     setIsEditMode(false);
-  };
-
-  const addTextSection = () => {
-    setSections([...sections, { type: "text", content: "" }]);
-    setEncodedSections([...encodedSections, { type: "text", content: "" }]);
-  };
-
-  const addImageSection = async() => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const { uri } = result.assets[0];
-      setSections([...sections, { type: "image", content: uri }]);
-      let base64 = "";
-
-      if (Platform.OS === "web") {
-        // Web: fetch the image and convert to Base64
-        const response = await fetch(uri);
-        const blob = await response.blob();
-  
-        // Convert blob to Base64
-        base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob); // Read the blob as a data URL
-        });
-      } else {
-        // Mobile: use FileSystem to get Base64 string
-        base64 = await FileSystem.readAsStringAsync(uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-      }
-
-      if (base64 !== "") {
-        setEncodedSections([...encodedSections, { type: "image", content: base64 }]);
-      }
-    }
-  };
-
-  const handleSectionChange = (index: number, content: string) => {
-    const newSections = [...sections];
-    newSections[index].content = content;
-    setSections(newSections);
-
-    const newEncodedSections = [...encodedSections];
-    newEncodedSections[index].content = content;
-    setEncodedSections(newEncodedSections);
-  };
-
-  const deleteSection = (index: number) => {
-    const newSections = sections.filter((_:any, i: number) => i !== index);
-    setSections(newSections);
-
-    const newEncodedSections = encodedSections.filter((_:any, i:number) => i !== index);
-    setEncodedSections(newEncodedSections);
   };
 
   return (
@@ -253,35 +162,10 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                   />
                 </View>
 
-                {sections.map((section: any, index: number) => (
-                  <View key={index} style={styles.inputContainer}>
-                    {section.type === "text" ? (
-                      <>
-                        <Text style={styles.label}>Journal</Text>
-                        <TextInput
-                          style={[styles.input, styles.textArea]}
-                          placeholder="Write your journal here..."
-                          value={section.content}
-                          onChangeText={(text) => handleSectionChange(index, text)}
-                          multiline={true}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Text style={styles.label}>Image</Text>
-                        <Image source={{ uri: section.content }} style={styles.image} />
-                      </>
-                    )}
-                    <Pressable onPress={() => deleteSection(index)} style={styles.deleteButton}>
-                      <MaterialIcons name="delete" size={24} color="red" />
-                    </Pressable>
-                  </View>
-                ))}
-
-                <View style={styles.buttonContainer}>
-                  <Button title="Add Text" onPress={addTextSection} color="#007AFF" />
-                  <Button title="Add Image" onPress={addImageSection} color="#007AFF" />
-                </View>
+                <RichTextEditor onContentChange={(newSections: Section[]) => {
+                  setSections(newSections);
+                  console.log(newSections, "newSections");
+                }} initialContent={journal.captionText} />
 
                 <View style={styles.buttonContainer}>
                   <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
@@ -289,7 +173,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 </View>
               </View>
             ) : (
-              <JournalDisplay journal={journal} groupedSections={sections} />
+              <JournalDisplay key = {JSON.stringify(sections)} journal={journal} groupedSections={sections} />
             )}
           </View>
         </View>       
@@ -300,137 +184,3 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
 
 export default JournalDetailModal;
 
-const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    width: "85%",
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    elevation: 10,
-  },
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  iconContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  detailLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginVertical: 5,
-    color: "#555",
-  },
-  detailText: {
-    fontWeight: "normal",
-    color: "#444",
-  },
-  datePicker: {
-    width: "100%",
-    marginBottom: 15,
-  },
-  textArea: {
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    height: 100,
-    fontSize: 16,
-    textAlignVertical: "top",
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  blogContainer: {
-    padding: 16,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  label: {
-    width: 100,
-    marginRight: 10,
-    fontSize: 16,
-    color: "#333",
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 10,
-    fontSize: 16,
-  },
-  text: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 8,
-  },
-  journalBody: {
-    fontSize: 16,
-    marginTop: 8,
-    color: "#555",
-  },
-  dropdownContainer: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  dropdown: {
-    height: 40,
-    width: "100%",
-  },
-  sectionContainer: {
-    marginBottom: 15,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  scrollView: {
-    maxHeight: "80%",
-  },
-  deleteButton: {
-    marginLeft: 10,
-  },
-});

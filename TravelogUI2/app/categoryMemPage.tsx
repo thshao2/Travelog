@@ -6,10 +6,22 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import { Journal } from "./popupMenu";
 import { RootStackParamList } from "./types";
 import config from "./config";
+import Slider from "react-slick";
+import { Box } from "@mui/material";
 
 import MemoryCard from "./memoryCard";
 
 const { API_URL } = config;
+
+const sliderSettings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 4000,
+};
 
 export default function CategoryMemPage() {
   const route = useRoute<RouteProp<RootStackParamList, "categoryMemPage">>();
@@ -19,6 +31,7 @@ export default function CategoryMemPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
+  const [images, setImages] = useState([]);
 
   const fetchMemoriesByCategory = async() => {
     try {
@@ -42,11 +55,34 @@ export default function CategoryMemPage() {
       } else {
         setError("Failed to fetch memories.");
       }
+
     } catch (err) {
       setError("Error fetching memories.");
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchOverviewUrls = async() => {
+    try {
+      // get slideshow urls:
+      const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${category}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${loginContext.accessToken}`,
+        },
+      });
+      if (!url_response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const url_data = await url_response.json();
+      setImages(url_data);
+
+    } catch (err) {
+      setError("Error fetching slideshow urls.");
+      console.error(err);
     }
   };
 
@@ -59,6 +95,7 @@ export default function CategoryMemPage() {
 
   useEffect(() => {
     fetchMemoriesByCategory();
+    fetchOverviewUrls();
   }, [category]);
 
   if (loading) {
@@ -68,26 +105,89 @@ export default function CategoryMemPage() {
     return <Text style={styles.errorText}>{error}</Text>;
   }
 
+  const handleRefetch = () => {
+    fetchMemoriesByCategory();
+    fetchOverviewUrls();
+  };
+   
   return (
     <ScrollView>
       <Typography level="h3" sx={{
+        alignSelf: "center",
         fontWeight: "bold",
-        paddingLeft: 2,
         paddingTop: 2,
       }}>{category}</Typography>
       <Typography level="h4" sx={{
-        paddingLeft: 2,
+        alignSelf: "center",
       }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
-      <Grid container spacing={2} sx={{ padding: 2 }}>
-        {memories.map((journal) => (
-          <Grid
-            key={journal.id}
-            xs={12} sm={4} md={3}
-          >
-            <MemoryCard onRefetch={fetchMemoriesByCategory} journal={journal} />
+      
+      <Box sx={{ 
+        display: "flex",
+        flexDirection: "row",
+        gap: 4,
+        padding: 2,
+      }}>
+        <Box sx={{
+          flex: 2,
+        }}>
+          <Grid container spacing={2} sx={{ padding: 2 }}>
+            {memories.map((journal) => (
+              <Grid
+                key={journal.id}
+                xs={12} sm={4} md={3}
+              >
+                <MemoryCard onRefetch={handleRefetch} journal={journal} />
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",           
+            width: "33%",            
+            height: "100%",              
+            overflow: "hidden",         
+            flexDirection: "column", 
+            marginTop: "15px",     
+          }}
+        >
+          {images.length === 0 ? (
+            <Box
+              sx={{
+                backgroundColor: "rgba(0,0,0,0.75)",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "500px",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="h5">Add images to your memories to see them your overview!</Typography>
+            </Box>
+          ) : (
+            <Slider {...sliderSettings}>
+              {images.map((image, index) => (
+                <Box
+                  key={index}
+                  component="img"
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  sx={{     
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                />
+              ))}
+            </Slider>
+          )}
+        </Box>
+     
+      </Box>
     </ScrollView>
   );
 }

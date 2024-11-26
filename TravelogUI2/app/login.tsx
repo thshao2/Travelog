@@ -9,8 +9,6 @@ import { useLoginContext } from "./context/LoginContext";
 
 const { API_URL } = config;
 
-// const API_URL = process.env.NODE_ENV === 'production' ? "http://18.144.165.97" : "http://localhost:8080";
-
 const LoginScreen = () => {
   const navigation = useNavigation();
 
@@ -120,7 +118,7 @@ const LoginScreen = () => {
         <Text style={styles.text}>
           Don't have an account?{" "}
           <Pressable onPress={() => navigation.navigate("signup")}>
-            <Text style={styles.signUpText}>Click here to sign up!</Text>
+            <Text key="clickToSignUp" style={styles.signUpText}>Click here to sign up!</Text>
           </Pressable>
         </Text>
       </View>

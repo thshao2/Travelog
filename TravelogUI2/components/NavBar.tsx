@@ -13,34 +13,35 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigation } from "@react-navigation/native";
-import {removeToken } from "../app/utils/util";
+import { removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 const pages = ["map", "saved", "profile"];
-const settings = ["Logout"];
+// const pages = ["map", "profile"];
+// const settings = ["Logout"];
 
 function NavBar() {
   const navigation = useNavigation();
   const loginContext = useLoginContext();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  // const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorElUser(event.currentTarget);
+  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  // const handleCloseUserMenu = () => {
+  //   setAnchorElUser(null);
+  // };
 
   const logout = async () => {
     console.log("-----------------LOGOUT OF NAVBAR CALLED!!!!!!!!!!!!!!---------------------");
@@ -50,15 +51,26 @@ function NavBar() {
     navigation.navigate("login");
   };
 
+  // Navigate to home only if user is logged in - otherwise stay in login / signup
+  const navigateToHome = async () => {
+    // if (loginContext.accessToken) {
+      navigation.navigate("index");
+    // }
+  };
+
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#4E5BA6" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
+          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
+            // disabled={!loginContext.accessToken}
+            onClick={() => navigateToHome()} 
+          />
           
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
-            onClick={() => navigation.navigate("index")}
+            onClick={() => navigateToHome()}
+            // disabled={!loginContext.accessToken}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -73,7 +85,7 @@ function NavBar() {
             Travelog
           </Button>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          {loginContext.accessToken && <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -109,7 +121,7 @@ function NavBar() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </Box> }
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
           
           {/* Wrapping Typography in Button for proper click handling (mobile view) */}
@@ -129,8 +141,8 @@ function NavBar() {
             TRAVELOG
           </Button>
           
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", marginLeft: 80 } }}>
-            {pages.map((page) => (
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: loginContext.accessToken ? 120 : 0 } }}>
+            {loginContext.accessToken && pages.map((page) => (
               <Button
                 key={page}
                 onClick={() => {
@@ -141,13 +153,35 @@ function NavBar() {
                   my: 2,
                   color: "white",
                   display: "block",
-                  marginLeft: 10,
+                  marginLeft: 6,
                   fontSize: "1.2rem",
                 }}
               >
                 {page}
               </Button>
             ))}
+            {/* Login Button if User has not logged in */}
+            {!loginContext.accessToken &&
+              <Button
+              key="login"
+              onClick={() => {
+                handleCloseNavMenu();
+                navigation.navigate("login");
+              }}
+              sx={{
+                my: 2,
+                color: "white",
+                display: "block",
+                marginLeft: 6,
+                fontSize: "1.2rem",
+                border: "2px solid white", // Add a white border
+                padding: "0.5rem 1rem",    // Add padding for better spacing
+                borderRadius: "4px",       // Optional: make the box corners rounded
+              }}
+            >
+              Log In
+            </Button>
+            }
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             {/* <Tooltip title="Open settings">
@@ -187,7 +221,7 @@ function NavBar() {
                 </Button>
               </MenuItem>
             </Menu> */}
-            <IconButton
+            { loginContext.accessToken && <IconButton
               onClick={logout}
               sx={{
                 position: "absolute", // Position it absolutely to the right
@@ -198,7 +232,7 @@ function NavBar() {
               }}
             >
               <LogoutIcon />
-            </IconButton>
+            </IconButton> }
           </Box>
         </Toolbar>
       </Container>

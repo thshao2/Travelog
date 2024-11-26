@@ -1,6 +1,7 @@
 package backend.travel_service.service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
@@ -79,34 +80,46 @@ public class MemoryService {
     }
 
     public Memory postMemory(Memory memory) {
-        
-        System.out.println(memory.getCaptionText());
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Parse captionText as a List of Maps
-            List<Map<String, String>> captionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
-    
-            for (Map<String, String> section : captionSections) {
-                String type = section.get("type");
-                String content = section.get("content");
+            // Parse captionText as a List of Maps with Object values
+            List<Map<String, Object>> captionSections = objectMapper.readValue(
+                memory.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
+            System.out.println("ABOVE FOR LOOP IN POSTMEMORY");
+            for (Map<String, Object> section : captionSections) {
+                String type = (String) section.get("type");
     
                 if ("image".equals(type)) {
+                    // Handle single image
+                    String content = (String) section.get("content");
                     String S3URL = uploadToS3(content, memory.getTitle());
                     section.put("content", S3URL);
+                    System.out.println("S3URL: " + S3URL);
+    
                 } else if ("text".equals(type)) {
+                    // Handle text content
+                    String content = (String) section.get("content");
                     System.out.println("Text content: " + content);
+    
                 }
             }
+    
+            // Serialize updated captionSections back to JSON
             memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+            // System.out.println(memory.getCaptionText());
+    
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+    
         return memoryRepository.save(memory);
     }
+    
 
     private String uploadToS3(String base64Image, String title) {
+        System.out.println("HERE IN UPLAODTOS3");
         byte[] decodedImage = Base64.getDecoder().decode(base64Image);
         String bucketName = "travelog-media";
         String uniqueFileName = UUID.randomUUID() + "-" + title + ".png";
@@ -155,6 +168,69 @@ public class MemoryService {
         }
     }
 
+    // public void updateMemory(Long memoryId, MemoryDto memoryDto) {
+    //     Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
+    //     memory.setTitle(memoryDto.getTitle());
+    //     memory.setCategory(memoryDto.getCategory());
+    //     memory.setLoc(memoryDto.getLoc());
+    //     memory.setCondition(memoryDto.getCondition());
+    //     memory.setInitDate(memoryDto.getInitDate());
+    //     memory.setEndDate(memoryDto.getEndDate());
+
+    //     ObjectMapper objectMapper = new ObjectMapper();
+    //     try {
+    //         // Parse captionText as a List of Maps with Object values
+    //         List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+    //         // List<Map<String, Object>> captionSections = objectMapper.readValue(
+    //         //     memoryDto.getCaptionText(),
+    //         //     new TypeReference<List<Map<String, Object>>>() {}
+    //         // );            
+    //         List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
+    //         // List<Map<String, Object>> previousCaptionSections = objectMapper.readValue(
+    //         //     memory.getCaptionText(),
+    //         //     new TypeReference<List<Map<String, Object>>>() {}
+    //         // );
+
+    //         // Collect URLs of images in previous and current sections
+    //         Set<String> previousImageUrls = previousCaptionSections.stream()
+    //             .filter(section -> "image".equals(section.get("type")))
+    //             .map(section -> section.get("content"))
+    //             .collect(Collectors.toSet());
+
+    //         Set<String> currentImageUrls = captionSections.stream()
+    //             .filter(section -> "image".equals(section.get("type")))
+    //             .map(section -> section.get("content"))
+    //             .collect(Collectors.toSet());
+            
+    //         // Determine deleted images (in previous but not in current)
+    //         Set<String> deletedImages = new HashSet<>(previousImageUrls);
+    //         deletedImages.removeAll(currentImageUrls);
+    //         deletedImages.forEach(this::deleteFromS3);
+
+    //         // Determine added images (in current but not in previous)
+    //         Set<String> addedImages = new HashSet<>(currentImageUrls);
+    //         addedImages.removeAll(previousImageUrls);
+
+    //         for (Map<String, String> section : captionSections) {
+    //             String type = (String) section.get("type");
+    //             String content = (String) section.get("content");
+    
+    //             if ("image".equals(type) && addedImages.contains(content)) {
+    //                 // Upload new image to S3 and replace content with S3 URL
+    //                 String S3URL = uploadToS3(content, memory.getTitle());
+    //                 section.put("content", S3URL);
+    //             }
+    //         }
+    
+    //         // Update captionText with modified captionSections
+    //         memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+        
+    //     memoryRepository.save(memory);
+    // }
+
     public void updateMemory(Long memoryId, MemoryDto memoryDto) {
         Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
         memory.setTitle(memoryDto.getTitle());
@@ -163,36 +239,42 @@ public class MemoryService {
         memory.setCondition(memoryDto.getCondition());
         memory.setInitDate(memoryDto.getInitDate());
         memory.setEndDate(memoryDto.getEndDate());
-
+    
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            // Parse captionText as a List of Maps
-            List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
-            List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, String>>>(){});
-
+            // Parse captionText as a List of Maps with Object values
+            List<Map<String, Object>> captionSections = objectMapper.readValue(
+                memoryDto.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
+            List<Map<String, Object>> previousCaptionSections = objectMapper.readValue(
+                memory.getCaptionText(),
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
+    
             // Collect URLs of images in previous and current sections
             Set<String> previousImageUrls = previousCaptionSections.stream()
                 .filter(section -> "image".equals(section.get("type")))
-                .map(section -> section.get("content"))
+                .map(section -> (String) section.get("content"))
                 .collect(Collectors.toSet());
-
+    
             Set<String> currentImageUrls = captionSections.stream()
                 .filter(section -> "image".equals(section.get("type")))
-                .map(section -> section.get("content"))
+                .map(section -> (String) section.get("content"))
                 .collect(Collectors.toSet());
-            
+    
             // Determine deleted images (in previous but not in current)
             Set<String> deletedImages = new HashSet<>(previousImageUrls);
             deletedImages.removeAll(currentImageUrls);
             deletedImages.forEach(this::deleteFromS3);
-
+    
             // Determine added images (in current but not in previous)
             Set<String> addedImages = new HashSet<>(currentImageUrls);
             addedImages.removeAll(previousImageUrls);
-
-            for (Map<String, String> section : captionSections) {
-                String type = section.get("type");
-                String content = section.get("content");
+    
+            for (Map<String, Object> section : captionSections) {
+                String type = (String) section.get("type");
+                String content = (String) section.get("content");
     
                 if ("image".equals(type) && addedImages.contains(content)) {
                     // Upload new image to S3 and replace content with S3 URL
@@ -206,9 +288,10 @@ public class MemoryService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+    
         memoryRepository.save(memory);
     }
+    
 
     public List<Location> getVisitedLocations(Long userId) {
         // get all 'visited' pins
@@ -345,5 +428,42 @@ public class MemoryService {
         visitedStatsDto.setDefaultLocation(defaultLocation.get(2));
         return visitedStatsDto;
     }
+    // get array of s3 urls for overview slideshow
+    public List<String> getOverviewUrls(Long userId, String category) {
+        // get all memories
+        List<Memory> memories = memoryRepository.findByCategory(userId, category);
 
+        // for each memory, add to list of s3 urls
+        List<String> overviewUrls = new ArrayList<>();
+
+        for (Memory memory : memories) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                // from postMemory
+                // Parse captionText as a List of Maps with Object values
+                List<Map<String, Object>> captionSections = objectMapper.readValue(
+                    memory.getCaptionText(),
+                    new TypeReference<List<Map<String, Object>>>() {}
+                );  
+                // Collect URLs of images in previous and current sections
+                Set<String> urls = captionSections.stream()
+                .filter(section -> "image".equals(section.get("type")))
+                .map(section -> (String) section.get("content"))
+                .collect(Collectors.toSet());  
+                
+                overviewUrls.addAll(urls);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // // if urls is empty, add default imgs into urls
+        // if (overviewUrls.isEmpty()) {
+        //     System.out.println("no images associated w category -- default imgs will be used");
+        //     overviewUrls.add("https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        //     overviewUrls.add("https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        //     overviewUrls.add("https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        //     overviewUrls.add("https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+        // }
+        return overviewUrls;
+    }
 }
