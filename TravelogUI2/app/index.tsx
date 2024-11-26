@@ -1,13 +1,15 @@
 import React from "react";
 import Slider from "react-slick";
 import { Box, Typography } from "@mui/material";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationHelpersContext, useNavigation } from "@react-navigation/native";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useLoginContext } from "./context/LoginContext";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const loginContext = useLoginContext();
 
   const images = [
     "https://images8.alphacoders.com/103/1039011.jpg",
@@ -26,6 +28,14 @@ export default function HomeScreen() {
     autoplay: true,
     autoplaySpeed: 3000,
   };
+
+  const lets_go_func = () => {
+    if (loginContext.accessToken) {
+      navigation.navigate("map");
+    } else {
+      navigation.navigate("login");
+    }
+  }
 
   return (
     <Box
@@ -108,7 +118,7 @@ export default function HomeScreen() {
                   Life is about the adventures you take and the memories you make.
                 </Typography>
                 <Typography
-                  onClick={()=>navigation.navigate("login")}
+                  onClick={()=>lets_go_func()}
                   variant="h5"
                   sx={{
                     color: "#FCC7B5",
