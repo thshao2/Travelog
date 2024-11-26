@@ -52,9 +52,9 @@ function NavBar() {
 
   // Navigate to home only if user is logged in - otherwise stay in login / signup
   const navigateToHome = async () => {
-    if (loginContext.accessToken) {
+    // if (loginContext.accessToken) {
       navigation.navigate("index");
-    }
+    // }
   };
 
   return (
@@ -140,7 +140,7 @@ function NavBar() {
             TRAVELOG
           </Button>
           
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: 120 } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: loginContext.accessToken ? 120 : 0 } }}>
             {loginContext.accessToken && pages.map((page) => (
               <Button
                 key={page}
@@ -159,6 +159,28 @@ function NavBar() {
                 {page}
               </Button>
             ))}
+            {/* Login Button if User has not logged in */}
+            {!loginContext.accessToken &&
+              <Button
+              key="login"
+              onClick={() => {
+                handleCloseNavMenu();
+                navigation.navigate("login");
+              }}
+              sx={{
+                my: 2,
+                color: "white",
+                display: "block",
+                marginLeft: 6,
+                fontSize: "1.2rem",
+                border: "2px solid white", // Add a white border
+                padding: "0.5rem 1rem",    // Add padding for better spacing
+                borderRadius: "4px",       // Optional: make the box corners rounded
+              }}
+            >
+              Log In
+            </Button>
+            }
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             {/* <Tooltip title="Open settings">
