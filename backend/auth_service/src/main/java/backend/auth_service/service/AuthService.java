@@ -37,7 +37,7 @@ public class AuthService {
         return "Added user to the system";
     }
     // checking for duplicate email addresses:
-    private boolean checkDuplicateEmails(String userEmail) {
+    public boolean checkDuplicateEmails(String userEmail) {
         return repository.findByEmail(userEmail).isPresent();
     }
     // checking for duplicate usernames:
@@ -88,15 +88,13 @@ public class AuthService {
     // }
 
     public User updateUser(Optional<User> existingUser, User user) {
-        System.out.println("Updating user: " + user);
-        // update username
-        if (user.getUsername() != null) {
-            existingUser.get().setUsername(user.getUsername());
+        if (!existingUser.isPresent()) {
+            throw new InvalidCredentialsException("User not found");
         }
-        System.out.println("Updated username: " + existingUser.get().getUsername());
-        System.out.println("Updated Existing User: " + existingUser);
-        repository.save(existingUser.get());
-        return existingUser.get();
+        User userToUpdate = existingUser.get();
+        userToUpdate.setUsername(user.getUsername());
+        userToUpdate.setEmail(user.getEmail());
+        return repository.save(userToUpdate);
     }
 
     public User updateUserPassword(User existingUser, String password) {
