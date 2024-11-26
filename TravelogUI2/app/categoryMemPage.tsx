@@ -134,7 +134,7 @@ export default function CategoryMemPage() {
             {memories.map((journal) => (
               <Grid
                 key={journal.id}
-                xs={12} sm={4} md={3}
+                xs={12} sm={6} md={4}
               >
                 <MemoryCard onRefetch={handleRefetch} journal={journal} />
               </Grid>
@@ -149,7 +149,8 @@ export default function CategoryMemPage() {
             height: "100%",              
             overflow: "hidden",         
             flexDirection: "column", 
-            marginTop: "15px",     
+            marginTop: "15px",  
+            // borderRadius: "13px",   
           }}
         >
           {images.length === 0 ? (
@@ -163,9 +164,10 @@ export default function CategoryMemPage() {
                 height: "500px",
                 width: "100%",
                 textAlign: "center",
+                // borderRadius: "13px",
               }}
             >
-              <Typography variant="h5">Add images to your memories to see them your overview!</Typography>
+              <Typography variant="h5">Add images to your memories to see them in your overview!</Typography>
             </Box>
           ) : (
             <Slider {...sliderSettings}>
@@ -175,11 +177,15 @@ export default function CategoryMemPage() {
                   component="img"
                   src={image}
                   alt={`Slide ${index + 1}`}
-                  sx={{     
-                    height: "100%",
+                  sx={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    height: "500px", 
+                    width: "100%",   
+                    objectFit: "contain", // no vertical stretch for horizontal imgs
+                    backgroundColor: "#6e6e6e",// "rgba(140, 183, 216, 0.25)", // #f0f0f0
+                    // borderRadius: "13px",
                   }}
                 />
               ))}
