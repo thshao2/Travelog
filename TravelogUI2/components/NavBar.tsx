@@ -59,7 +59,12 @@ function NavBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
+    // <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
+    <AppBar position="static" sx={{
+      backgroundColor: "#8CB7D8", // Subtle soft blue
+      color: "#FFFFFF",           // White text for contrast
+      borderBottom: "2px solid #328ECB", // Slightly darker blue for accent
+    }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
@@ -155,6 +160,9 @@ function NavBar() {
                   display: "block",
                   marginLeft: 6,
                   fontSize: "1.2rem",
+                  "&:hover": {
+                    backgroundColor: "#5C7A9E", // Gold for hover effect
+                  }
                 }}
               >
                 {page}
