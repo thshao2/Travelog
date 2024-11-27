@@ -35,7 +35,7 @@ export default function HomeScreen() {
     } else {
       navigation.navigate("login");
     }
-  }
+  };
 
   return (
     <Box

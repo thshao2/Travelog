@@ -61,7 +61,7 @@ const SignUpPage = () => {
         await storeToken(data.token);
         loginContext.setEmail(email);
         loginContext.setAccessToken(data.token);
-        navigation.navigate("(tabs)");
+        navigation.navigate("index");
 
       } else if (response.status === 409) {
         setDuplicateEmail(true);

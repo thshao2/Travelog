@@ -32,7 +32,7 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
   const images = JSON.parse(journal.captionText)
     .filter((section: any) => section.type === "image" || section.type === "imageGrid")
     .flatMap((section: any) =>
-      section.type === "image" ? [section.content] : section.images.map((img: any) => img.content)
+      section.type === "image" ? [section.content] : section.images.map((img: any) => img.content),
     );
 
   const showPrevImage = () => {
