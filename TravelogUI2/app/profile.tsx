@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Text, View, Image, Pressable, TextInput, Alert, ImageBackground, ScrollView, Platform, Modal } from "react-native";
-import { Grid } from "@mui/joy";
+import { Box, Grid, Typography } from "@mui/joy";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -336,16 +336,38 @@ export default function ProfilePage() {
         </View>
       </View>
 
-      <Grid container spacing={2} sx={{ padding: 2 }}>
-        {_memories.map((journal) => (
-          <Grid
-            key={journal.id}
-            sm={12} md={6}
-          >
-            <PostCard onRefetch={handleRefetch} journal={journal} user={name} />
-          </Grid>
-        ))}
-      </Grid>
+      {_memories.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "50vh",
+            textAlign: "center",
+          }}
+        >
+          <Typography level="h4" sx={{ mb: 2 }}>
+          Start your journey!
+          </Typography>
+          <Pressable onPress={() => navigation.navigate("map")}>
+            <Typography
+              level="h4"
+              sx={{ color: "blue", textDecoration: "underline" }}
+            >
+            Go to Map
+            </Typography>
+          </Pressable>
+        </Box>
+      ) : (
+        <Grid container spacing={2} sx={{ padding: 2 }}>
+          {_memories.map((journal) => (
+            <Grid key={journal.id} xs={12} sm={12} md={6}>
+              <PostCard onRefetch={handleRefetch} journal={journal} user={name} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       <Modal visible={showPasswordForm} animationType="slide" transparent={true} onRequestClose={closePasswordForm}>
         <View style={styles.modalContainer}>

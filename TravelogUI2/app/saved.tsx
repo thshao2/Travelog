@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
 import { Box, Typography, Card, Grid } from "@mui/joy";
@@ -31,10 +31,8 @@ export default function SavedPage() {
       });
       if (response.ok) {
         const data: string[] = await response.json();
-        const filteredCategories = data.filter(category => category !== "All");
-      
-        setCategories(filteredCategories); // Set the categories without "All"
-        console.log("ALL CATEGORIES MINUS ALL -- ", filteredCategories);
+        const filteredCategories = data.filter((category) => category.trim() !== "");
+        setCategories(filteredCategories);
       } else {
         console.error("Error fetching categories:", response.statusText);
       }
@@ -81,6 +79,61 @@ export default function SavedPage() {
         {label}
       </Typography>
     </Card>
+  );
+
+  return (
+    <ScrollView>
+      <Box sx={{ padding: 2 }}>
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+            }}
+          >
+            <ActivityIndicator size="large" />
+          </Box>
+        ) : categories.length > 0 ? (
+          <>
+            <Typography level="h3" sx={{ textAlign: "center", mb: 2 }}>
+          View by Categories
+            </Typography>
+            <Grid container spacing={3}>
+              {categories.map((category, index) => (
+                <Grid xs={12} sm={6} md={4} lg={3} key={category}>
+                  <CategoryButton label={category} index={index} />
+                </Grid>
+              ))}
+            </Grid>
+          </>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+              textAlign: "center",
+            }}
+          >
+            <Typography level="h4" sx={{ mb: 2 }}>
+              Start your journey!
+            </Typography>
+            <Pressable onPress={() => navigation.navigate("map")}>
+              <Typography
+                level="h4"
+                sx={{ color: "blue", textDecoration: "underline" }}
+              >
+                Go to Map
+              </Typography>
+            </Pressable>
+          </Box>
+        )}
+      </Box>
+    </ScrollView>
   );
 
   return (

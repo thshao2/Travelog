@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, PropsWithChildren, useEffect } from "react";
-import { getToken, storeToken } from "../utils/util";
+import { getToken } from "../utils/util";
 import { useNavigation, useRouter } from "expo-router";
 
 import config from "../config";

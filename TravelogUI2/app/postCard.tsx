@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Card, Divider } from "@mui/material";
+import { Box, Card, Divider, Chip } from "@mui/material";
 import { View, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";
@@ -15,13 +15,12 @@ import { Typography } from "@mui/joy";
 const { API_URL } = config;
 
 interface PostCardProps {
-  journal: Journal;
-  onRefetch: () => void;
-  user: string
+ journal: Journal;
+ onRefetch: () => void;
+ user: string
 }
 
 export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
-  console.log(user);
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
@@ -144,18 +143,17 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
     <View style={{ flex: 1, width: "95%" }}>
       <Card
         sx={{
-          //   position: "relative",
           padding: 2,
           display: "flex",
           flexDirection: "row",
+          // flexDirection: { xs:"column", sm: "column", md: "row" },
           width: "100%",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          //   flexWrap: "wrap", // Allow content to wrap
         }}
       >
         {/* Image Section */}
-        <div style={{ flex: 1, width: "70%" }}>
+        <div style={{ flex: 1, margin: "1%" }}>
           <Box
             sx={{
               position: "relative",
@@ -181,72 +179,85 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
               }}
             />
 
-            <IconButton
-              onClick={showPrevImage}
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "8px",
-                transform: "translateY(-50%)",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                color: "#fff",
-                zIndex: 2,
-              }}
-            >
-              <ChevronLeft />
-            </IconButton>
+            {images.length > 1 && (
+              <>
+                <IconButton
+                  onClick={showPrevImage}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "8px",
+                    transform: "translateY(-50%)",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    color: "#fff",
+                    zIndex: 2,
+                  }}
+                >
+                  <ChevronLeft />
+                </IconButton>
 
-            <IconButton
-              onClick={showNextImage}
+                <IconButton
+                  onClick={showNextImage}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "8px",
+                    transform: "translateY(-50%)",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    color: "#fff",
+                    zIndex: 2,
+                  }}
+                >
+                  <ChevronRight />
+                </IconButton>
+              </>
+            )}
+
+          </Box>
+          <Box>
+            <Typography
+              level="inherit"
               sx={{
                 position: "absolute",
-                top: "50%",
-                right: "8px",
-                transform: "translateY(-50%)",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                color: "#fff",
-                zIndex: 2,
+                fontWeight: "bold",
+                opacity: 0.7,
+                bottom: 0,
+                left: 0,
+                padding: 2,
               }}
             >
-              <ChevronRight />
-            </IconButton>
-          </Box>
-          <Box sx={{ textAlign: "center", marginTop: "8px" }}>
-            <Typography level="inherit">
-              {currentImageIndex + 1} / {images.length}
+              {formatDate(journal.endDate)}
             </Typography>
           </Box>
-          <Typography
-            level="inherit"
-            sx={{
-              fontWeight: "bold",
-              opacity: 0.7,
-              bottom: 0,
-              left: 0,
-              padding: 2,
-            }}
-          >
-            {formatDate(journal.endDate)}
-          </Typography>
         </div>
 
-        <div style={{ flex: 1, width: "30%" }}>
-
+        <Box sx={{ flex: 1, width: "30%", margin: "2%" }}>
           <Typography level="h4">{journal.title}</Typography>
+          <Chip style={{ margin: "1%" }} label={user} />
           <div style={{ display: "flex", alignItems: "center" }}>
             <Ionicons name="location" size={20} color={"#E18CA0"} />
-            <Typography level="inherit" style={{ color: "gray", marginLeft: "8px" }}>
+            <Typography
+              level="inherit"
+              style={{
+                color: "gray",
+                marginLeft: "8px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               {journal.loc}
             </Typography>
           </div>
           <Divider sx={{ marginY: 1 }} />
           <ScrollView>
-            <div style={{
+            <Box style={{
               marginTop: "8px",
-              maxHeight: "50px", // Limit the height of the scrollable area
-              overflowY: "auto", // Enable vertical scrolling
-              paddingRight: "8px", // Add padding to prevent content from being cut off
-            }}>
+              minHeight: "160px",
+              maxHeight: "160px",
+              overflowY: "auto",
+            }}
+            >
               {JSON.parse(journal.captionText)
                 .filter((section: any) => section.type === "text")
                 .map((section: any, index: number) => (
@@ -257,19 +268,18 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
                       display: "-webkit-box",
                       overflow: "hidden",
                       WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 3,
                     }}
                   >
                     {section.content}
                   </Typography>
                 ))}
-            </div>
+            </Box>
           </ScrollView>
-        </div>
+        </Box>
         <Ionicons name="open-outline" size={24} color="black" style={{
+        //  position: "absolute",
           top: 0,
           right: 0,
-          padding: 2,
         }} onClick={() => openJournalDetail(journal)} />
       </Card>
 

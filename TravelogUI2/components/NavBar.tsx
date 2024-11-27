@@ -61,9 +61,9 @@ function NavBar() {
   return (
     // <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
     <AppBar position="static" sx={{
-      backgroundColor: "#8CB7D8", // Subtle soft blue
+      backgroundColor: "#5460e6", // "#8CB7D8", // Subtle soft blue
       color: "#FFFFFF",           // White text for contrast
-      borderBottom: "2px solid #328ECB", // Slightly darker blue for accent
+      borderBottom: "2px solid #515ac3", // Slightly darker blue for accent
     }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
@@ -161,7 +161,7 @@ function NavBar() {
                   marginLeft: 6,
                   fontSize: "1.2rem",
                   "&:hover": {
-                    backgroundColor: "#5C7A9E", // Gold for hover effect
+                    backgroundColor: "#8d94f7", // Gold for hover effect
                   },
                 }}
               >
@@ -237,6 +237,9 @@ function NavBar() {
                 top: "50%", // Center vertically
                 transform: "translateY(-50%)", // Adjust the vertical alignment
                 color: "inherit", // Inherit color to match the theme
+                "&:hover": {
+                  backgroundColor: "#8d94f7", // Gold for hover effect
+                },
               }}
             >
               <LogoutIcon />
