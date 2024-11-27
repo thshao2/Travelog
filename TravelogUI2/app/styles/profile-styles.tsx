@@ -4,17 +4,17 @@ export const styles = StyleSheet.create({
   profileContainer: {
     flexGrow: 1,
     backgroundColor: "#F5F5F5",
-    paddingBottom: 20,
+    // paddingBottom: 20,
   },
   background: {
     width: "100%",
-    height: 250,
+    height: 350,
     justifyContent: "center",
     alignItems: "center",
   },
   profileInfo: {
     alignItems: "center",
-    marginTop: -80, // To overlap the profile picture
+    marginTop: -100, // To overlap the profile picture
     padding: 10,
     backgroundColor: "#FFF",
     // borderRadius: 15,
@@ -67,7 +67,7 @@ export const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginVertical: 20,
+    marginVertical: 10,
     backgroundColor: "#FFF",
     padding: 15,
     borderRadius: 15,

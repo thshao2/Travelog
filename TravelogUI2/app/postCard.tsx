@@ -9,6 +9,7 @@ import JournalDetailModal from "./journalDetail";
 import { IconButton } from "@mui/material";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import { Typography } from "@mui/joy";
 
@@ -145,8 +146,8 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
         sx={{
           padding: 2,
           display: "flex",
-          flexDirection: "row",
-          // flexDirection: { xs:"column", sm: "column", md: "row" },
+          // flexDirection: "row",
+          flexDirection: { xs: "column", sm: "column", md: "row" },
           width: "100%",
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -214,24 +215,9 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
             )}
 
           </Box>
-          <Box>
-            <Typography
-              level="inherit"
-              sx={{
-                position: "absolute",
-                fontWeight: "bold",
-                opacity: 0.7,
-                bottom: 0,
-                left: 0,
-                padding: 2,
-              }}
-            >
-              {formatDate(journal.endDate)}
-            </Typography>
-          </Box>
         </div>
 
-        <Box sx={{ flex: 1, width: "30%", margin: "2%" }}>
+        <Box sx={{ flex: 1, width: { xs: "100%", md: "30%" },margin: "2%" }}>
           <Typography level="h4">{journal.title}</Typography>
           <Chip style={{ margin: "1%" }} label={user} />
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -249,13 +235,30 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
               {journal.loc}
             </Typography>
           </div>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <CalendarMonthIcon />
+            <Typography
+              level="inherit"
+              style={{
+                color: "gray",
+                marginLeft: "7px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {formatDate(journal.endDate)}
+            </Typography>
+          </div>
           <Divider sx={{ marginY: 1 }} />
           <ScrollView>
             <Box style={{
               marginTop: "8px",
-              minHeight: "160px",
-              maxHeight: "160px",
+              maxHeight: "120px",
               overflowY: "auto",
+            }}
+            sx={{
+              minHeight: { md: "120px" },
             }}
             >
               {JSON.parse(journal.captionText)
@@ -277,7 +280,6 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
           </ScrollView>
         </Box>
         <Ionicons name="open-outline" size={24} color="black" style={{
-        //  position: "absolute",
           top: 0,
           right: 0,
         }} onClick={() => openJournalDetail(journal)} />

@@ -61,9 +61,9 @@ function NavBar() {
   return (
     // <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
     <AppBar position="static" sx={{
-      backgroundColor: "#5460e6", // "#8CB7D8", // Subtle soft blue
+      backgroundColor: "#4361ee", //"#5460e6", // "#8CB7D8", // Subtle soft blue
       color: "#FFFFFF",           // White text for contrast
-      borderBottom: "2px solid #515ac3", // Slightly darker blue for accent
+      // borderBottom: "2px solid #8E759C", // Slightly darker blue for accent
     }}>
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
@@ -161,7 +161,7 @@ function NavBar() {
                   marginLeft: 6,
                   fontSize: "1.2rem",
                   "&:hover": {
-                    backgroundColor: "#8d94f7", // Gold for hover effect
+                    backgroundColor: "#4895ef", //"#8d94f7", // Gold for hover effect
                   },
                 }}
               >
@@ -185,6 +185,9 @@ function NavBar() {
                   border: "2px solid white", // Add a white border
                   padding: "0.5rem 1rem",    // Add padding for better spacing
                   borderRadius: "4px",       // Optional: make the box corners rounded
+                  "&:hover": {
+                    backgroundColor: "#4895ef",// "#8d94f7", // Gold for hover effect
+                  },
                 }}
               >
               Log In
@@ -238,7 +241,7 @@ function NavBar() {
                 transform: "translateY(-50%)", // Adjust the vertical alignment
                 color: "inherit", // Inherit color to match the theme
                 "&:hover": {
-                  backgroundColor: "#8d94f7", // Gold for hover effect
+                  backgroundColor: "#4895ef",// "#8d94f7", // Gold for hover effect
                 },
               }}
             >

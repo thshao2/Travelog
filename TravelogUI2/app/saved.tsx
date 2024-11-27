@@ -55,7 +55,8 @@ export default function SavedPage() {
     }, [loginContext.accessToken]),
   );
 
-  const themeColors = ["#996c96", "#e18ca0", "#328ecb", "#7AAACE", "#D0A496", "#9699D0", "#96D0B9", "#E3D187", "#D49292"];
+  // const themeColors = ["#996c96", "#e18ca0", "#328ecb", "#7AAACE", "#D0A496", "#9699D0", "#96D0B9", "#E3D187", "#D49292"];
+  const themeColors = ["#E29398", "#EFAA96", "#FBD6A1", "#99E2D0", "#86D0E8", "#9BB1F1", "#B590E0"];
 
   const CategoryButton: React.FC<CategoryButtonProps> = ({ label, index }) => (
     <Card

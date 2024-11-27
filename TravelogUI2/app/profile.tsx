@@ -360,7 +360,7 @@ export default function ProfilePage() {
           </Pressable>
         </Box>
       ) : (
-        <Grid container spacing={2} sx={{ padding: 2 }}>
+        <Grid container spacing={1} sx={{ padding: 1 }}>
           {_memories.map((journal) => (
             <Grid key={journal.id} xs={12} sm={12} md={6}>
               <PostCard onRefetch={handleRefetch} journal={journal} user={name} />
