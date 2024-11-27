@@ -35,11 +35,12 @@ export default function CategoryMemPage() {
 
   const fetchMemoriesByCategory = async() => {
     try {
-      const endpoint =
-        category === "All"
-          ? `${API_URL}/travel/memory/user`
-          : `${API_URL}/travel/memory/category/${category}`;
-  
+      // const endpoint =
+      //   category === "All"
+      //     ? `${API_URL}/travel/memory/user`
+      //     : `${API_URL}/travel/memory/category/${category}`;
+      const endpoint = `${API_URL}/travel/memory/category/${category}`;
+    
       const response = await fetch(endpoint, {
         method: "GET",
         headers: {

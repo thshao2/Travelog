@@ -30,8 +30,11 @@ export default function SavedPage() {
         },
       });
       if (response.ok) {
-        const data = await response.json();
-        setCategories(data);
+        const data: string[] = await response.json();
+        const filteredCategories = data.filter(category => category !== "All");
+      
+        setCategories(filteredCategories); // Set the categories without "All"
+        console.log("ALL CATEGORIES MINUS ALL -- ", filteredCategories);
       } else {
         console.error("Error fetching categories:", response.statusText);
       }
@@ -99,7 +102,7 @@ export default function SavedPage() {
           </Box>
         ) : (
           <Grid container spacing={3}>
-            {["All", ...categories].map((category, index) => (
+            {categories.map((category, index) => (
               <Grid xs={12} sm={6} md={4} lg={3} key={category}>
                 <CategoryButton label={category} index={index} />
               </Grid>
