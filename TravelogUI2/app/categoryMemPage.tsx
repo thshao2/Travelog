@@ -112,90 +112,85 @@ export default function CategoryMemPage() {
   };
    
   return (
-    <ScrollView>
-      <Typography level="h3" sx={{
-        alignSelf: "center",
-        fontWeight: "bold",
-        paddingTop: 2,
-      }}>{category}</Typography>
-      <Typography level="h4" sx={{
-        alignSelf: "center",
-      }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
-      
-      <Box sx={{ 
-        display: "flex",
-        flexDirection: "row",
-        gap: 4,
-        padding: 2,
-      }}>
-        <Box sx={{
-          flex: 2,
-        }}>
-          <Grid container spacing={2} sx={{ padding: 2 }}>
-            {memories.map((journal) => (
-              <Grid
-                key={journal.id}
-                xs={12} sm={6} md={4}
-              >
-                <MemoryCard onRefetch={handleRefetch} journal={journal} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",           
-            width: "33%",            
-            height: "100%",              
-            overflow: "hidden",         
-            flexDirection: "column", 
-            marginTop: "15px",  
-            // borderRadius: "13px",   
-          }}
-        >
-          {images.length === 0 ? (
-            <Box
-              sx={{
-                backgroundColor: "rgba(0,0,0,0.75)",
-                color: "white",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "500px",
-                width: "100%",
-                textAlign: "center",
-                // borderRadius: "13px",
-              }}
+    <Box sx={{
+      display: "flex",
+      flexDirection: "row",
+      width: "100%",
+      height: "100%",
+    }}>
+      {/* left side: title, category stats, grid*/}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 2, padding: 10 }} showsVerticalScrollIndicator={false}>
+        <Typography level="h3" sx={{
+          alignSelf: "center",
+          fontWeight: "bold",
+          paddingTop: 2,
+        }}>{category}</Typography>
+        <Typography level="h4" sx={{
+          alignSelf: "center",
+        }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
+        
+        <Grid container spacing={2} sx={{ padding: 2 }}>
+          {memories.map((journal) => (
+            <Grid
+              key={journal.id}
+              xs={12} sm={6} md={4}
             >
-              <Typography variant="h5">Add images to your memories to see them in your overview!</Typography>
-            </Box>
-          ) : (
-            <Slider {...sliderSettings}>
-              {images.map((image, index) => (
-                <Box
-                  key={index}
-                  component="img"
-                  src={image}
-                  alt={`Slide ${index + 1}`}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "500px", 
-                    width: "100%",   
-                    objectFit: "contain", // no vertical stretch for horizontal imgs
-                    backgroundColor: "#6e6e6e",// "rgba(140, 183, 216, 0.25)", // #f0f0f0
-                    // borderRadius: "13px",
-                  }}
-                />
-              ))}
-            </Slider>
-          )}
-        </Box>
-     
+              <MemoryCard onRefetch={handleRefetch} journal={journal} />
+            </Grid>
+          ))}
+        </Grid>
+      </ScrollView>
+      
+      {/* right side: category overview */}
+      <Box
+        sx={{
+          display: "flex",           
+          width: "33%",            
+          height: "500px",              
+          overflow: "hidden",         
+          flexDirection: "column", 
+          marginTop: "4%", // CHANGE THIS PART
+          marginBottom: "1%",
+          justiyContent: "center",
+        }}
+      >
+        {images.length === 0 ? (
+          <Box sx={{
+            backgroundColor: "rgba(0,0,0,0.75)",
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "500px",
+            width: "100%",
+            textAlign: "center",
+          }}>
+            <Typography variant="h5">Add images to your memories to see them in your overview!</Typography>
+          </Box>
+        ) : (
+          <Slider {...sliderSettings} dots={false} style={{ width: "100%", minHeight: "500px", justifyContent: "center", alignItems: "center" }}>
+            {images.map((image, index) => (
+              <Box
+                key={index}
+                component="img"
+                src={image}
+                alt={`Slide ${index + 1}`}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "500px", 
+                  width: "100%",   
+                  objectFit: "contain", // no vertical stretch for horizontal imgs
+                  backgroundColor: "#6e6e6e",// "rgba(140, 183, 216, 0.25)", // #f0f0f0
+                  // borderRadius: "13px",
+                }}
+              />
+            ))}
+          </Slider>
+        )}
       </Box>
-    </ScrollView>
+    </Box>
   );
 }
 
