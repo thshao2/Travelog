@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Box, Typography, Grid } from "@mui/joy";
@@ -75,14 +76,11 @@ export default function ExplorePage() {
     fetchAllMemories();
   };
   
-  // Fetch data on component mount
-  useEffect(() => {
-    if (loginContext.accessToken.length > 0) {
+  useFocusEffect(
+    useCallback(() => {
       fetchAllMemories();
-    } else {
-      navigation.navigate("login");
-    }
-  }, [loginContext.accessToken]);
+    }, [loginContext.accessToken]),
+  );
   
   return (
     <ScrollView>
