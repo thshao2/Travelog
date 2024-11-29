@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-// import { Card, Divider, Typography, Box } from "@mui/material";
 import { Box, Typography, Card, Divider } from "@mui/joy";
-// Import the photo icon
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";

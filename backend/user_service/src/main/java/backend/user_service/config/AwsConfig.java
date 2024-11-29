@@ -30,7 +30,7 @@
 //     public AmazonS3 s3Client() {
 //         // Creating AWS credentials using access key and secret key
 //         AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);
-        
+
 //         // Building Amazon S3 client with specified credentials and region
 //         return AmazonS3ClientBuilder.standard()
 //                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
@@ -43,8 +43,9 @@ package backend.user_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.services.s3.S3Client;
+
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class AwsConfig {

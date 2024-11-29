@@ -55,7 +55,6 @@ export default function SavedPage() {
     }, [loginContext.accessToken]),
   );
 
-  // const themeColors = ["#996c96", "#e18ca0", "#328ecb", "#7AAACE", "#D0A496", "#9699D0", "#96D0B9", "#E3D187", "#D49292"];
   const themeColors = ["#E29398", "#EFAA96", "#FBD6A1", "#99E2D0", "#86D0E8", "#9BB1F1", "#B590E0"];
 
   const CategoryButton: React.FC<CategoryButtonProps> = ({ label, index }) => (
@@ -132,36 +131,6 @@ export default function SavedPage() {
               </Typography>
             </Pressable>
           </Box>
-        )}
-      </Box>
-    </ScrollView>
-  );
-
-  return (
-    <ScrollView>
-      <Box sx={{ padding: 2 }}>
-        <Typography level="h3" sx={{ textAlign: "center", mb: 2 }}>
-        View by Categories
-        </Typography>
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "50vh",
-            }}
-          >
-            <ActivityIndicator size="large" />
-          </Box>
-        ) : (
-          <Grid container spacing={3}>
-            {categories.map((category, index) => (
-              <Grid xs={12} sm={6} md={4} lg={3} key={category}>
-                <CategoryButton label={category} index={index} />
-              </Grid>
-            ))}
-          </Grid>
         )}
       </Box>
     </ScrollView>

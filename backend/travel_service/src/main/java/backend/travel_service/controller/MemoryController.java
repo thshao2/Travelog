@@ -33,9 +33,9 @@ public class MemoryController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getMemory() {
-        System.out.println("GET /memory endpoint hit");
-        return ResponseEntity.ok("Memory Service is running");
+    public ResponseEntity<List<Memory>> getAllMemories() {
+        List<Memory> memories = memoryService.getAllMemories();
+        return ResponseEntity.ok(memories);
     }
 
     @GetMapping("/user")
@@ -110,7 +110,8 @@ public class MemoryController {
     }
 
     @GetMapping("/category-overview/{category}")
-    public ResponseEntity<List<String>> getOverviewByCategory(@RequestHeader("X-User-Id") Long userId, @PathVariable String category) {
+    public ResponseEntity<List<String>> getOverviewByCategory(
+            @RequestHeader("X-User-Id") Long userId, @PathVariable String category) {
         List<String> urls = memoryService.getOverviewUrls(userId, category);
         return ResponseEntity.ok(urls);
     }

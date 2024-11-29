@@ -1,13 +1,18 @@
 package travelog_backend.user_service.controller;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,10 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.web.client.RestTemplate;
 
 import backend.user_service.TestApplication;
@@ -32,7 +33,7 @@ import backend.user_service.service.UserService;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @WebMvcTest(controllers = UserController.class)
-@ContextConfiguration(classes = { TestApplication.class, UserService.class })
+@ContextConfiguration(classes = {TestApplication.class, UserService.class})
 public class UserControllerTests {
 
     @Autowired
@@ -57,7 +58,15 @@ public class UserControllerTests {
 
     @Test
     public void testGetCurrentUserProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
+        UserProfile userProfile = new UserProfile(
+                1L,
+                1L,
+                "test@example.com",
+                "testuser",
+                "Test bio",
+                "https://example.com/avatar.jpg",
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
         UserDTO userDTO = new UserDTO(1L, "testuser", "password", "test@example.com");
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
@@ -78,22 +87,28 @@ public class UserControllerTests {
     public void testGetCurrentUserProfile_UserNotFound() throws Exception {
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(null);
 
-        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L)).andExpect(status().isNotFound());
 
         System.out.println("Passed testGetCurrentUserProfile_UserNotFound");
     }
 
     @Test
     public void testGetCurrentUserProfile_FetchUserFailed() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
+        UserProfile userProfile = new UserProfile(
+                1L,
+                1L,
+                "test@example.com",
+                "testuser",
+                "Test bio",
+                "https://example.com/avatar.jpg",
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
         when(restTemplate.getForEntity("http://auth-service:3010/auth/user?userId=1", UserDTO.class))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
 
-        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L))
-                .andExpect(status().isInternalServerError());
+        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L)).andExpect(status().isInternalServerError());
 
         System.out.println("Passed testGetCurrentUserProfile_FetchUserFailed");
     }
@@ -102,24 +117,31 @@ public class UserControllerTests {
     public void testGetCurrentUserProfile_Exception() throws Exception {
         when(userProfileRepository.findByuserId(anyLong())).thenThrow(new RuntimeException("Database error"));
 
-        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L))
-                .andExpect(status().isInternalServerError());
+        mockMvc.perform(get("/user/profile").header("X-User-Id", 1L)).andExpect(status().isInternalServerError());
 
         System.out.println("Passed testGetCurrentUserProfile_Exception");
     }
 
     @Test
     public void testUpdateUserProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
+        UserProfile userProfile = new UserProfile(
+                1L,
+                1L,
+                "test@example.com",
+                "testuser",
+                "Test bio",
+                "https://example.com/avatar.jpg",
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
         UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null, 0, 0, 0);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
         when(userProfileRepository.save(userProfile)).thenReturn(userProfile);
 
         mockMvc.perform(put("/user/update")
-                .header("X-User-Id", 1L)
-                .param("username", updateRequest.getUsername())
-                .param("bio", updateRequest.getBio()))
+                        .header("X-User-Id", 1L)
+                        .param("username", updateRequest.getUsername())
+                        .param("bio", updateRequest.getBio()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("newuser"))
                 .andExpect(jsonPath("$.bio").value("New bio"));
@@ -134,9 +156,9 @@ public class UserControllerTests {
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(null);
 
         mockMvc.perform(put("/user/update")
-                .header("X-User-Id", 1L)
-                .param("username", updateRequest.getUsername())
-                .param("bio", updateRequest.getBio()))
+                        .header("X-User-Id", 1L)
+                        .param("username", updateRequest.getUsername())
+                        .param("bio", updateRequest.getBio()))
                 .andExpect(status().isNotFound());
 
         System.out.println("Passed testUpdateUserProfile_UserNotFound");
@@ -144,16 +166,26 @@ public class UserControllerTests {
 
     @Test
     public void testUpdateUserProfile_Exception() throws Exception {
-        UserProfile userProfile = new UserProfile(1L, 1L, "test@example.com", "testuser", "Test bio", "https://example.com/avatar.jpg", LocalDate.now(), new UserProfile.Statistics(0,0,0));
+        UserProfile userProfile = new UserProfile(
+                1L,
+                1L,
+                "test@example.com",
+                "testuser",
+                "Test bio",
+                "https://example.com/avatar.jpg",
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
         UserProfileUpdateRequest updateRequest = new UserProfileUpdateRequest("newuser", "New bio", null, 0, 0, 0);
 
         when(userProfileRepository.findByuserId(anyLong())).thenReturn(userProfile);
-        doThrow(new RuntimeException("Database error")).when(userProfileRepository).save(userProfile);
+        doThrow(new RuntimeException("Database error"))
+                .when(userProfileRepository)
+                .save(userProfile);
 
         mockMvc.perform(put("/user/update")
-                .header("X-User-Id", 1L)
-                .param("username", updateRequest.getUsername())
-                .param("bio", updateRequest.getBio()))
+                        .header("X-User-Id", 1L)
+                        .param("username", updateRequest.getUsername())
+                        .param("bio", updateRequest.getBio()))
                 .andExpect(status().isInternalServerError());
 
         System.out.println("Passed testUpdateUserProfile_Exception");

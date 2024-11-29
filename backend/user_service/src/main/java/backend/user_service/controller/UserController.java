@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,7 +19,6 @@ import backend.user_service.dto.UserProfileUpdateRequest;
 import backend.user_service.entity.UserProfile;
 import backend.user_service.repository.UserProfileRepository;
 import backend.user_service.service.UserService;
-
 
 @RestController
 @RequestMapping("/user")
@@ -38,6 +38,11 @@ public class UserController {
         return userService.getCurrentUserProfile(userId);
     }
 
+    @GetMapping("/username")
+    public String getUsername(@RequestParam Long userId) {
+        return userService.getUsernameByUserId(userId);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<String> createProfile(@RequestBody UserProfile userProfile) {
         try {
@@ -53,15 +58,14 @@ public class UserController {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while creating the user profile: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while creating the user profile");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while creating the user profile");
         }
     }
 
-
     @PutMapping("/update")
     public ResponseEntity<UserProfile> updateUserProfile(
-        @RequestHeader("X-User-Id") Long userId,
-        @ModelAttribute UserProfileUpdateRequest profileUpdateRequest) {
+            @RequestHeader("X-User-Id") Long userId, @ModelAttribute UserProfileUpdateRequest profileUpdateRequest) {
         try {
             // System.out.println("updated user profile image: " + profile.getUri());
             System.out.println("Updating user profile for user ID: " + userId);
@@ -80,8 +84,8 @@ public class UserController {
             String base64Image = profileUpdateRequest.getImage();
             int citiesVisited = profileUpdateRequest.getCitiesVisited();
             int countriesVisited = profileUpdateRequest.getCountriesVisited();
-            int continentsVisited = profileUpdateRequest.getContinentsVisited();   
-            
+            int continentsVisited = profileUpdateRequest.getContinentsVisited();
+
             if (bio != null) {
                 userProfile.setBio(bio);
             }
@@ -93,7 +97,9 @@ public class UserController {
             // If a file was uploaded, store it in S3 and update the media URL
             if (base64Image != null) {
                 String mediaUrl = userService.uploadToS3(base64Image); // Upload file to S3
-                if (userProfile.getAvatarMediaId() != "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png" && userProfile.getAvatarMediaId() != null) {
+                if (userProfile.getAvatarMediaId()
+                                != "https://travelog-media.s3.us-west-1.amazonaws.com/default-pfp.png"
+                        && userProfile.getAvatarMediaId() != null) {
                     userService.deleteFromS3(userProfile.getAvatarMediaId());
                 }
                 userProfile.setAvatarMediaId(mediaUrl);

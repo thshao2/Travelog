@@ -12,4 +12,3 @@ public class TravelConfig {
         return new RestTemplate();
     }
 }
-

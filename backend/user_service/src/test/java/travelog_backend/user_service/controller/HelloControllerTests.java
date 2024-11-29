@@ -15,15 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import backend.user_service.TestApplication;
 import backend.user_service.controller.HelloController;
 
 @WebMvcTest(HelloController.class)
-@ContextConfiguration(classes = TestApplication.class) // need spring context config for testing 
+@ContextConfiguration(classes = TestApplication.class) // need spring context config for testing
 public class HelloControllerTests {
 
     @Autowired
@@ -34,16 +34,18 @@ public class HelloControllerTests {
 
     @Test
     public void testIndex() throws Exception {
-        mockMvc.perform(get("/test"))                .andExpect(status().isOk())
+        mockMvc.perform(get("/test"))
+                .andExpect(status().isOk())
                 .andExpect(content().string("Greetings from Spring Boot - User Service!!!!!!!"));
-   
-        }
+    }
 
     @Test
     public void testConnection_Success() throws Exception {
-        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {{
-            put("username", "testuser");
-        }});
+        List<Map<String, Object>> mockResult = Arrays.asList(new HashMap<String, Object>() {
+            {
+                put("username", "testuser");
+            }
+        });
         when(jdbcTemplate.queryForList(anyString())).thenReturn(mockResult);
 
         mockMvc.perform(get("/test/user-db-test"))

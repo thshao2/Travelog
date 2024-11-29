@@ -26,7 +26,6 @@
 // import java.util.Optional;
 // import java.util.Arrays;
 
-
 // public class UserServiceTests {
 //     @Mock
 //     private UserProfileRepository userRepository;
@@ -53,9 +52,6 @@
 //         userProfile.setAvatarMediaId(2L);
 //     }
 
-
 //     // @Test
-    
 
 // }
-

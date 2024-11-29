@@ -19,11 +19,32 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Define some dummy UserProfile data
         UserProfile profile1 = new UserProfile(
-                12456L, 1L, "travelog@gmail.com", "travelog", "Bio for Travelog", null, LocalDate.now(), new UserProfile.Statistics(0,0,0));
-        UserProfile profile2 =
-                new UserProfile(12345L, 2L, "molly@gmail.com", "Molly Member", "Bio for Molly", null, LocalDate.now(), new UserProfile.Statistics(0,0,0));
-        UserProfile profile3 =
-                new UserProfile(16546L, 3L, "anna@gmail.com", "Anna Admin", "Bio for Anna", null, LocalDate.now(), new UserProfile.Statistics(0,0,0));
+                12456L,
+                1L,
+                "travelog@gmail.com",
+                "travelog",
+                "Bio for Travelog",
+                null,
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
+        UserProfile profile2 = new UserProfile(
+                12345L,
+                2L,
+                "molly@gmail.com",
+                "Molly Member",
+                "Bio for Molly",
+                null,
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
+        UserProfile profile3 = new UserProfile(
+                16546L,
+                3L,
+                "anna@gmail.com",
+                "Anna Admin",
+                "Bio for Anna",
+                null,
+                LocalDate.now(),
+                new UserProfile.Statistics(0, 0, 0));
 
         // Insert the data only if it doesn't exist
         if (!userProfileRepository.existsByEmail(profile1.getEmail())) {

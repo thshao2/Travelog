@@ -20,7 +20,6 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-
 @Service
 public class UserService {
 
@@ -43,6 +42,10 @@ public class UserService {
         newUserProfile.setAvatarMediaId(profile.getAvatarMediaId());
         user_repository.save(newUserProfile); // Save the user profile
         return true;
+    }
+
+    public String getUsernameByUserId(Long userId) {
+        return user_repository.findUsernameByUserId(userId);
     }
 
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile(Long userId) {
@@ -83,9 +86,11 @@ public class UserService {
 
                 // add stats
                 userProfileResponse.setCitiesVisited(userProfile.getStatistics().getCitiesVisited());
-                userProfileResponse.setCountriesVisited(userProfile.getStatistics().getCountriesVisited());
-                userProfileResponse.setContinentsVisited(userProfile.getStatistics().getContinentsVisited());
-                                
+                userProfileResponse.setCountriesVisited(
+                        userProfile.getStatistics().getCountriesVisited());
+                userProfileResponse.setContinentsVisited(
+                        userProfile.getStatistics().getContinentsVisited());
+
                 System.out.println("Returning user profile response: " + userProfileResponse);
                 return ResponseEntity.ok(userProfileResponse);
             } else {
@@ -121,15 +126,14 @@ public class UserService {
         byte[] decodedImage = Base64.getDecoder().decode(base64Image);
         String bucketName = "travelog-media";
         String uniqueFileName = UUID.randomUUID() + "-profile.jpg";
-    
+
         try {
             s3Client.putObject(
-                PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(uniqueFileName)
-                    .build(),
-                RequestBody.fromBytes(decodedImage)
-            );
+                    PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(uniqueFileName)
+                            .build(),
+                    RequestBody.fromBytes(decodedImage));
             return "https://" + bucketName + ".s3.amazonaws.com/" + uniqueFileName;
         } catch (S3Exception e) {
             e.printStackTrace();
@@ -139,17 +143,13 @@ public class UserService {
 
     public void deleteFromS3(String mediaURL) {
         String bucketName = "travelog-media";
-        
+
         // Extract the key from the media URL
         String key = mediaURL.substring(mediaURL.lastIndexOf("/") + 1);
-    
+
         try {
             s3Client.deleteObject(
-                DeleteObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build()
-            );
+                    DeleteObjectRequest.builder().bucket(bucketName).key(key).build());
             System.out.println("Successfully deleted " + mediaURL + " from S3.");
         } catch (S3Exception e) {
             e.printStackTrace();

@@ -363,7 +363,7 @@ export default function ProfilePage() {
         <Grid container spacing={1} sx={{ padding: 1 }}>
           {_memories.map((journal) => (
             <Grid key={journal.id} xs={12} sm={12} md={6}>
-              <PostCard onRefetch={handleRefetch} journal={journal} user={name} />
+              <PostCard onRefetch={handleRefetch} journal={journal} user={name} edit={true}/>
             </Grid>
           ))}
         </Grid>

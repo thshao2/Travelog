@@ -19,9 +19,10 @@ interface PostCardProps {
  journal: Journal;
  onRefetch: () => void;
  user: string
+ edit: boolean
 }
 
-export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
+export default function PostCard({ journal, onRefetch, user, edit }: PostCardProps) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
@@ -279,10 +280,12 @@ export default function PostCard({ journal, onRefetch, user }: PostCardProps) {
             </Box>
           </ScrollView>
         </Box>
-        <Ionicons name="open-outline" size={24} color="black" style={{
-          top: 0,
-          right: 0,
-        }} onClick={() => openJournalDetail(journal)} />
+        {edit && (
+          <Ionicons name="open-outline" size={24} color="black" style={{
+            top: 0,
+            right: 0,
+          }} onClick={() => openJournalDetail(journal)} />
+        )}
       </Card>
 
       {selectedJournal && (
