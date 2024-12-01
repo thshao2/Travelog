@@ -32,3 +32,8 @@ export const removeToken = async() => {
     return await AsyncStorage.removeItem("token");
   }
 };
+
+export const validateEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};

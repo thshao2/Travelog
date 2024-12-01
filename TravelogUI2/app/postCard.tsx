@@ -26,9 +26,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
-  const [_memories, setMemories] = useState<Journal[]>([]);
-  const [_error, setError] = useState<string | null>(null);
-  const [_visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = JSON.parse(journal.captionText)
     .filter((section: any) => section.type === "image" || section.type === "imageGrid")
@@ -63,13 +60,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
     setIsDetailVisible(false);
   };
 
-  const calculateVisitedStats = (memories: Journal[]) => {
-    const visited = memories.filter((memory) => memory.condition === "Visited").length;
-    const total = memories.length;
-    const percentage = total > 0 ? Math.round((visited / total) * 100) : 0;
-    setVisitedStats({ count: visited, percentage });
-  };
-
   const updateUserStats = async (token: string) => {
     try {
       const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
@@ -79,7 +69,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
           Authorization: `Bearer ${token}`,
         },
       });
-
       if (!response.ok) {
         throw new Error("updateUserStats - network response was not ok");
       }
@@ -90,7 +79,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
 
   const handleDeleteJournal = async (journalId: number) => {
     setIsDetailVisible(false);
-
     try {
       const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
         method: "DELETE",
@@ -99,27 +87,18 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
           Authorization: `Bearer ${loginContext.accessToken}`,
         },
       });
-
       if (!response.ok) {
         throw new Error("Failed to delete memory.");
       }
-
-      setMemories((prevMemories) => {
-        const updatedMemories = prevMemories.filter((memory) => memory.id !== journalId);
-        calculateVisitedStats(updatedMemories);
-        return updatedMemories;
-      });
+      await updateUserStats(loginContext.accessToken);
       onRefetch();
-      updateUserStats(loginContext.accessToken);
     } catch (err) {
       console.error(err);
-      setError("Failed to delete memory.");
     }
   };
 
   const handleEditJournal = async (updatedJournal: Journal) => {
     setIsDetailVisible(false);
-
     try {
       const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
         method: "PUT",
@@ -129,25 +108,22 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
         },
         body: JSON.stringify(updatedJournal),
       });
-
       if (!response.ok) {
         throw new Error("Failed to edit memory.");
       }
-
+      await updateUserStats(loginContext.accessToken);
       onRefetch();
-      updateUserStats(loginContext.accessToken);
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <View style={{ flex: 1, width: "95%" }}>
+    <View style={{ flex: 1, width: "95%", alignSelf: "center" }}>
       <Card
         sx={{
           padding: 2,
           display: "flex",
-          // flexDirection: "row",
           flexDirection: { xs: "column", sm: "column", md: "row" },
           width: "100%",
           overflow: "hidden",
@@ -155,7 +131,7 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
         }}
       >
         {/* Image Section */}
-        <div style={{ flex: 1, margin: "1%" }}>
+        <div style={{ flex: 1 }}>
           <Box
             sx={{
               position: "relative",
@@ -218,7 +194,7 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
           </Box>
         </div>
 
-        <Box sx={{ flex: 1, width: { xs: "100%", md: "30%" },margin: "2%" }}>
+        <Box sx={{ flex: 1, width: { xs: "98%", md: "30%" }, margin: "2%" }}>
           <Typography level="h4">{journal.title}</Typography>
           <Chip style={{ margin: "1%" }} label={user} />
           <div style={{ display: "flex", alignItems: "center" }}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Text, View, Image, Pressable, TextInput, Alert, ImageBackground, ScrollView, Platform, Modal } from "react-native";
 import { Box, Grid, Typography } from "@mui/joy";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -108,19 +108,20 @@ export default function ProfilePage() {
   };
 
   // Fetch user profile on component mount
-  useEffect(() => {
-    if (loginContext.accessToken.length > 0) {
-      fetchProfile();
-      fetchUserMemories();
-      fetchStats();
-    } else {
-      console.log(`HERE IS TOKEN: ${loginContext.accessToken}`);
-      navigation.navigate("login");
-    }
-  }, [loginContext.accessToken]);
+  // useEffect(() => {
+  //   if (loginContext.accessToken.length > 0) {
+  //     fetchProfile();
+  //     fetchUserMemories();
+  //     fetchStats();
+  //   } else {
+  //     console.log(`HERE IS TOKEN: ${loginContext.accessToken}`);
+  //     navigation.navigate("login");
+  //   }
+  // }, [loginContext.accessToken]);
 
   useFocusEffect(
     useCallback(() => {
+      fetchProfile();
       fetchStats();
       fetchUserMemories();
     }, [loginContext.accessToken]),
@@ -360,13 +361,15 @@ export default function ProfilePage() {
           </Pressable>
         </Box>
       ) : (
-        <Grid container spacing={1} sx={{ padding: 1 }}>
-          {_memories.map((journal) => (
-            <Grid key={journal.id} xs={12} sm={12} md={6}>
-              <PostCard onRefetch={handleRefetch} journal={journal} user={name} edit={true}/>
-            </Grid>
-          ))}
-        </Grid>
+        <Box sx={{ alignSelf: "center" }} style={{ width: "90%" }}>
+          <Grid container spacing={1} >
+            {_memories.map((journal) => (
+              <Grid key={journal.id} xs={12} sm={12} md={6}>
+                <PostCard onRefetch={handleRefetch} journal={journal} user={name} edit={true}/>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       )}
 
       <Modal visible={showPasswordForm} animationType="slide" transparent={true} onRequestClose={closePasswordForm}>
