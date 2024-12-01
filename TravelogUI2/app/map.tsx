@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl, { Map as MapboxMap, Marker } from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
-import { Platform, Text, Pressable, View } from "react-native";
+import { Text, Pressable, View } from "react-native";
 import JournalModal from "./journalModal";
 import PopupMenu from "./popupMenu";
 import config from "./config";
@@ -10,6 +10,8 @@ import { styles } from "./styles/map-styles";
 import { useLoginContext } from "./context/LoginContext";
 
 import { BottomNavigation } from "react-native-paper";
+
+import { useMediaQuery } from "@mui/material";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -53,11 +55,13 @@ function Map() {
 
   const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER);
   const [zoom, setZoom] = useState<number>(INITIAL_ZOOM);
-  const [pitch, setPitch] = useState<number>(INITIAL_PITCH);
+  const [pitch, _setPitch] = useState<number>(INITIAL_PITCH);
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
 
   const [selectedPreset, setSelectedPreset] = useState("day");
+
+  const isMobile = useMediaQuery("(max-width: 768px)"); // Detect mobile screen size
 
   // const [markers, setMarkers] = useState<mapboxgl.Marker[]>([]); // Store markers
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -117,16 +121,10 @@ function Map() {
     const geocoder = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken,
       mapboxgl: mapboxgl,
-      placeholder: "Search for places",
+      placeholder: "Search for places...",
     });
 
     mapRef.current.addControl(geocoder);
-
-    // Listen for the geocoder result event
-    // geocoder.on('result', () => {
-    //   // Set the pitch to 75 after moving to the new location
-    //   mapRef.current?.setPitch(75);
-    // });
 
     mapRef.current.on("move", () => {
       // get the current center coordinates and zoom level from the map
@@ -136,14 +134,6 @@ function Map() {
       // update state
       setCenter([mapCenter.lng, mapCenter.lat]);
       setZoom(mapZoom);
-      // mapRef.current?.setPitch(75);
-      setPitch(75);
-      // mapRef.current?.flyTo({
-      //   center: center,
-      //   zoom: zoom,
-      //   pitch: 75,
-      // })
-      // mapRef.current?.setPitch(INITIAL_PITCH);
     });
 
     return () => {
@@ -354,49 +344,70 @@ function Map() {
 
   return (
     <>
-      {Platform.OS === "web" ? (
+      <div id="map-container" ref={mapContainerRef} />
+      {!isMobile && (
         <div className="sidebar">
           Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)} | zIndex: {mapRef.current?.getPitch().toFixed(2)}
         </div>
-      ) : (
-        <div className="sidebar">
-          <Text>Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} | Zoom: {zoom.toFixed(2)}</Text>
-        </div>
       )}
-      <button className="reset-button" onClick={handleButtonClick}>
+      <button
+        style={{
+          position: "absolute",
+          top: isMobile ? "82vh" : "50px",
+          zIndex: 1000,
+        }}
+        className="reset-button"
+        onClick={handleButtonClick}>
         <Text>Reset</Text>
-      </button>
-      <div id="map-container" ref={mapContainerRef} />
-  
-      {/* Bottom Navigation for lighting presets */}
-      <View style={styles.bottomNavigationContainer}>
-        <BottomNavigation
-          navigationState={{
-            index: ["dawn", "day", "dusk", "night"].indexOf(selectedPreset),
-            routes: [
-              { key: "dawn", title: "Dawn", focusedIcon: () => <Feather name="sunrise" size={24} color="#ff6700" /> },
-              { key: "day", title: "Day", focusedIcon: () => <MaterialIcons name="wb-sunny" size={24} color="#fff962" /> },
-              { key: "dusk", title: "Dusk", focusedIcon: () => <MaterialIcons name="wb-twilight" size={24} color="orange" /> },
-              { key: "night", title: "Night", focusedIcon: () => <MaterialIcons name="nights-stay" size={24} color="black" /> },
-            ],
-          }}
-          onIndexChange={(index) => handleTabChange(["dawn", "day", "dusk", "night"][index])}
-          renderScene={() => null}
-          barStyle={styles.navBar}
-        />
-      </View>
-  
+      </button >
+
+      <div
+        style={{
+          position: "absolute",
+          // bottom: isMobile ? "10px" : "20px",
+          // left: "10px",
+          top: isMobile ? "10px" : "5px",
+          right: "0px",
+          zIndex: 1000,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        {/* Bottom Navigation for lighting presets */}
+        <View style={styles.bottomNavigationContainer}>
+          <BottomNavigation
+            navigationState={{
+              index: ["dawn", "day", "dusk", "night"].indexOf(selectedPreset),
+              routes: [
+                { key: "dawn", title: "Dawn", focusedIcon: () => <Feather name="sunrise" size={24} color="#ff6700" /> },
+                { key: "day", title: "Day", focusedIcon: () => <MaterialIcons name="wb-sunny" size={24} color="#fff962" /> },
+                { key: "dusk", title: "Dusk", focusedIcon: () => <MaterialIcons name="wb-twilight" size={24} color="orange" /> },
+                { key: "night", title: "Night", focusedIcon: () => <MaterialIcons name="nights-stay" size={24} color="black" /> },
+              ],
+            }}
+            onIndexChange={(index) => handleTabChange(["dawn", "day", "dusk", "night"][index])}
+            renderScene={() => null}
+            barStyle={styles.navBar}
+          />
+        </View>
+      </div>
+
       {/* PopupMenu and JournalModal components */}
-      {selectedPin?.marker && selectedPin.position && (
-        <PopupMenu
-          selectedPin={selectedPin}
-          onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
-          onAddJournal={() => setIsModalVisible(true)}
-          onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
-          key={memories.length}
-        />
-      )}
-  
+      {
+        selectedPin?.marker && selectedPin.position && (
+          <PopupMenu
+            selectedPin={selectedPin}
+            onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
+            onAddJournal={() => setIsModalVisible(true)}
+            onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
+            key={memories.length}
+          />
+        )
+      }
+
       <JournalModal
         selectedPin={selectedPin}
         isModalVisible={isModalVisible}
@@ -406,15 +417,17 @@ function Map() {
           setIsModalVisible(false);
         }}
       />
-  
+
       {/* Plus button for dropping a pin */}
-      {loginContext.accessToken.length > 0 && (
-        <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
-          <Text style={styles.plusButtonText}>+</Text>
-        </Pressable>
-      )}
+      {
+        loginContext.accessToken.length > 0 && (
+          <Pressable style={styles.plusButton} onPress={handlePinDropMode}>
+            <Text style={styles.plusButtonText}>+</Text>
+          </Pressable>
+        )
+      }
     </>
-  );  
+  );
 }
 
 export default function map() {

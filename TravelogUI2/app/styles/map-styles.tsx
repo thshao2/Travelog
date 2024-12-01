@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   bottomNavigationContainer: {
     position: "absolute",
-    top: 100,
-    left: 10,
+    top: 60,
+    right: 10,
   },
   navBar: {
     backgroundColor: "white",
