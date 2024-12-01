@@ -1,10 +1,12 @@
-import { Text, View, Image, Modal, Pressable, TouchableOpacity } from "react-native";
+import { View, Image, Modal, Pressable, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-import { styles } from "./styles/journal-display-styles";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
-import { Box, Card, IconButton } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { styles } from "./styles/journal-display-styles";
+
+import Grid from "@mui/material/Grid2";
 
 interface ImageData {
   id: string;
@@ -75,8 +77,8 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [images, _setImages] = useState<string[]>(
     sections
-      .filter((section): section is ImageData => section.type === "image") // Filter ImageData entries
-      .map((imageData) => imageData.content), // Extract the content property
+      .filter((section): section is ImageData => section.type === "image")
+      .map((imageData) => imageData.content),
   );
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -93,105 +95,117 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.detailsSection}>
-        <Text style={styles.detailLabel}>Category: <Text style={styles.detailText}>{journal.category}</Text></Text>
-        <Text style={styles.detailLabel}>Location: <Text style={styles.detailText}>{journal.loc}</Text></Text>
-        <Text style={styles.detailLabel}>Status: <Text style={styles.detailText}>{journal.condition}</Text></Text>
-        <Text style={styles.detailLabel}>Start Date: <Text style={styles.detailText}>{new Date(journal.initDate).toLocaleDateString()}</Text></Text>
-        <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
-      </View>
-
-      {/* This is the text content portion*/}
-      <Text style={styles.journalBody}>{sections[0].content}</Text>
-
-      {/* This is all of the images */}
-      <View style={styles.blogContainer}>
-        <Card
-          sx={{
-            padding: 2,
-            display: "flex",
-            mt: 5,
-            flexDirection: { xs: "column", sm: "column", md: "row" },
-            width: "100%",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {/* Image Section */}
-          <div style={{ flex: 1, margin: "1%" }}>
+    <Box sx={{ width: "100%", padding: 2 }}>
+      {/* Responsive Grid Container */}
+      <Grid container spacing={2}>
+        {/* Image Section */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Box sx={{ position: "relative", width: "100%", paddingBottom: "75%", backgroundColor: "#f0f0f0" }}>
+            <Box
+              component="img"
+              onClick={() => setSelectedImage(images[currentImageIndex])}
+              src={images[currentImageIndex] || "../assets/images/default-pic.jpg"}
+              alt={`Image ${currentImageIndex + 1}`}
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
+            />
+            {images.length > 1 && (
+              <>
+                <IconButton
+                  onClick={showPrevImage}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "8px",
+                    transform: "translateY(-50%)",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    color: "#fff",
+                    zIndex: 2,
+                  }}
+                >
+                  <ChevronLeft />
+                </IconButton>
+                <IconButton
+                  onClick={showNextImage}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "8px",
+                    transform: "translateY(-50%)",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    color: "#fff",
+                    zIndex: 2,
+                  }}
+                >
+                  <ChevronRight />
+                </IconButton>
+              </>
+            )}
+          </Box>
+          {/* Image Preview Thumbnails */}
+          {images.length > 1 && (
             <Box
               sx={{
-                position: "relative",
-                width: "100%",
-                paddingBottom: "75%", // 4:3 aspect ratio
-                overflow: "hidden",
-                backgroundColor: "#f0f0f0",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                mt: 2,
+                gap: 1,
               }}
             >
-              {/* Image */}
-
-              <Box
-                component="img"
-                onClick={() => setSelectedImage(images[currentImageIndex])}
-                src={images[currentImageIndex] || "../assets/images/default-pic.jpg"}
-                alt={`Image ${currentImageIndex + 1}`}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  objectFit: "contain",
-                }}
-              />
-
-              {images.length > 1 && (
-                <>
-                  <IconButton
-                    onClick={showPrevImage}
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "8px",
-                      transform: "translateY(-50%)",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)",
-                      color: "#fff",
-                      zIndex: 2,
-                    }}
-                  >
-                    <ChevronLeft />
-                  </IconButton>
-
-                  <IconButton
-                    onClick={showNextImage}
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      right: "8px",
-                      transform: "translateY(-50%)",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)",
-                      color: "#fff",
-                      zIndex: 2,
-                    }}
-                  >
-                    <ChevronRight />
-                  </IconButton>
-                </>
-              )}
-
+              {images.map((image, index) => (
+                <Box
+                  key={index}
+                  component="img"
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  sx={{
+                    width: { xs: "30%", sm: "16%" }, // 3 per row on mobile, 6 per row on desktop
+                    aspectRatio: "1",
+                    objectFit: "cover",
+                    border: index === currentImageIndex ? "2px solid #1976d2" : "2px solid transparent",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
             </Box>
-          </div>
-        </Card>
-      </View>
+          )}
+        </Grid>
 
+        {/* Text Section */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="h5" gutterBottom>
+            {journal.category}
+          </Typography>
+          <Typography variant="subtitle1">Location: {journal.loc}</Typography>
+          <Typography variant="subtitle1">Status: {journal.condition}</Typography>
+          <Typography variant="subtitle1">
+            Start Date: {new Date(journal.initDate).toLocaleDateString()}
+          </Typography>
+          <Typography variant="subtitle1">
+            End Date: {new Date(journal.endDate).toLocaleDateString()}
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            {sections[0]?.content || ""}
+          </Typography>
+        </Grid>
+      </Grid>
+
+      {/* Image Preview Modal */}
       <ImagePreview
         isVisible={!!selectedImage}
         imageUri={selectedImage || ""}
         onClose={() => setSelectedImage(null)}
       />
-    </View>
+    </Box>
   );
 };
 

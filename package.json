@@ -2,7 +2,7 @@
     "name": "travelog-app",
     "version": "1.0.0",
     "scripts": {
-        "start": "npm run backend && npm run frontend && npm run stop-backend",
+        "start": "npm run backend && npm run frontend",
         "deploy-frontend": "npm run installs && npm run build-frontend",
         "deploy-logs": "cd backend && sudo docker compose logs -f",
         "frontend": "cd TravelogUI2 && npm run start",
