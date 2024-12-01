@@ -2,7 +2,9 @@ import { Text, View, Image, Modal, Pressable, TouchableOpacity } from "react-nat
 import React, { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { styles } from "./styles/journal-display-styles";
-import { ImageList, ImageListItem } from "@mui/material";
+import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ChevronRight from "@mui/icons-material/ChevronRight";
+import { Box, Card, IconButton } from "@mui/material";
 
 interface ImageData {
   id: string;
@@ -71,30 +73,24 @@ const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
 const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
   const [sections, setSections] = useState<(TextData | ImageData)[]>(groupedSections || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const maxImageSize = 180; // Matching the creation modal's max size
+  const [images, _setImages] = useState<string[]>(
+    sections
+      .filter((section): section is ImageData => section.type === "image") // Filter ImageData entries
+      .map((imageData) => imageData.content), // Extract the content property
+  );
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     setSections(groupedSections || []);
   }, [groupedSections, journal.captionText]);
 
-  const calculateImageDimensions = (dimensions: { width: number; height: number }) => {
-    const { width, height } = dimensions;
-    const aspectRatio = width / height;
-
-    if (width > height) {
-      return {
-        width: maxImageSize,
-        height: maxImageSize / aspectRatio,
-      };
-    } else {
-      return {
-        width: maxImageSize * aspectRatio,
-        height: maxImageSize,
-      };
-    }
+  const showPrevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : images.length - 1));
   };
 
-  calculateImageDimensions({ width: 200, height: 200 });
+  const showNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
 
   return (
     <View style={styles.container}>
@@ -106,43 +102,88 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
         <Text style={styles.detailLabel}>End Date: <Text style={styles.detailText}>{new Date(journal.endDate).toLocaleDateString()}</Text></Text>
       </View>
 
+      {/* This is the text content portion*/}
       <Text style={styles.journalBody}>{sections[0].content}</Text>
+
+      {/* This is all of the images */}
       <View style={styles.blogContainer}>
-        <ImageList sx={{ width: 1000, height: 900 }} cols={4} rowHeight={164}>
-          {(sections.slice(1) as ImageData[]).map((section, index) => (
-            <View key={index} style={styles.sectionContainer}>
-              <TouchableOpacity
-                onPress={() => setSelectedImage(section.content.startsWith("https") ? section.content : section.encodedContent)}
-                style={styles.imageWrapper}
-              >
-                {/* <Image
-                    source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
-                    style={[
-                      styles.image,
-                      calculateImageDimensions(section.dimensions),
-                    ]}
-                    resizeMode="contain"
-                  /> */}
-                <ImageListItem key={section.id}>
-                  <img
-                    srcSet={`${section.content.startsWith("https") ? section.content : section.encodedContent}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                    src={`${section.content.startsWith("https") ? section.content : section.encodedContent}?w=164&h=164&fit=crop&auto=format`}
-                    alt={"image"}
-                    loading="lazy"
-                  />
-                  {/* <Image
-                    source={{ uri: section.content.startsWith("https") ? section.content : section.encodedContent }}
-                    style={[
-                      styles.image,
-                      calculateImageDimensions(section.dimensions),
-                    ]}
-                    resizeMode="contain"
-                  /> */}
-                </ImageListItem>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ImageList>
+        <Card
+          sx={{
+            padding: 2,
+            display: "flex",
+            mt: 5,
+            flexDirection: { xs: "column", sm: "column", md: "row" },
+            width: "100%",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {/* Image Section */}
+          <div style={{ flex: 1, margin: "1%" }}>
+            <Box
+              sx={{
+                position: "relative",
+                width: "100%",
+                paddingBottom: "75%", // 4:3 aspect ratio
+                overflow: "hidden",
+                backgroundColor: "#f0f0f0",
+              }}
+            >
+              {/* Image */}
+
+              <Box
+                component="img"
+                onClick={() => setSelectedImage(images[currentImageIndex])}
+                src={images[currentImageIndex] || "../assets/images/default-pic.jpg"}
+                alt={`Image ${currentImageIndex + 1}`}
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
+              />
+
+              {images.length > 1 && (
+                <>
+                  <IconButton
+                    onClick={showPrevImage}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "8px",
+                      transform: "translateY(-50%)",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      color: "#fff",
+                      zIndex: 2,
+                    }}
+                  >
+                    <ChevronLeft />
+                  </IconButton>
+
+                  <IconButton
+                    onClick={showNextImage}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "8px",
+                      transform: "translateY(-50%)",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      color: "#fff",
+                      zIndex: 2,
+                    }}
+                  >
+                    <ChevronRight />
+                  </IconButton>
+                </>
+              )}
+
+            </Box>
+          </div>
+        </Card>
       </View>
 
       <ImagePreview
