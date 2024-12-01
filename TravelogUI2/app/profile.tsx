@@ -124,6 +124,7 @@ export default function ProfilePage() {
       fetchProfile();
       fetchStats();
       fetchUserMemories();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loginContext.accessToken]),
   );
 
@@ -349,14 +350,14 @@ export default function ProfilePage() {
           }}
         >
           <Typography level="h4" sx={{ mb: 2 }}>
-          Start your journey!
+            Start your journey!
           </Typography>
           <Pressable onPress={() => navigation.navigate("map")}>
             <Typography
               level="h4"
               sx={{ color: "blue", textDecoration: "underline" }}
             >
-            Go to Map
+              Go to Map
             </Typography>
           </Pressable>
         </Box>
@@ -365,7 +366,7 @@ export default function ProfilePage() {
           <Grid container spacing={1} >
             {_memories.map((journal) => (
               <Grid key={journal.id} xs={12} sm={12} md={6}>
-                <PostCard onRefetch={handleRefetch} journal={journal} user={name} edit={true}/>
+                <PostCard onRefetch={handleRefetch} journal={journal} user={name} edit={true} />
               </Grid>
             ))}
           </Grid>

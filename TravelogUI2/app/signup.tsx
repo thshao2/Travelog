@@ -42,7 +42,7 @@ const SignUpPage = () => {
   );
 
   // Handle signup button press
-  const handleSignUp = async() => {
+  const handleSignUp = async () => {
     try {
       let response = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
@@ -77,14 +77,14 @@ const SignUpPage = () => {
     >
       <View style={styles.container}>
         <Text style={styles.title}>Travelog</Text>
-  
+
         <TextInput
           style={styles.input}
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
         />
-  
+
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -98,7 +98,7 @@ const SignUpPage = () => {
         {duplicateEmail && (
           <Text style={styles.errorText}>Email address has already been taken!</Text>
         )}
-  
+
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -106,7 +106,7 @@ const SignUpPage = () => {
           onChangeText={setPassword}
           secureTextEntry={true}
         />
-  
+
         <TextInput
           style={styles.input}
           placeholder="Confirm Password"
@@ -117,7 +117,7 @@ const SignUpPage = () => {
         {confirmPassword !== "" && confirmPassword !== password && (
           <Text style={styles.errorText}>Passwords do not match.</Text>
         )}
-  
+
         <Pressable
           onPress={handleSignUp}
           disabled={!isFormValid}
@@ -128,7 +128,7 @@ const SignUpPage = () => {
         >
           <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
-  
+
         <Text style={styles.text}>
           Have an account already?
           <Pressable onPress={() => navigation.navigate("login")}>

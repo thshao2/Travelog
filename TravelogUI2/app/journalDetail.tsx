@@ -23,7 +23,7 @@ export type Section = {
   type: string,
   content: string,
   encodedContent?: string,
-  dimensions?: {width: number, height: number}
+  dimensions?: { width: number, height: number }
 }
 
 function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
@@ -61,7 +61,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       title: editedJournalTitle,
       category: editedJournalCategory,
       loc: editedJournalLocation,
-      condition: editedJournalCondition, 
+      condition: editedJournalCondition,
       initDate: editedInitDate,
       endDate: editedEndDate,
       captionText: JSON.stringify(sections),
@@ -173,10 +173,10 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 </View>
               </View>
             ) : (
-              <JournalDisplay key = {JSON.stringify(sections)} journal={journal} groupedSections={sections} clickEdit={handleEditToggle} />
+              <JournalDisplay key={JSON.stringify(sections)} journal={journal} groupedSections={sections} clickEdit={handleEditToggle} />
             )}
           </View>
-        </View>       
+        </View>
       </ScrollView>
     </Modal>
   );

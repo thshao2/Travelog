@@ -34,7 +34,7 @@ export default function CategoryMemPage() {
   const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
   const [images, setImages] = useState([]);
 
-  const fetchMemoriesByCategory = async() => {
+  const fetchMemoriesByCategory = async () => {
     console.log("fetching mem");
     try {
       const response = await fetch(`${API_URL}/travel/memory/category/${category}`, {
@@ -44,7 +44,7 @@ export default function CategoryMemPage() {
           "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setMemories(data);
@@ -61,7 +61,7 @@ export default function CategoryMemPage() {
     }
   };
 
-  const fetchOverviewUrls = async() => {
+  const fetchOverviewUrls = async () => {
     try {
       // get slideshow urls:
       const url_response = await fetch(`${API_URL}/travel/memory/category-overview/${category}`, {
@@ -93,12 +93,14 @@ export default function CategoryMemPage() {
   useEffect(() => {
     fetchMemoriesByCategory();
     fetchOverviewUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginContext.accessToken, category]);
 
   useFocusEffect(
     useCallback(() => {
       fetchMemoriesByCategory();
       fetchOverviewUrls();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loginContext.accessToken, category]),
   );
 
@@ -113,7 +115,7 @@ export default function CategoryMemPage() {
     fetchMemoriesByCategory();
     fetchOverviewUrls();
   };
-   
+
   return (
     <Box sx={{
       display: "flex",
@@ -131,7 +133,7 @@ export default function CategoryMemPage() {
         <Typography level="h4" sx={{
           alignSelf: "center",
         }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
-        
+
         <Typography>{memories.length}</Typography>
         <Grid container spacing={2} sx={{ padding: 2 }}>
           {memories.map((journal) => (
@@ -144,16 +146,16 @@ export default function CategoryMemPage() {
           ))}
         </Grid>
       </ScrollView>
-      
+
       {/* right side: category overview */}
       <Box
         sx={{
-          display: "flex",   
-          backgroundColor: "#d9d9d9",        
+          display: "flex",
+          backgroundColor: "#d9d9d9",
           width: "33%",
-          height: "80%",            
-          overflow: "hidden",         
-          flexDirection: "column", 
+          height: "80%",
+          overflow: "hidden",
+          flexDirection: "column",
           margin: "2%",
           textAlign: "center",
         }}
@@ -161,7 +163,11 @@ export default function CategoryMemPage() {
         {images.length === 0 ? (
           <Typography level="h4">Add images to your journals!</Typography>
         ) : (
-          <Slider {...sliderSettings} dots={false} style={{ width: "100%", minHeight: "500px", justifyContent: "center", alignItems: "center" }}>
+          <Slider {...sliderSettings} dots={false}
+            // style={{
+            //   width: "100%", minHeight: "500px", justifyContent: "center", alignItems: "center"
+            // }}
+          >
             {images.map((image, index) => (
               <Box
                 key={index}
@@ -172,8 +178,8 @@ export default function CategoryMemPage() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  height: "500px", 
-                  width: "100%",   
+                  height: "500px",
+                  width: "100%",
                   objectFit: "contain", // no vertical stretch for horizontal imgs
                 }}
               />

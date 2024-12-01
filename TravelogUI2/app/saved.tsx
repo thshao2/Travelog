@@ -52,6 +52,7 @@ export default function SavedPage() {
   useFocusEffect(
     useCallback(() => {
       fetchCategories();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loginContext.accessToken]),
   );
 
@@ -98,7 +99,7 @@ export default function SavedPage() {
         ) : categories.length > 0 ? (
           <>
             <Typography level="h3" sx={{ textAlign: "center", mb: 2 }}>
-          View by Categories
+              View by Categories
             </Typography>
             <Grid container spacing={3}>
               {categories.map((category, index) => (

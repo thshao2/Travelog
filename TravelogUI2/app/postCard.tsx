@@ -18,10 +18,10 @@ import { updateUserStats } from "./utils/journalUtil";
 const { API_URL } = config;
 
 interface PostCardProps {
- journal: Journal;
- onRefetch: () => void;
- user: string
- edit: boolean
+  journal: Journal;
+  onRefetch: () => void;
+  user: string
+  edit: boolean
 }
 
 export default function PostCard({ journal, onRefetch, user, edit }: PostCardProps) {
@@ -205,14 +205,15 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
           </div>
           <Divider sx={{ marginY: 1 }} />
           <ScrollView>
-            <Box style={{
-              marginTop: "8px",
-              maxHeight: "120px",
-              overflowY: "auto",
-            }}
-            sx={{
-              minHeight: { md: "120px" },
-            }}
+            <Box
+              style={{
+                marginTop: "8px",
+                maxHeight: "120px",
+                overflowY: "auto",
+              }}
+              sx={{
+                minHeight: { md: "120px" },
+              }}
             >
               {JSON.parse(journal.captionText)
                 .filter((section: any) => section.type === "text")

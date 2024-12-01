@@ -3,7 +3,7 @@ import { Text, View, TextInput, Button, Modal, ScrollView } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
 import { Picker } from "@react-native-picker/picker";
 import { useLoginContext } from "./context/LoginContext";
-import RichTextEditor from "./richTextEditor"; 
+import RichTextEditor from "./richTextEditor";
 import config from "./config";
 
 import { updateUserStats } from "./utils/journalUtil";
@@ -58,6 +58,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
       }
     };
     fetchCoordinates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPin]);
 
   const handleSubmit = async () => {

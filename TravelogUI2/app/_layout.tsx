@@ -36,8 +36,6 @@ export default function RootLayout() {
     return null;
   }
 
-  // const showNavBar = ["/map", "/saved", "/", "/categoryMemPage", "", "/profile"].includes(location.pathname);
-
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       

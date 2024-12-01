@@ -16,7 +16,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { styles } from "./styles/rich-text-editor-styles";
 import { Section } from "./journalDetail";
-// import { Section } from "./journalDetail";
 
 interface ImageData {
   id: string;
@@ -59,8 +58,8 @@ const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
             source={{ uri: imageUri }}
             style={styles.previewImage}
           />
-          <TouchableOpacity 
-            style={styles.closeButton} 
+          <TouchableOpacity
+            style={styles.closeButton}
             onPress={onClose}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
@@ -78,7 +77,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
   );
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView | null>(null);
-  
+
   const maxImageSize = 180;
 
   const getImageDimensions = (uri: string) => {
@@ -196,8 +195,8 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
         <MaterialIcons name="add-photo-alternate" size={24} color="#4CAF50" />
         <Text style={styles.addImageText}>Add Images To Grid</Text>
       </TouchableOpacity>
-      
-      <ScrollView 
+
+      <ScrollView
         ref={scrollViewRef}
         style={styles.editor}
         showsVerticalScrollIndicator={true}
@@ -211,7 +210,7 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
           placeholderTextColor="#999"
           textAlignVertical="top"
         />
-        
+
         {content.length > 1 && (
           <View style={styles.gridContainer}>
             <View style={[styles.imageGrid, { gap: 8 }]}>

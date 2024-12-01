@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import JournalDetailModal from "./journalDetail";
 import { useLoginContext } from "./context/LoginContext";
+import { styles } from "./styles/popup-menu-styles";
 
 import config from "./config";
 import DeleteConfirmationModal from "./deleteConfirmationModal";
@@ -14,7 +15,7 @@ import { updateUserStats } from "./utils/journalUtil";
 const { API_URL } = config;
 
 export type Journal = {
-  id: number;  
+  id: number;
   userId: number;
   pinId: number;
   title: string;
@@ -31,14 +32,13 @@ interface PopupMenuProps {
     pinId: number | null,
     marker: mapboxgl.Marker | null;
     position: {
-        top: number;
-        left: number;
+      top: number;
+      left: number;
     } | null;
   },
   onClose: () => void,
   onAddJournal: () => void,
   onDeletePin: () => void,
-  // refreshMemories: () => void,
 }
 
 const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin }: PopupMenuProps) => {
@@ -54,7 +54,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   const fetchMemoriesData = async (pinId: number | null): Promise<void> => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${API_URL}/travel/memory/${pinId}`, {
         method: "GET",
@@ -66,7 +66,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      
+
       const memoriesData: Journal[] = await response.json();
       setMemories(memoriesData);
       console.log("NEW MEMORIES: ------");
@@ -82,6 +82,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 
   useEffect(() => {
     fetchMemoriesData(selectedPin.pinId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPin.pinId]);
 
   const closeJournalDetail = () => {
@@ -90,9 +91,9 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // Function to delete a memory by ID
-  const handleDeleteJournal = async(journalId: number) => {
+  const handleDeleteJournal = async (journalId: number) => {
     setIsDetailVisible(false);
-    
+
     try {
       const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
         method: "DELETE",
@@ -101,16 +102,15 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
           "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete memory.");
-      } 
-      // if (condition === "Visited")
+      }
       updateUserStats(loginContext.accessToken);
-  
+
       const message = await response.text();
       console.log(message);
-  
+
       // Update the memories state to remove the deleted journal
       setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
     } catch (err) {
@@ -131,7 +131,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
       },
       body: JSON.stringify(updatedJournal),
     });
-  
+
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
@@ -143,7 +143,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   const handleDeletePin = async () => {
     setIsDeleteModalVisible(false);
     console.log("Delete pin called!");
-    onDeletePin();    
+    onDeletePin();
   };
 
   // update user stats if status of memory changes, OR if memory is deleted
@@ -176,7 +176,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     >
       <Text style={styles.popupTitle}>Memories</Text>
       <Pressable onPress={onClose} style={styles.closeButton} role="button" aria-label='close-icon'>
-        <MaterialIcons name="close" size={18} color="black"/>
+        <MaterialIcons name="close" size={18} color="black" />
       </Pressable>
 
       {/* Display the list of previous journal entries (memories) */}
@@ -187,7 +187,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         <Text style={styles.errorText}>{error}</Text>
       ) : memories.length > 0 ? (
         <PopupMenuList
-          memories = {JSON.stringify(memories)}
+          memories={JSON.stringify(memories)}
           setSelectedJournal={setSelectedJournal}
           setIsDetailVisible={setIsDetailVisible}
         />
@@ -228,74 +228,3 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
 };
 
 export default PopupMenu;
-
-const styles = StyleSheet.create({
-  popupMenu: {
-    position: "absolute",
-    width: 250,
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    padding: 5,
-  },
-  popupTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
-  },
-  journalButton: {
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginVertical: 5,
-  },
-  journalButtonText: {
-    fontSize: 16,
-  },
-  noMemoriesText: {
-    textAlign: "center",
-    fontStyle: "italic",
-    color: "#888",
-    marginVertical: 10,
-  },
-  menuButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginTop: 15,
-  },
-  menuButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "600",
-  },
-  deleteButton: {
-    backgroundColor: "#ff4444",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  deleteButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "600",
-  },
-});

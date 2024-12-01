@@ -33,7 +33,7 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   };
 
   // Function to delete a memory by ID
-  const handleDeleteJournal = async(journalId: number) => {
+  const handleDeleteJournal = async (journalId: number) => {
     setIsDetailVisible(false);
     try {
       const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
@@ -47,14 +47,14 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
         throw new Error("Failed to delete memory.");
       }
       await updateUserStats(loginContext.accessToken);
-      onRefetch();      
+      onRefetch();
     } catch (err) {
       console.error(err);
     }
   };
 
   // Function to edit a memory by ID
-  const handleEditJournal = async(updatedJournal: Journal) => {
+  const handleEditJournal = async (updatedJournal: Journal) => {
     setIsDetailVisible(false);
 
     const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
@@ -65,7 +65,7 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
       },
       body: JSON.stringify(updatedJournal),
     });
-  
+
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
@@ -89,10 +89,10 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
           component="img"
           src={
             JSON.parse(journal.captionText).find((section: any) => section.type === "image")?.content ||
-    JSON.parse(journal.captionText)
-      .find((section: any) => section.type === "imageGrid")
-      ?.images[0]?.content ||
-    "https://travelog-media.s3.us-west-1.amazonaws.com/add-image.png"
+            JSON.parse(journal.captionText)
+              .find((section: any) => section.type === "imageGrid")
+              ?.images[0]?.content ||
+            "https://travelog-media.s3.us-west-1.amazonaws.com/add-image.png"
           }
           alt="Journal Image"
           sx={{
@@ -118,13 +118,14 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
               size={20}
               color={"#E18CA0"}
             />
-            <Typography level="inherit" sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              color: "gray",
-            }}
-            style={{ marginLeft: "8px" }}>
+            <Typography level="inherit"
+              sx={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                color: "gray",
+              }}
+              style={{ marginLeft: "8px" }}>
               {journal.loc}
             </Typography>
           </div>

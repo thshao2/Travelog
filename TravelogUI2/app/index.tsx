@@ -55,8 +55,7 @@ export default function HomeScreen() {
               sx={{
                 position: "relative",
                 width: "100%",
-                height: "100%",
-                // height: { xs: "300px", sm: "400px", md: "100%" },
+                height: "100vh",
                 overflow: "hidden",
               }}
             >
@@ -118,7 +117,7 @@ export default function HomeScreen() {
                   Life is about the adventures you take and the memories you make.
                 </Typography>
                 <Typography
-                  onClick={()=>lets_go_func()}
+                  onClick={() => lets_go_func()}
                   variant="h5"
                   sx={{
                     color: "#FCC7B5",

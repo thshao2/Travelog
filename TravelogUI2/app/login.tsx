@@ -37,7 +37,7 @@ const LoginScreen = () => {
   );
 
   // Handle login button press
-  const handleLogin = async() => {
+  const handleLogin = async () => {
     try {
       let response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -78,7 +78,7 @@ const LoginScreen = () => {
         {!validateEmail(email) && email !== "" && (
           <Text style={styles.errorText}>Please enter a valid email address.</Text>
         )}
-  
+
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -86,7 +86,7 @@ const LoginScreen = () => {
           onChangeText={setPassword}
           secureTextEntry={true}
         />
-  
+
         <Pressable
           onPress={handleLogin}
           disabled={!isFormValid}
@@ -97,7 +97,7 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonText}>Login</Text>
         </Pressable>
-  
+
         <Text style={styles.text}>
           Don't have an account?
           <Pressable onPress={() => navigation.navigate("signup")}>

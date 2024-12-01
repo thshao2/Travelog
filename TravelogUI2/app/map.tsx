@@ -139,6 +139,7 @@ function Map() {
     return () => {
       mapRef.current?.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPins = async (token: string) => {
@@ -321,6 +322,7 @@ function Map() {
     markersRef.current = [];
 
     fetchPins(loginContext.accessToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginContext]);
 
   useEffect(() => {
@@ -331,6 +333,7 @@ function Map() {
     return () => {
       mapRef.current?.off("click", handleMapClick);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addingPin]);
 
   const setLightingPreset = (preset: "dawn" | "day" | "dusk" | "night") => {

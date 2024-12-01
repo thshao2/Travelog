@@ -202,7 +202,7 @@ const JournalDisplay = ({ journal, groupedSections, clickEdit }: JournalDisplayP
           <Typography variant="subtitle1">
             End Date: {new Date(journal.endDate).toLocaleDateString()}
           </Typography>
-          <Typography variant="body1" sx={{ 
+          <Typography variant="body1" sx={{
             mt: 2,
             wordBreak: "break-word", // Ensures long words wrap within the container
             overflowWrap: "break-word", // Fallback for better browser support

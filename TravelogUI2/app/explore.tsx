@@ -13,7 +13,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const loginContext = useContext(LoginContext);
   const [usernames, setUsernames] = useState<Map<number, string>>(new Map());
-  
+
   // Fetch all memories
   const fetchAllMemories = async () => {
     try {
@@ -39,7 +39,7 @@ export default function ExplorePage() {
       setLoading(false);
     }
   };
-  
+
   // Fetch usernames for unique userIds
   const fetchUsernames = async (userIds: any) => {
     try {
@@ -66,18 +66,19 @@ export default function ExplorePage() {
       console.error("Error fetching usernames:", error);
     }
   };
-  
+
   // Refetch memories
   const handleRefetch = () => {
     fetchAllMemories();
   };
-  
+
   useFocusEffect(
     useCallback(() => {
       fetchAllMemories();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loginContext.accessToken]),
   );
-  
+
   return (
     <ScrollView style={{ width: "98%", margin: "1%" }}>
       <Box>
@@ -104,7 +105,7 @@ export default function ExplorePage() {
             }}
           >
             <Typography level="h4" sx={{ mb: 2 }}>
-          Explore others' journey
+              Explore others' journey
             </Typography>
           </Box>
         ) : (
@@ -125,4 +126,3 @@ export default function ExplorePage() {
     </ScrollView>
   );
 }
-  
