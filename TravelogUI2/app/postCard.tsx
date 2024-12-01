@@ -10,8 +10,10 @@ import { IconButton } from "@mui/material";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-
 import { Typography } from "@mui/joy";
+
+import { formatDate } from "./utils/util";
+import { updateUserStats } from "./utils/journalUtil";
 
 const { API_URL } = config;
 
@@ -41,15 +43,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    }).format(d);
-  };
-
   const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
     setIsDetailVisible(true);
@@ -58,23 +51,6 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
   const closeJournalDetail = () => {
     setSelectedJournal(null);
     setIsDetailVisible(false);
-  };
-
-  const updateUserStats = async (token: string) => {
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("updateUserStats - network response was not ok");
-      }
-    } catch (err) {
-      console.error("Error updating stats after posting pin to database: " + err);
-    }
   };
 
   const handleDeleteJournal = async (journalId: number) => {

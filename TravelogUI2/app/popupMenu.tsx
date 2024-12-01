@@ -9,6 +9,8 @@ import DeleteConfirmationModal from "./deleteConfirmationModal";
 
 import PopupMenuList from "./popMenuList";
 
+import { updateUserStats } from "./utils/journalUtil";
+
 const { API_URL } = config;
 
 export type Journal = {
@@ -145,25 +147,25 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // update user stats if status of memory changes, OR if memory is deleted
-  const updateUserStats = async(token: string) => {
-    try {
-      console.log("about to post to update-stats");
-      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("updateUserStats - network response was not ok");
-      } else {
-        console.log("after post - user stats updated successfully !!!");
-      }
-    } catch (err) {
-      console.error("Error updating stats after posting pin to database: " + err);
-    }
-  };
+  // const updateUserStats = async(token: string) => {
+  //   try {
+  //     console.log("about to post to update-stats");
+  //     const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("updateUserStats - network response was not ok");
+  //     } else {
+  //       console.log("after post - user stats updated successfully !!!");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error updating stats after posting pin to database: " + err);
+  //   }
+  // };
 
   return (
     <View

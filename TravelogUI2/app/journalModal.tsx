@@ -6,6 +6,7 @@ import { useLoginContext } from "./context/LoginContext";
 import RichTextEditor from "./richTextEditor"; 
 import config from "./config";
 
+import { updateUserStats } from "./utils/journalUtil";
 import { styles } from "./styles/journal-modal-styles";
 
 const { API_URL } = config;
@@ -112,22 +113,22 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     setReset("");
   };
 
-  const updateUserStats = async (token: string) => {
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("updateUserStats - network response was not ok");
-      }
-    } catch (err) {
-      console.error("Error updating stats after posting pin to database: " + err);
-    }
-  };
+  // const updateUserStats = async (token: string) => {
+  //   try {
+  //     const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": `Bearer ${token}`,
+  //       },
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("updateUserStats - network response was not ok");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error updating stats after posting pin to database: " + err);
+  //   }
+  // };
 
   const getDefaultLocation = async (latitude: number, longitude: number, token: string) => {
     try {
