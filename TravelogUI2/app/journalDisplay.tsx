@@ -193,7 +193,11 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
           <Typography variant="subtitle1">
             End Date: {new Date(journal.endDate).toLocaleDateString()}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ 
+            mt: 2,
+            wordBreak: "break-word", // Ensures long words wrap within the container
+            overflowWrap: "break-word", // Fallback for better browser support
+          }}>
             {sections[0]?.content || ""}
           </Typography>
         </Grid>
