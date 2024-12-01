@@ -7,6 +7,9 @@ import { useLoginContext } from "./context/LoginContext";
 import config from "./config";
 import JournalDetailModal from "./journalDetail";
 
+import { formatDate } from "./utils/util";
+import { updateUserStats } from "./utils/journalUtil";
+
 const { API_URL } = config;
 
 interface MemoryCardProps {
@@ -18,49 +21,6 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
-  const [_memories, setMemories] = useState<Journal[]>([]);
-  const [_error, setError] = useState<string | null>(null);
-  const [_visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
-
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    }).format(d);
-  };
-
-  const handleClick = () => {
-    openJournalDetail(journal);
-  };
-
-  const calculateVisitedStats = (memories: Journal[]) => {
-    const visited = memories.filter((memory) => memory.condition === "Visited").length;
-    const total = memories.length;
-    const percentage = total > 0 ? Math.round((visited / total) * 100) : 0;
-    setVisitedStats({ count: visited, percentage });
-  };
-
-  const updateUserStats = async(token: string) => {
-    try {
-      console.log("about to post to update-stats");
-      const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("updateUserStats - network response was not ok");
-      } else {
-        console.log("after post - user stats updated successfully !!!");
-      }
-    } catch (err) {
-      console.error("Error updating stats after posting pin to database: " + err);
-    }
-  };
 
   const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
@@ -75,7 +35,6 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   // Function to delete a memory by ID
   const handleDeleteJournal = async(journalId: number) => {
     setIsDetailVisible(false);
-    
     try {
       const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
         method: "DELETE",
@@ -84,34 +43,18 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
           "Authorization": `Bearer ${loginContext.accessToken}`,
         },
       });
-  
       if (!response.ok) {
         throw new Error("Failed to delete memory.");
       }
-  
-      const message = await response.text();
-      console.log(message);
-  
-      // Update the memories state to remove the deleted journal
-      setMemories((prevMemories) => {
-        const updatedMemories = prevMemories.filter(journal => journal.id !== journalId);
-        calculateVisitedStats(updatedMemories);
-        return updatedMemories;
-      });
-      onRefetch();
-
-      // Update stats
-      updateUserStats(loginContext.accessToken);
-
+      await updateUserStats(loginContext.accessToken);
+      onRefetch();      
     } catch (err) {
       console.error(err);
-      setError("Failed to delete memory.");
     }
   };
 
   // Function to edit a memory by ID
   const handleEditJournal = async(updatedJournal: Journal) => {
-    console.log("editing in mem card");
     setIsDetailVisible(false);
 
     const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
@@ -126,14 +69,13 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
     if (!response.ok) {
       throw new Error("Failed to edit memory.");
     }
-    console.log("about to refetch");
+    await updateUserStats(loginContext.accessToken);
     onRefetch();
-    updateUserStats(loginContext.accessToken);
   };
 
   return (
     <View>
-      <Card onClick={handleClick}
+      <Card onClick={() => openJournalDetail(journal)}
         sx={{
           position: "relative",
           padding: 2,

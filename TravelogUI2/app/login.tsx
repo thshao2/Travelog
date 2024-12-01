@@ -19,12 +19,6 @@ const LoginScreen = () => {
 
   const loginContext = useLoginContext();
 
-  // Function to validate email format
-  // const validateEmail = (email: string) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // };
-
   // Validate form fields
   useEffect(() => {
     if (validateEmail(email) && password) {

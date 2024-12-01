@@ -21,12 +21,6 @@ const SignUpPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [duplicateEmail, setDuplicateEmail] = useState<boolean>(false);
 
-  // // Function to validate email format
-  // const validateEmail = (email: string) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // };
-
   // Validate form fields
   useEffect(() => {
     if (username && validateEmail(email) && password && password === confirmPassword) {
