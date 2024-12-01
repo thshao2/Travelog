@@ -36,6 +36,7 @@ interface Journal {
 interface JournalDisplayProps {
   journal: Journal;
   groupedSections: (TextData | ImageData)[];
+  clickEdit: () => void;
 }
 
 interface ImagePreviewProps {
@@ -72,7 +73,7 @@ const ImagePreview = ({ isVisible, imageUri, onClose }: ImagePreviewProps) => {
   );
 };
 
-const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
+const JournalDisplay = ({ journal, groupedSections, clickEdit }: JournalDisplayProps) => {
   const [sections, setSections] = useState<(TextData | ImageData)[]>(groupedSections || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [images, _setImages] = useState<string[]>(
@@ -94,6 +95,14 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
+  const clickImage = () => {
+    if (images[currentImageIndex] !== undefined) {
+      setSelectedImage(images[currentImageIndex]);
+    } else {
+      clickEdit();
+    }
+  };
+
   return (
     <Box sx={{ width: "100%", padding: 2 }}>
       {/* Responsive Grid Container */}
@@ -103,8 +112,8 @@ const JournalDisplay = ({ journal, groupedSections }: JournalDisplayProps) => {
           <Box sx={{ position: "relative", width: "100%", paddingBottom: "75%", backgroundColor: "#f0f0f0" }}>
             <Box
               component="img"
-              onClick={() => setSelectedImage(images[currentImageIndex])}
-              src={images[currentImageIndex] || "../assets/images/default-pic.jpg"}
+              onClick={() => clickImage()}
+              src={images[currentImageIndex] || "https://travelog-media.s3.us-west-1.amazonaws.com/add-image.png"}
               alt={`Image ${currentImageIndex + 1}`}
               sx={{
                 position: "absolute",

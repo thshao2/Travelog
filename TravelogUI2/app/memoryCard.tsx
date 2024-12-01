@@ -18,9 +18,9 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
   const loginContext = useLoginContext();
-  const [memories, setMemories] = useState<Journal[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
+  const [_memories, setMemories] = useState<Journal[]>([]);
+  const [_error, setError] = useState<string | null>(null);
+  const [_visitedStats, setVisitedStats] = useState({ count: 0, percentage: 0 });
 
   const formatDate = (date: Date) => {
     const d = new Date(date);
@@ -150,7 +150,7 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
     JSON.parse(journal.captionText)
       .find((section: any) => section.type === "imageGrid")
       ?.images[0]?.content ||
-    "../assets/images/default-pic.jpg"
+    "https://travelog-media.s3.us-west-1.amazonaws.com/add-image.png"
           }
           alt="Journal Image"
           sx={{

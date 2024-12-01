@@ -173,7 +173,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                 </View>
               </View>
             ) : (
-              <JournalDisplay key = {JSON.stringify(sections)} journal={journal} groupedSections={sections} />
+              <JournalDisplay key = {JSON.stringify(sections)} journal={journal} groupedSections={sections} clickEdit={handleEditToggle} />
             )}
           </View>
         </View>       
