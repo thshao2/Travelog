@@ -7,9 +7,7 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-// import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-// import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigation } from "@react-navigation/native";
@@ -17,9 +15,7 @@ import { removeToken } from "../app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-const pages = ["map", "saved", "explore", "profile"];
-// const pages = ["map", "profile"];
-// const settings = ["Logout"];
+const pages: (keyof ReactNavigation.RootParamList)[] = ["map", "saved", "explore", "profile"];
 
 function NavBar() {
   const navigation = useNavigation();
@@ -59,19 +55,18 @@ function NavBar() {
   };
 
   return (
-    // <AppBar position="static" sx={{ backgroundColor: "#1F5579" }}>
     <AppBar position="static" sx={{
       backgroundColor: "#4361ee", //"#5460e6", // "#8CB7D8", // Subtle soft blue
       color: "#FFFFFF",           // White text for contrast
       // borderBottom: "2px solid #8E759C", // Slightly darker blue for accent
     }}>
-      <Container maxWidth="xxl">
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
             // disabled={!loginContext.accessToken}
-            onClick={() => navigateToHome()} 
+            onClick={() => navigateToHome()}
           />
-          
+
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
             onClick={() => navigateToHome()}
@@ -90,7 +85,7 @@ function NavBar() {
             Travelog
           </Button>
 
-          {loginContext.accessToken && <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          {loginContext.accessToken && <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -101,6 +96,24 @@ function NavBar() {
             >
               <MenuIcon />
             </IconButton>
+            <Button
+              onClick={() => navigation.navigate("index")}
+              sx={{
+                mr: 2,
+                display: { xs: "flex", md: "none" },
+                flexGrow: 1,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
+              TRAVELOG
+            </Button>
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -117,7 +130,7 @@ function NavBar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
+              {pages.map((page: any) => (
                 <MenuItem key={page} onClick={() => {
                   handleCloseNavMenu();
                   navigation.navigate(page);
@@ -126,28 +139,10 @@ function NavBar() {
                 </MenuItem>
               ))}
             </Menu>
-          </Box> }
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} onClick={() => navigation.navigate("index")} />
-          
-          {/* Wrapping Typography in Button for proper click handling (mobile view) */}
-          <Button
-            onClick={() => navigation.navigate("index")}
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            TRAVELOG
-          </Button>
-          
+          </Box>}
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: loginContext.accessToken ? 120 : 0 } }}>
-            {loginContext.accessToken && pages.map((page) => (
+            {loginContext.accessToken && pages.map((page: any) => (
               <Button
                 key={page}
                 onClick={() => {
@@ -190,7 +185,7 @@ function NavBar() {
                   },
                 }}
               >
-              Log In
+                Log In
               </Button>
             }
           </Box>
@@ -232,7 +227,7 @@ function NavBar() {
                 </Button>
               </MenuItem>
             </Menu> */}
-            { loginContext.accessToken && <IconButton
+            {loginContext.accessToken && <IconButton
               onClick={logout}
               sx={{
                 position: "absolute", // Position it absolutely to the right
@@ -246,7 +241,7 @@ function NavBar() {
               }}
             >
               <LogoutIcon />
-            </IconButton> }
+            </IconButton>}
           </Box>
         </Toolbar>
       </Container>

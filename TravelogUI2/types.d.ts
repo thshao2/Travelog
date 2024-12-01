@@ -6,7 +6,8 @@ declare global {
       map: undefined;
       profile: undefined;
       index: undefined;
-      // explore: undefined;
+      explore: undefined;
+      saved: undefined;
       login: undefined;
       signup: undefined;
       categoryMemPage: { category: string };
