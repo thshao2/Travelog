@@ -1,7 +1,6 @@
 import React, { useState, useContext, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { ScrollView, ActivityIndicator } from "react-native";
 import { Box, Typography, Grid } from "@mui/joy";
 import { LoginContext } from "./context/LoginContext";
 import config from "./config";
@@ -10,12 +9,9 @@ import { Journal } from "./popupMenu";
 const { API_URL } = config;
 
 export default function ExplorePage() {
-  const navigation = useNavigation();
   const [memories, setMemories] = useState<Journal[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const loginContext = useContext(LoginContext);
-  
-  // Map to store usernames
   const [usernames, setUsernames] = useState<Map<number, string>>(new Map());
   
   // Fetch all memories
@@ -83,9 +79,20 @@ export default function ExplorePage() {
   );
   
   return (
-    <ScrollView>
-      <Box sx={{ padding: 2 }}>
-        {memories.length === 0 ? (
+    <ScrollView style={{ width: "98%", margin: "1%" }}>
+      <Box>
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+            }}
+          >
+            <ActivityIndicator size="large" />
+          </Box>
+        ) : memories.length === 0 ? (
           <Box
             sx={{
               display: "flex",
@@ -97,13 +104,13 @@ export default function ExplorePage() {
             }}
           >
             <Typography level="h4" sx={{ mb: 2 }}>
-                Explore others' journey
+          Explore others' journey
             </Typography>
           </Box>
         ) : (
-          <Grid container spacing={1} sx={{ padding: 1 }}>
+          <Grid container spacing={2}>
             {memories.map((journal) => (
-              <Grid key={journal.id} xs={12} sm={12} md={6}>
+              <Grid xs={12} sm={12} md={6} key={journal.id}>
                 <PostCard
                   onRefetch={handleRefetch}
                   journal={journal}

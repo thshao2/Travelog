@@ -65,7 +65,9 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   statsContainer: {
+    width: "90%",
     flexDirection: "row",
+    alignSelf: "center",
     justifyContent: "space-around",
     marginVertical: 10,
     backgroundColor: "#FFF",
