@@ -262,7 +262,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
 
             {/* Rich Text Editor */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Journal*</Text>
+              <Text style={styles.label}>Journal</Text>
               <View style={{ flex: 1 }}>
                 <RichTextEditor
                   onContentChange={(newSections) => {

@@ -10,7 +10,7 @@ import DeleteConfirmationModal from "./deleteConfirmationModal";
 
 import PopupMenuList from "./popMenuList";
 
-import { updateUserStats } from "./utils/journalUtil";
+import { deleteJournal, editJournal } from "./utils/journalUtil";
 
 const { API_URL } = config;
 
@@ -91,52 +91,10 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
   };
 
   // Function to delete a memory by ID
-  const handleDeleteJournal = async (journalId: number) => {
+  const handleDeleteJournal = async (journalId: number, token: string) => {
     setIsDetailVisible(false);
-
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete memory.");
-      }
-      updateUserStats(loginContext.accessToken);
-
-      const message = await response.text();
-      console.log(message);
-
-      // Update the memories state to remove the deleted journal
-      setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
-    } catch (err) {
-      console.error(err);
-      setError("Failed to delete memory.");
-    }
-  };
-
-  // Function to edit a memory by ID
-  const handleEditJournal = async (updatedJournal: Journal) => {
-    setIsDetailVisible(false);
-
-    const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${loginContext.accessToken}`,
-      },
-      body: JSON.stringify(updatedJournal),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to edit memory.");
-    }
-    updateUserStats(loginContext.accessToken);
-    await fetchMemoriesData(selectedPin.pinId);
+    await deleteJournal(journalId, token);
+    setMemories((prevMemories) => prevMemories.filter(journal => journal.id !== journalId));
   };
 
   // Function to delete the pin
@@ -146,26 +104,12 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
     onDeletePin();
   };
 
-  // update user stats if status of memory changes, OR if memory is deleted
-  // const updateUserStats = async(token: string) => {
-  //   try {
-  //     console.log("about to post to update-stats");
-  //     const response = await fetch(`${API_URL}/travel/memory/update-stats`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${token}`,
-  //       },
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("updateUserStats - network response was not ok");
-  //     } else {
-  //       console.log("after post - user stats updated successfully !!!");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error updating stats after posting pin to database: " + err);
-  //   }
-  // };
+  // Function to edit a memory by ID
+  const handleEditJournal = async (updatedJournal: Journal, token: string) => {
+    setIsDetailVisible(false);
+    await editJournal(updatedJournal, token);
+    await fetchMemoriesData(selectedPin.pinId);
+  };
 
   return (
     <View

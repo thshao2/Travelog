@@ -121,7 +121,7 @@ export default function SavedPage() {
             }}
           >
             <Typography level="h4" sx={{ mb: 2 }}>
-              Start your journey!
+              Start categorizing your journey!
             </Typography>
             <Pressable onPress={() => navigation.navigate("map")}>
               <Typography

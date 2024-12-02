@@ -191,9 +191,7 @@ const JournalDisplay = ({ journal, groupedSections, clickEdit }: JournalDisplayP
 
         {/* Text Section */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="h5" gutterBottom>
-            {journal.category}
-          </Typography>
+          <Typography variant="subtitle1">Category: {journal.category}</Typography>
           <Typography variant="subtitle1">Location: {journal.loc}</Typography>
           <Typography variant="subtitle1">Status: {journal.condition}</Typography>
           <Typography variant="subtitle1">

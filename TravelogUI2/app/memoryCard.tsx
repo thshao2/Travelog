@@ -3,14 +3,10 @@ import { Box, Typography, Card, Divider } from "@mui/joy";
 import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";
-import { useLoginContext } from "./context/LoginContext";
-import config from "./config";
 import JournalDetailModal from "./journalDetail";
 
 import { formatDate } from "./utils/util";
-import { updateUserStats } from "./utils/journalUtil";
-
-const { API_URL } = config;
+import { deleteJournal, editJournal } from "./utils/journalUtil";
 
 interface MemoryCardProps {
   journal: Journal,
@@ -20,7 +16,6 @@ interface MemoryCardProps {
 export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
-  const loginContext = useLoginContext();
 
   const openJournalDetail = (journal: Journal) => {
     setSelectedJournal(journal);
@@ -33,43 +28,16 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
   };
 
   // Function to delete a memory by ID
-  const handleDeleteJournal = async (journalId: number) => {
+  const handleDeleteJournal = async (journalId: number, token: string) => {
     setIsDetailVisible(false);
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${loginContext.accessToken}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete memory.");
-      }
-      await updateUserStats(loginContext.accessToken);
-      onRefetch();
-    } catch (err) {
-      console.error(err);
-    }
+    await deleteJournal(journalId, token);
+    onRefetch();
   };
 
   // Function to edit a memory by ID
-  const handleEditJournal = async (updatedJournal: Journal) => {
+  const handleEditJournal = async (updatedJournal: Journal, token: string) => {
     setIsDetailVisible(false);
-
-    const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${loginContext.accessToken}`,
-      },
-      body: JSON.stringify(updatedJournal),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to edit memory.");
-    }
-    await updateUserStats(loginContext.accessToken);
+    await editJournal(updatedJournal, token);
     onRefetch();
   };
 
@@ -92,7 +60,7 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
             JSON.parse(journal.captionText)
               .find((section: any) => section.type === "imageGrid")
               ?.images[0]?.content ||
-            "https://travelog-media.s3.us-west-1.amazonaws.com/add-image.png"
+            "../assets/images/default-pic.jpg"
           }
           alt="Journal Image"
           sx={{

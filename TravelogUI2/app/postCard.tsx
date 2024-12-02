@@ -3,8 +3,6 @@ import { Box, Card, Divider, Chip } from "@mui/material";
 import { View, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Journal } from "./popupMenu";
-import { useLoginContext } from "./context/LoginContext";
-import config from "./config";
 import JournalDetailModal from "./journalDetail";
 import { IconButton } from "@mui/material";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
@@ -13,9 +11,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Typography } from "@mui/joy";
 
 import { formatDate } from "./utils/util";
-import { updateUserStats } from "./utils/journalUtil";
-
-const { API_URL } = config;
+import { deleteJournal, editJournal } from "./utils/journalUtil";
 
 interface PostCardProps {
   journal: Journal;
@@ -27,7 +23,6 @@ interface PostCardProps {
 export default function PostCard({ journal, onRefetch, user, edit }: PostCardProps) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [selectedJournal, setSelectedJournal] = useState<Journal | null>(null);
-  const loginContext = useLoginContext();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = JSON.parse(journal.captionText)
     .filter((section: any) => section.type === "image" || section.type === "imageGrid")
@@ -53,45 +48,18 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
     setIsDetailVisible(false);
   };
 
-  const handleDeleteJournal = async (journalId: number) => {
+  // Function to delete a memory by ID
+  const handleDeleteJournal = async (journalId: number, token: string) => {
     setIsDetailVisible(false);
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/${journalId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${loginContext.accessToken}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete memory.");
-      }
-      await updateUserStats(loginContext.accessToken);
-      onRefetch();
-    } catch (err) {
-      console.error(err);
-    }
+    await deleteJournal(journalId, token);
+    onRefetch();
   };
 
-  const handleEditJournal = async (updatedJournal: Journal) => {
+  // Function to edit a memory by ID
+  const handleEditJournal = async (updatedJournal: Journal, token: string) => {
     setIsDetailVisible(false);
-    try {
-      const response = await fetch(`${API_URL}/travel/memory/${updatedJournal.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${loginContext.accessToken}`,
-        },
-        body: JSON.stringify(updatedJournal),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to edit memory.");
-      }
-      await updateUserStats(loginContext.accessToken);
-      onRefetch();
-    } catch (err) {
-      console.error(err);
-    }
+    await editJournal(updatedJournal, token);
+    onRefetch();
   };
 
   return (

@@ -17,7 +17,7 @@ const { API_URL } = config;
 const sliderSettings = {
   dots: true,
   infinite: true,
-  speed: 500,
+  speed: 1000,
   slidesToShow: 1,
   slidesToScroll: 1,
   autoplay: true,
@@ -133,8 +133,7 @@ export default function CategoryMemPage() {
         <Typography level="h4" sx={{
           alignSelf: "center",
         }}>Visited: {visitedStats.count}/{memories.length} places ({visitedStats.percentage}%)</Typography>
-
-        <Typography>{memories.length}</Typography>
+        
         <Grid container spacing={2} sx={{ padding: 2 }}>
           {memories.map((journal) => (
             <Grid

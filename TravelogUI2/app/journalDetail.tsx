@@ -6,6 +6,7 @@ import { Journal } from "./popupMenu";
 import { Picker } from "@react-native-picker/picker";
 import JournalDisplay from "./journalDisplay";
 import RichTextEditor from "./richTextEditor";
+import { useLoginContext } from "./context/LoginContext";
 
 import { styles } from "./styles/journal-detail-styles";
 
@@ -14,8 +15,8 @@ export interface JournalDetailProps {
   setIsDetailVisible: (state: boolean) => void,
   journal: Journal,
   onClose: () => void,
-  onDelete: (journalId: number) => void,
-  onEdit: (updatedJournal: Journal) => void,
+  onDelete: (journalId: number, token: string) => void,
+  onEdit: (updatedJournal: Journal, token: string) => void,
 }
 
 export type Section = {
@@ -36,6 +37,8 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
   const [editedEndDate, setEditedEndDate] = useState(new Date(new Date(journal?.endDate).setHours(0, 0, 0, 0)));
   const [sections, setSections] = useState(JSON.parse(journal.captionText));
   const [isFormValid, setIsFormValid] = useState(false);
+
+  const loginContext = useLoginContext();
 
   useEffect(() => {
     if (editedJournalTitle && editedJournalLocation && editedJournalCondition && editedInitDate && editedEndDate) {
@@ -65,7 +68,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
       initDate: editedInitDate,
       endDate: editedEndDate,
       captionText: JSON.stringify(sections),
-    });
+    }, loginContext.accessToken);
 
     setIsEditMode(false);
   };
@@ -84,7 +87,7 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
               <Text style={styles.modalTitle}>{isEditMode ? "Edit Journal" : journal.title}</Text>
               <View style={styles.iconContainer}>
                 <MaterialIcons name="edit" size={24} color="black" onPress={handleEditToggle} />
-                <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id)} />
+                <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id, loginContext.accessToken)} />
                 <MaterialIcons name="close" size={24} color="black" onPress={onClose} />
               </View>
             </View>
@@ -162,10 +165,15 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
                   />
                 </View>
 
-                <RichTextEditor onContentChange={(newSections: Section[]) => {
-                  setSections(newSections);
-                  console.log(newSections, "newSections");
-                }} initialContent={journal.captionText} />
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Journal</Text>
+                  <View style={{ flex: 1 }}>
+                    <RichTextEditor onContentChange={(newSections: Section[]) => {
+                      setSections(newSections);
+                      console.log(newSections, "newSections");
+                    }} initialContent={journal.captionText} />
+                  </View>
+                </View>
 
                 <View style={styles.buttonContainer}>
                   <Button title="Save" onPress={handleEditSubmit} disabled={!isFormValid} color="#4CAF50" />
