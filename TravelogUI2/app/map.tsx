@@ -356,12 +356,13 @@ function Map() {
       <button
         style={{
           position: "absolute",
-          top: isMobile ? "82vh" : "50px",
+          left: isMobile ? "120px" : "12px",
+          bottom: isMobile ? "5px" : "120px",
           zIndex: 1000,
         }}
         className="reset-button"
         onClick={handleButtonClick}>
-        <Text>Reset</Text>
+        <Text>Reset Location</Text>
       </button >
 
       <div
@@ -369,9 +370,9 @@ function Map() {
           position: "absolute",
           // bottom: isMobile ? "10px" : "20px",
           // left: "10px",
-          top: isMobile ? "10px" : "5px",
-          right: "0px",
-          zIndex: 1000,
+          bottom: "40px",
+          left: "12px",
+          zIndex: 1,
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
           justifyContent: "center",
@@ -380,7 +381,7 @@ function Map() {
         }}
       >
         {/* Bottom Navigation for lighting presets */}
-        <View style={styles.bottomNavigationContainer}>
+        <View>
           <BottomNavigation
             navigationState={{
               index: ["dawn", "day", "dusk", "night"].indexOf(selectedPreset),
