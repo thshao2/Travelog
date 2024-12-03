@@ -60,7 +60,7 @@ The User Service handles user profile management, including creating, updating, 
     "message": "User not found"
   }
   ```
-- **500 Internal Server Error:** An error occurred while retrieving the username.
+- **500 Internal Server Error:** An error occurred while retrieving the username
   ```json
   {
     "message": "An error occurred while retrieving the username"
@@ -137,7 +137,7 @@ The User Service handles user profile management, including creating, updating, 
     "bio": "string"
   }
   ```
-- **404 Not Found:** User profile not found
+- **404 Not Found:** User profile not found.
   ```json
   {
     "message": "User profile not found"
@@ -153,40 +153,40 @@ The User Service handles user profile management, including creating, updating, 
 ## Service Methods
 
 ### UserService
-- **createNewProfile(UserProfile profile)**  
-  **Description:** Creates a new user profile.
+- **createNewProfile(UserProfile profile)**
+  - **Description:** Creates a new user profile.
   - **Parameters:**
     - `profile`: The user profile to create.
-  - **Returns:** true if the profile was created successfully, false otherwise.
+  - **Returns:** `true` if the profile was created successfully, `false` otherwise.
 
-- **getUsernameByUserId(Long userId)**  
-  **Description:** Retrieves the username by user ID.
+- **getUsernameByUserId(Long userId)**
+  - **Description:** Retrieves the username by user ID.
   - **Parameters:**
     - `userId`: The ID of the user to retrieve the username for.
   - **Returns:** The username of the user.
 
-- **getCurrentUserProfile(Long userId)**  
-  **Description:** Retrieves the current user's profile by user ID.
+- **getCurrentUserProfile(Long userId)**
+  - **Description:** Retrieves the current user's profile by user ID.
   - **Parameters:**
     - `userId`: The ID of the user to retrieve the profile for.
-  - **Returns:** A ResponseEntity containing the user profile.
+  - **Returns:** A `ResponseEntity` containing the user profile.
 
-- **updateUserProfile(Long userId, String newUsername, String newBio)**  
-  **Description:** Updates the user profile.
+- **updateUserProfile(Long userId, String newUsername, String newBio)**
+  - **Description:** Updates the user profile.
   - **Parameters:**
     - `userId`: The ID of the user to update.
     - `newUsername`: The new username.
     - `newBio`: The new bio.
   - **Returns:** The updated user profile.
 
-- **uploadToS3(String base64Image)**  
-  **Description:** Uploads an image to S3.
+- **uploadToS3(String base64Image)**
+  - **Description:** Uploads an image to S3.
   - **Parameters:**
     - `base64Image`: The base64-encoded image to upload.
   - **Returns:** The URL of the uploaded image.
 
-- **deleteFromS3(String mediaURL)**  
-  **Description:** Deletes an image from S3.
+- **deleteFromS3(String mediaURL)**
+  - **Description:** Deletes an image from S3.
   - **Parameters:**
     - `mediaURL`: The URL of the image to delete.
 
@@ -205,3 +205,16 @@ The User Service handles user profile management, including creating, updating, 
 - **testUpdateUserProfile_UserNotFound()**: Tests the scenario where the user profile to update is not found.
 - **testUpdateUserProfile_Exception()**: Tests the scenario where an exception occurs while updating the user profile.
 
+### UserServiceTests
+- **testCreateNewProfile_Success()**: Tests the successful creation of a new user profile.
+- **testGetUsernameByUserId_Success()**: Tests the successful retrieval of the username by user ID.
+- **testGetCurrentUserProfile_Success()**: Tests the successful retrieval of the current user's profile.
+- **testGetCurrentUserProfile_UserNotFound()**: Tests the scenario where the user profile is not found.
+- **testGetCurrentUserProfile_FetchUserFailed()**: Tests the scenario where fetching the user fails.
+- **testGetCurrentUserProfile_Exception()**: Tests the scenario where an exception occurs while fetching the user profile.
+- **testUpdateUserProfile_Success()**: Tests the successful update of the user profile.
+- **testUpdateUserProfile_UserNotFound()**: Tests the scenario where the user profile to update is not found.
+- **testUploadToS3_Success()**: Tests the successful upload of an image to S3.
+- **testUploadToS3_Failure()**: Tests the scenario where uploading an image to S3 fails.
+- **testDeleteFromS3_Success()**: Tests the successful deletion of an image from S3.
+- **testDeleteFromS3_Failure()**: Tests the scenario where deleting an image from S3 fails.
