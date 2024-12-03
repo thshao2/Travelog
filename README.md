@@ -21,8 +21,16 @@ npm run installs
 
 ```bash
 cd /app/Travelog
+git pull
 npm run restart-backend-prod
 npm run deploy-frontend
+```
+OR 
+
+```bash
+cd /app/Travelog
+git pull
+npm run deploy
 ```
 ## AWS S3 Development Access
 
