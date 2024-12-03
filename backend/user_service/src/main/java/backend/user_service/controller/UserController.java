@@ -57,7 +57,7 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create user profile");
             }
         } catch (Exception e) {
-            System.err.println("An error occurred while creating the user profile: " + e.getMessage());
+            System.out.println("An error occurred while creating the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while creating the user profile");
         }

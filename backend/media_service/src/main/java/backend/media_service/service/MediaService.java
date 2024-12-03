@@ -13,6 +13,7 @@ public class MediaService {
     private MediaRepository mediaRepository;
 
     public Media getMediaById(Long mediaId) {
-        return mediaRepository.findById(mediaId).orElse(null);
+        return mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new RuntimeException("Media not found"));
     }
 }
