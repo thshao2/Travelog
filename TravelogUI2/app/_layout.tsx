@@ -14,7 +14,7 @@ import applyGlobalPolyfills from "./decoder";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { LoginProvider } from "./context/LoginContext";
-import NavBar from "../components/NavBar";
+import NavBar from "@/components/NavBar";
 applyGlobalPolyfills();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

@@ -3,11 +3,13 @@ INSERT INTO locations (id, latitude, longitude) VALUES (598769, 37.7749, -122.41
 INSERT INTO locations (id, latitude, longitude) VALUES (565430, 34.0522, -118.2437);
 INSERT INTO locations (id, latitude, longitude) VALUES (555670, 40.7128, -74.0060);
 INSERT INTO locations (id, latitude, longitude) VALUES (576530, 48.8566, 2.3522);
+-- INSERT INTO locations (id, latitude, longitude) VALUES (111111, 37.0032, 122.0588); -- College 9 Apartment
 
 INSERT INTO pins (id, user_id, location_id, created_at) VALUES (9999, 1, 598769, '2023-10-02 18:00:00');
 INSERT INTO pins (id, user_id, location_id, created_at) VALUES (9000, 1, 565430, '2023-10-02 18:00:00');
 INSERT INTO pins (id, user_id, location_id, created_at) VALUES (9234, 2, 555670, '2023-10-02 18:00:00');
 INSERT INTO pins (id, user_id, location_id, created_at) VALUES (9678, 2, 576530, '2023-10-02 18:00:00');
+-- INSERT INTO pins (id, user_id, location_id, created_at) VALUES (1000, 2, 111111, '2023-10-02 18:00:00');
 
 
 -- INSERT INTO memories (id, user_id, pin_id, title, category, loc, condition, caption_text, init_date, end_date) VALUES (11111, 1, 9999, 'SF Trip', 'Favorite', 'Eiffel Tower', 'Visited', 'Visited the Eiffel Tower', '2023-10-01 10:00:00', '2023-10-02 18:00:00');
