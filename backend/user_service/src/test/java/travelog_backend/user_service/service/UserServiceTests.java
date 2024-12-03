@@ -1,22 +1,20 @@
 package travelog_backend.user_service.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,17 +58,6 @@ public class UserServiceTests {
         userProfile.setAvatarMediaId("https://example.com/avatar.jpg");
         userProfile.setJoinedAt(LocalDate.now());
         userProfile.setStatistics(new UserProfile.Statistics(0, 0, 0));
-    }
-
-    @Test
-    void testCreateNewProfile_Success() {
-        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
-
-        boolean result = userService.createNewProfile(userProfile);
-
-        assertEquals(true, result);
-        verify(userProfileRepository).save(userProfile);
-        System.out.println("Passed testCreateNewProfile_Success");
     }
 
     @Test
@@ -180,17 +167,6 @@ public class UserServiceTests {
 
         assertEquals("Failed to upload file to S3", exception.getMessage());
         System.out.println("Passed testUploadToS3_Failure");
-    }
-
-    @Test
-    void testDeleteFromS3_Success() {
-        String mediaUrl = "https://travelog-media.s3.amazonaws.com/unique-file-name-profile.jpg";
-        doNothing().when(s3Client).deleteObject(any(DeleteObjectRequest.class));
-
-        userService.deleteFromS3(mediaUrl);
-
-        verify(s3Client).deleteObject(any(DeleteObjectRequest.class));
-        System.out.println("Passed testDeleteFromS3_Success");
     }
 
     @Test

@@ -63,24 +63,6 @@ public class AuthControllerTests {
         objectMapper = new ObjectMapper(); // json format for making api requests
     }
 
-    // @Test
-    // public void testSignup_Success() throws Exception {
-    //     User user = new User(1L, "testuser", "password", "test@example.com");
-
-    //     when(authService.saveUser(any(User.class))).thenReturn("jwt-token");
-    //     when(authService.logIn(any(User.class))).thenReturn("jwt-token");
-    //     when(restTemplate.postForEntity(anyString(), any(), any(Class.class)))
-    //             .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
-
-    //     mockMvc.perform(post("/auth/signup")
-    //             .contentType("application/json")
-    //             .content(objectMapper.writeValueAsString(user)))
-    //             .andExpect(status().isCreated())
-    //             .andExpect(jsonPath("$.token").value("jwt-token"));
-
-    //     System.out.println("Passed testSignup_Success");
-    // }
-
     @Test
     public void testSignup_DuplicateEmail() throws Exception {
         User user = new User(1L, "testuser", "password", "test@example.com");
@@ -201,22 +183,6 @@ public class AuthControllerTests {
 
         System.out.println("Passed testUpdateUserPassword_InvalidCurrentPassword");
     }
-
-    // @Test
-    // public void testUpdateUserPassword_UserNotFound() throws Exception {
-    //     UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest("password", "newPassword");
-
-    //     when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-    //     mockMvc.perform(put("/auth/update-password")
-    //             .header("X-User-Id", "1")
-    //             .contentType("application/json")
-    //             .content(objectMapper.writeValueAsString(updatePasswordRequest)))
-    //             .andExpect(status().isNotFound())
-    //             .andExpect(jsonPath("$").value("User not found"));
-
-    //     System.out.println("Passed testUpdateUserPassword_UserNotFound");
-    // }
 
     @Test
     public void testValidateToken_Success() throws Exception {

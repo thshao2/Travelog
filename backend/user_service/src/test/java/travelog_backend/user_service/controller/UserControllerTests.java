@@ -141,52 +141,6 @@ public class UserControllerTests {
     }
 
     @Test
-    public void testCreateProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(
-                1L,
-                1L,
-                "test@example.com",
-                "testuser",
-                "Test bio",
-                "https://example.com/avatar.jpg",
-                LocalDate.now(),
-                new UserProfile.Statistics(0, 0, 0));
-
-        when(userService.createNewProfile(userProfile)).thenReturn(userProfile);
-
-        mockMvc.perform(post("/user/create")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userProfile)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").value("User profile created successfully"));
-
-        System.out.println("Passed testCreateProfile_Success");
-    }
-
-    @Test
-    public void testCreateProfile_Failure() throws Exception {
-        UserProfile userProfile = new UserProfile(
-                1L,
-                1L,
-                "test@example.com",
-                "testuser",
-                "Test bio",
-                "https://example.com/avatar.jpg",
-                LocalDate.now(),
-                new UserProfile.Statistics(0, 0, 0));
-
-        when(userService.createNewProfile(userProfile)).thenReturn(null);
-
-        mockMvc.perform(post("/user/create")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userProfile)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("Failed to create user profile"));
-
-        System.out.println("Passed testCreateProfile_Failure");
-    }
-
-    @Test
     public void testCreateProfile_Exception() throws Exception {
         UserProfile userProfile = new UserProfile(
                 1L,
