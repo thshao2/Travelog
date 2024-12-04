@@ -1,22 +1,23 @@
 package backend.travel_service.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -121,7 +122,8 @@ public class MemoryServiceTests {
         List<Memory> memories = new ArrayList<>();
         memories.add(memory);
 
-        when(memoryRepository.findByUserIdAndPinIdOrderByEndDateDesc(anyLong(), anyLong())).thenReturn(memories);
+        when(memoryRepository.findByUserIdAndPinIdOrderByEndDateDesc(anyLong(), anyLong()))
+                .thenReturn(memories);
 
         List<Memory> result = memoryService.getMemoriesByUserIdAndPinId(1L, 1L);
 
@@ -304,7 +306,8 @@ public class MemoryServiceTests {
     void testGetDefaultLocation_Success() {
         List<String> locationData = List.of("Test City", "Test Country", "Test Continent");
 
-        when(geocodingService.getLocationData(any(Double.class), any(Double.class))).thenReturn(locationData);
+        when(geocodingService.getLocationData(any(Double.class), any(Double.class)))
+                .thenReturn(locationData);
 
         VisitedStatsDto result = memoryService.getDefaultLocation(1.0, 1.0);
 

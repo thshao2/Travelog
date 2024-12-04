@@ -1,17 +1,18 @@
 package travelog_backend.auth_service.service;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -56,7 +57,7 @@ public class AuthServiceTests {
         System.out.println("Passed test fetch user"); // check debug console
     }
 
-    @Test 
+    @Test
     void testValidatePassword_Success() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("password123", user.getPassword())).thenReturn(true);
@@ -152,13 +153,13 @@ public class AuthServiceTests {
     void testUpdateUser_UserNotFound() {
         User updatedUser = new User();
         updatedUser.setUsername("newUsername");
-    
+
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
-    
+
         assertThrows(InvalidCredentialsException.class, () -> {
             authService.updateUser(Optional.empty(), updatedUser);
         });
-    
+
         verify(userRepository, times(0)).save(user);
         System.out.println("test update user user not found"); // check debug console
     }
