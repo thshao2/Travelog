@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doNothing;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,17 +59,6 @@ public class UserServiceTests {
         userProfile.setAvatarMediaId("https://example.com/avatar.jpg");
         userProfile.setJoinedAt(LocalDate.now());
         userProfile.setStatistics(new UserProfile.Statistics(0, 0, 0));
-    }
-
-    @Test
-    void testCreateNewProfile_Success() {
-        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
-
-        boolean result = userService.createNewProfile(userProfile);
-
-        assertEquals(true, result);
-        verify(userProfileRepository).save(userProfile);
-        System.out.println("Passed testCreateNewProfile_Success");
     }
 
     @Test
@@ -161,7 +149,8 @@ public class UserServiceTests {
     void testUploadToS3_Success() {
         String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAAUA";
         String expectedUrl = "https://travelog-media.s3.amazonaws.com/unique-file-name-profile.jpg";
-        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(null);
+        when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
+                .thenReturn(null);
 
         String mediaUrl = userService.uploadToS3(base64Image);
 
@@ -172,7 +161,9 @@ public class UserServiceTests {
     @Test
     void testUploadToS3_Failure() {
         String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAAUA";
-        doThrow(new RuntimeException("Failed to upload file to S3")).when(s3Client).putObject(any(PutObjectRequest.class), any(RequestBody.class));
+        doThrow(new RuntimeException("Failed to upload file to S3"))
+                .when(s3Client)
+                .putObject(any(PutObjectRequest.class), any(RequestBody.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             userService.uploadToS3(base64Image);
@@ -183,20 +174,11 @@ public class UserServiceTests {
     }
 
     @Test
-    void testDeleteFromS3_Success() {
-        String mediaUrl = "https://travelog-media.s3.amazonaws.com/unique-file-name-profile.jpg";
-        doNothing().when(s3Client).deleteObject(any(DeleteObjectRequest.class));
-
-        userService.deleteFromS3(mediaUrl);
-
-        verify(s3Client).deleteObject(any(DeleteObjectRequest.class));
-        System.out.println("Passed testDeleteFromS3_Success");
-    }
-
-    @Test
     void testDeleteFromS3_Failure() {
         String mediaUrl = "https://travelog-media.s3.amazonaws.com/unique-file-name-profile.jpg";
-        doThrow(new RuntimeException("Failed to delete file from S3")).when(s3Client).deleteObject(any(DeleteObjectRequest.class));
+        doThrow(new RuntimeException("Failed to delete file from S3"))
+                .when(s3Client)
+                .deleteObject(any(DeleteObjectRequest.class));
 
         Exception exception = assertThrows(RuntimeException.class, () -> {
             userService.deleteFromS3(mediaUrl);

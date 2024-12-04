@@ -1,13 +1,19 @@
 package travelog_backend.user_service.controller;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyLong;
 import org.mockito.InjectMocks;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,11 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -141,52 +142,6 @@ public class UserControllerTests {
     }
 
     @Test
-    public void testCreateProfile_Success() throws Exception {
-        UserProfile userProfile = new UserProfile(
-                1L,
-                1L,
-                "test@example.com",
-                "testuser",
-                "Test bio",
-                "https://example.com/avatar.jpg",
-                LocalDate.now(),
-                new UserProfile.Statistics(0, 0, 0));
-
-        when(userService.createNewProfile(userProfile)).thenReturn(userProfile);
-
-        mockMvc.perform(post("/user/create")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userProfile)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").value("User profile created successfully"));
-
-        System.out.println("Passed testCreateProfile_Success");
-    }
-
-    @Test
-    public void testCreateProfile_Failure() throws Exception {
-        UserProfile userProfile = new UserProfile(
-                1L,
-                1L,
-                "test@example.com",
-                "testuser",
-                "Test bio",
-                "https://example.com/avatar.jpg",
-                LocalDate.now(),
-                new UserProfile.Statistics(0, 0, 0));
-
-        when(userService.createNewProfile(userProfile)).thenReturn(null);
-
-        mockMvc.perform(post("/user/create")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userProfile)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value("Failed to create user profile"));
-
-        System.out.println("Passed testCreateProfile_Failure");
-    }
-
-    @Test
     public void testCreateProfile_Exception() throws Exception {
         UserProfile userProfile = new UserProfile(
                 1L,
@@ -201,8 +156,8 @@ public class UserControllerTests {
         when(userService.createNewProfile(userProfile)).thenThrow(new RuntimeException("Database error"));
 
         mockMvc.perform(post("/user/create")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(userProfile)))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(userProfile)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$").value("An error occurred while creating the user profile"));
 

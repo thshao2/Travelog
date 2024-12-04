@@ -1,13 +1,19 @@
 package travelog_backend.auth_service.controller;
 
-import java.util.Optional;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,11 +21,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,33 +64,16 @@ public class AuthControllerTests {
         objectMapper = new ObjectMapper(); // json format for making api requests
     }
 
-    // @Test
-    // public void testSignup_Success() throws Exception {
-    //     User user = new User(1L, "testuser", "password", "test@example.com");
-
-    //     when(authService.saveUser(any(User.class))).thenReturn("jwt-token");
-    //     when(authService.logIn(any(User.class))).thenReturn("jwt-token");
-    //     when(restTemplate.postForEntity(anyString(), any(), any(Class.class)))
-    //             .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
-
-    //     mockMvc.perform(post("/auth/signup")
-    //             .contentType("application/json")
-    //             .content(objectMapper.writeValueAsString(user)))
-    //             .andExpect(status().isCreated())
-    //             .andExpect(jsonPath("$.token").value("jwt-token"));
-
-    //     System.out.println("Passed testSignup_Success");
-    // }
-
     @Test
     public void testSignup_DuplicateEmail() throws Exception {
         User user = new User(1L, "testuser", "password", "test@example.com");
 
-        when(authService.saveUser(any(User.class))).thenThrow(new DuplicateCredentialsException("User with email is already registered with us"));
+        when(authService.saveUser(any(User.class)))
+                .thenThrow(new DuplicateCredentialsException("User with email is already registered with us"));
 
         mockMvc.perform(post("/auth/signup")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(user)))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value("User with email is already registered with us"));
 
@@ -140,8 +124,8 @@ public class AuthControllerTests {
         when(authService.logIn(user)).thenReturn("jwt-token");
 
         mockMvc.perform(post("/auth/login")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(user)))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("jwt-token"));
 
@@ -155,8 +139,8 @@ public class AuthControllerTests {
         when(authService.logIn(user)).thenThrow(new InvalidCredentialsException("Invalid credentials"));
 
         mockMvc.perform(post("/auth/login")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(user)))
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$").value("Invalid credentials"));
 
@@ -173,9 +157,9 @@ public class AuthControllerTests {
         when(authService.updateUserPassword(user, "newPassword")).thenReturn(user);
 
         mockMvc.perform(put("/auth/update-password")
-                .header("X-User-Id", "1")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatePasswordRequest)))
+                        .header("X-User-Id", "1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(updatePasswordRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.username").value("testuser"))
@@ -193,30 +177,14 @@ public class AuthControllerTests {
         when(authService.validatePassword(user, "wrongpassword")).thenReturn(false);
 
         mockMvc.perform(put("/auth/update-password")
-                .header("X-User-Id", "1")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(updatePasswordRequest)))
+                        .header("X-User-Id", "1")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(updatePasswordRequest)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$").value("Invalid current password"));
 
         System.out.println("Passed testUpdateUserPassword_InvalidCurrentPassword");
     }
-
-    // @Test
-    // public void testUpdateUserPassword_UserNotFound() throws Exception {
-    //     UpdatePasswordRequest updatePasswordRequest = new UpdatePasswordRequest("password", "newPassword");
-
-    //     when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
-
-    //     mockMvc.perform(put("/auth/update-password")
-    //             .header("X-User-Id", "1")
-    //             .contentType("application/json")
-    //             .content(objectMapper.writeValueAsString(updatePasswordRequest)))
-    //             .andExpect(status().isNotFound())
-    //             .andExpect(jsonPath("$").value("User not found"));
-
-    //     System.out.println("Passed testUpdateUserPassword_UserNotFound");
-    // }
 
     @Test
     public void testValidateToken_Success() throws Exception {

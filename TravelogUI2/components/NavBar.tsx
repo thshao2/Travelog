@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useNavigation } from "@react-navigation/native";
-import { removeToken } from "../app/utils/util";
+import { removeToken } from "@/app/utils/util";
 import { useLoginContext } from "@/app/context/LoginContext";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -22,25 +22,16 @@ function NavBar() {
   const loginContext = useLoginContext();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  // const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorElUser(event.currentTarget);
-  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null);
-  // };
-
   const logout = async () => {
-    console.log("-----------------LOGOUT OF NAVBAR CALLED!!!!!!!!!!!!!!---------------------");
     await removeToken();
     loginContext.setEmail("");
     loginContext.setAccessToken("");
@@ -56,21 +47,18 @@ function NavBar() {
 
   return (
     <AppBar position="static" sx={{
-      backgroundColor: "#4361ee", //"#5460e6", // "#8CB7D8", // Subtle soft blue
-      color: "#FFFFFF",           // White text for contrast
-      // borderBottom: "2px solid #8E759C", // Slightly darker blue for accent
+      backgroundColor: "#4361ee",
+      color: "#FFFFFF",
     }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-            // disabled={!loginContext.accessToken}
             onClick={() => navigateToHome()}
           />
 
           {/* Wrapping Typography in Button for proper click handling */}
           <Button
             onClick={() => navigateToHome()}
-            // disabled={!loginContext.accessToken}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -135,7 +123,7 @@ function NavBar() {
                   handleCloseNavMenu();
                   navigation.navigate(page);
                 }}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                  <Typography sx={{ textAlign: "center", textTransform: "capitalize" }}>{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -156,7 +144,7 @@ function NavBar() {
                   marginLeft: 6,
                   fontSize: "1.2rem",
                   "&:hover": {
-                    backgroundColor: "#4895ef", //"#8d94f7", // Gold for hover effect
+                    backgroundColor: "#4895ef",
                   },
                 }}
               >
@@ -177,11 +165,11 @@ function NavBar() {
                   display: "block",
                   marginLeft: 6,
                   fontSize: "1.2rem",
-                  border: "2px solid white", // Add a white border
-                  padding: "0.5rem 1rem",    // Add padding for better spacing
-                  borderRadius: "4px",       // Optional: make the box corners rounded
+                  border: "2px solid white",
+                  padding: "0.5rem 1rem",
+                  borderRadius: "4px", 
                   "&:hover": {
-                    backgroundColor: "#4895ef",// "#8d94f7", // Gold for hover effect
+                    backgroundColor: "#4895ef",
                   },
                 }}
               >

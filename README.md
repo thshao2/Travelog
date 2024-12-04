@@ -5,7 +5,7 @@ Production URLs:
 - http://18.144.165.97
 - http://ec2-18-144-165-97.us-west-1.compute.amazonaws.com/
 
-To start the entire web application, run
+To build and start the entire web application, run
 
 ```bash
 npm start
@@ -21,8 +21,16 @@ npm run installs
 
 ```bash
 cd /app/Travelog
+git pull
 npm run restart-backend-prod
 npm run deploy-frontend
+```
+OR 
+
+```bash
+cd /app/Travelog
+git pull
+npm run deploy
 ```
 ## AWS S3 Development Access
 
