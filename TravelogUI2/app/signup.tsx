@@ -132,7 +132,7 @@ const SignUpPage = () => {
         <Text style={styles.text}>
           Have an account already?
           <Pressable onPress={() => navigation.navigate("login")}>
-            <Text style={styles.funcText}>Click here to login!</Text>
+            <Text style={styles.funcText}> Click here to login!</Text>
           </Pressable>
         </Text>
       </View>
