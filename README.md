@@ -5,7 +5,7 @@ Production URLs:
 - http://18.144.165.97
 - http://ec2-18-144-165-97.us-west-1.compute.amazonaws.com/
 
-To start the entire web application, run
+To build and start the entire web application, run
 
 ```bash
 npm start
