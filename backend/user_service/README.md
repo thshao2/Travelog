@@ -198,15 +198,12 @@ The User Service handles user profile management, including creating, updating, 
 - **testGetCurrentUserProfile_FetchUserFailed()**: Tests the scenario where fetching the user fails.
 - **testGetCurrentUserProfile_Exception()**: Tests the scenario where an exception occurs while fetching the user profile.
 - **testGetUsername_Success()**: Tests the successful retrieval of the username by user ID.
-- **testCreateProfile_Success()**: Tests the successful creation of a new user profile.
-- **testCreateProfile_Failure()**: Tests the scenario where creating the user profile fails.
 - **testCreateProfile_Exception()**: Tests the scenario where an exception occurs while creating the user profile.
 - **testUpdateUserProfile_Success()**: Tests the successful update of the user profile.
 - **testUpdateUserProfile_UserNotFound()**: Tests the scenario where the user profile to update is not found.
 - **testUpdateUserProfile_Exception()**: Tests the scenario where an exception occurs while updating the user profile.
 
 ### UserServiceTests
-- **testCreateNewProfile_Success()**: Tests the successful creation of a new user profile.
 - **testGetUsernameByUserId_Success()**: Tests the successful retrieval of the username by user ID.
 - **testGetCurrentUserProfile_Success()**: Tests the successful retrieval of the current user's profile.
 - **testGetCurrentUserProfile_UserNotFound()**: Tests the scenario where the user profile is not found.
@@ -216,5 +213,4 @@ The User Service handles user profile management, including creating, updating, 
 - **testUpdateUserProfile_UserNotFound()**: Tests the scenario where the user profile to update is not found.
 - **testUploadToS3_Success()**: Tests the successful upload of an image to S3.
 - **testUploadToS3_Failure()**: Tests the scenario where uploading an image to S3 fails.
-- **testDeleteFromS3_Success()**: Tests the successful deletion of an image from S3.
 - **testDeleteFromS3_Failure()**: Tests the scenario where deleting an image from S3 fails.

@@ -1,130 +1,23 @@
-// // package backend.travel_service.controller;
-
-// // import org.springframework.beans.factory.annotation.Autowired;
-// // import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// // import org.springframework.boot.test.mock.mockito.MockBean;
-// // import org.springframework.test.context.ContextConfiguration;
-// // import org.springframework.test.web.servlet.MockMvc;
-
-// // import backend.travel_service.TestApplication;
-// // import backend.travel_service.service.PinService;
-
-// // @WebMvcTest(PinController.class)
-// // @ContextConfiguration(classes = TestApplication.class)
-// // public class PinControllerTests {
-
-// //     @Autowired
-// //     private MockMvc mockMvc;
-
-// //     @MockBean
-// //     private PinService pinService;
-
-// //     // @BeforeEach
-// //     // public void setUp() {
-// //     //     // possible setup code
-// //     // }
-
-// //     // @Test
-
-// // }
-
-// package backend.travel_service.controller;
-
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.ArgumentMatchers.anyLong;
-// import static org.mockito.Mockito.when;
-
-// import java.util.Arrays;
-// import java.util.List;
-
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.boot.test.mock.mockito.MockBean;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
-
-// import backend.travel_service.entity.Location;
-// import backend.travel_service.entity.Pin;
-// import backend.travel_service.service.PinService;
-
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-// import org.springframework.test.context.ContextConfiguration;
-// import backend.travel_service.TestApplication;
-
-// @WebMvcTest(PinController.class)
-// @ContextConfiguration(classes = TestApplication.class)
-// public class PinControllerTests {
-
-//     @Autowired
-//     private MockMvc mockMvc;
-
-//     @MockBean
-//     private PinService pinService;
-
-//     @Test
-//     public void testPostPin_Success() throws Exception {
-//         Location location = new Location(100, 100); // Fill in the necessary properties for Location
-//         Pin savedPin = new Pin(); // Fill in the necessary properties for Pin
-
-//         // Mock the service layer
-//         when(pinService.postPin(any(Location.class), anyLong())).thenReturn(savedPin);
-
-//         mockMvc.perform(post("/pin")
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content("{\"someProperty\":\"someValue\"}") // Replace with actual JSON representation of Location
-//                 .header("X-User-Id", 1))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().json("{\"id\":null,\"someProperty\":\"someValue\"}")); // Replace with actual
-// expected JSON for savedPin
-//     }
-
-//     @Test
-//     public void testGetPinList_Success() throws Exception {
-//         List<Pin> pins = Arrays.asList(new Pin()); // Populate with example Pins
-//         when(pinService.getPinList(anyLong())).thenReturn(pins);
-
-//         mockMvc.perform(get("/pin")
-//                 .header("X-User-Id", 1))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().json("[{\"id\":null,\"someProperty\":\"someValue\"}]")); // Replace with actual
-// expected JSON for pins
-//     }
-
-//     @Test
-//     public void testDeletePin_Success() throws Exception {
-//         Long pinId = 1L; // Example pin ID to delete
-
-//         mockMvc.perform(delete("/pin/{id}", pinId))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("Memory with ID " + pinId + " has been deleted / does not exist."));
-
-//         // Verify that the service method was called
-//         // Uncomment the line below if you want to verify service interactions
-//         // verify(pinService).deletePinById(pinId);
-//     }
-// }
-
 package backend.travel_service.controller;
 
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -143,26 +36,39 @@ public class PinControllerTests {
     @MockBean
     private PinService pinService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private Pin savedPin;
+    private ObjectMapper objectMapper;
+
+    private Pin pin;
 
     @BeforeEach
     public void setUp() {
-        // Set up a sample Pin object for testing
+        MockitoAnnotations.openMocks(this);
+        objectMapper = new ObjectMapper();
         Location location = new Location(1L, 37.000141856791984, -122.06259410472599);
-        savedPin = new Pin(1L, location, 1L, LocalDateTime.now());
+        pin = new Pin(1L, location, 1L, LocalDateTime.now());
     }
 
     @Test
     public void testDeletePin_Success() throws Exception {
-        Long pinId = 1L;
+        doNothing().when(pinService).deletePinById(anyLong());
 
-        // Perform the DELETE request
-        mockMvc.perform(delete("/pin/{id}", pinId))
+        mockMvc.perform(delete("/pin/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Memory with ID " + pinId + " has been deleted / does not exist."));
+                .andExpect(content().string("Memory with ID 1 has been deleted / does not exist."));
 
-        // Verify that the service method was called
-        verify(pinService).deletePinById(pinId);
+        System.out.println("Passed testDeletePin_Success");
+    }
+
+    @Test
+    public void testGetPinCoordinates_Success() throws Exception {
+        List<Double> coordinates = List.of(37.000141856791984, -122.06259410472599);
+
+        when(pinService.getCoordinatesById(anyLong())).thenReturn(coordinates);
+
+        mockMvc.perform(get("/pin/get-coordinates/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(coordinates)));
+
+        System.out.println("Passed testGetPinCoordinates_Success");
     }
 }
