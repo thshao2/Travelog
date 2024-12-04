@@ -22,7 +22,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import "./styles/Map.css";
 import { Double } from "react-native/Libraries/Types/CodegenTypes";
-import { getToken } from "./utils/util";
+import { getToken, debounce } from "./utils/util";
 
 const { API_URL } = config;
 
@@ -126,18 +126,20 @@ function Map() {
 
     mapRef.current.addControl(geocoder);
 
-    mapRef.current.on("move", () => {
-      // get the current center coordinates and zoom level from the map
-      const mapCenter = mapRef.current ? mapRef.current.getCenter() : { lng: -122.06258247708297, lat: 37.0003006998805 };
-      const mapZoom = mapRef.current ? mapRef.current.getZoom() : 18.12;
-
-      // update state
-      setCenter([mapCenter.lng, mapCenter.lat]);
-      setZoom(mapZoom);
-    });
+    const updateState = debounce(() => {
+      if (mapRef.current) {
+        const mapCenter = mapRef.current.getCenter();
+        const mapZoom = mapRef.current.getZoom();
+        setCenter([mapCenter.lng, mapCenter.lat]);
+        setZoom(mapZoom);
+      }
+    }, 100);
+  
+    mapRef.current.on("move", updateState);
 
     return () => {
       mapRef.current?.remove();
+      mapRef.current?.off("move", updateState);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
