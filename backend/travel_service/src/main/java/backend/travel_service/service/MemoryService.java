@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,7 +57,7 @@ public class MemoryService {
     private RestTemplate restTemplate;
 
     public List<Memory> getAllMemories() {
-        return memoryRepository.findAll();
+        return memoryRepository.findAll(Sort.by(Sort.Direction.DESC, "endDate"));
     }
 
     public List<Memory> getMemoriesByUserId(Long userId) {

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -77,7 +78,7 @@ public class MemoryServiceTests {
         List<Memory> memories = new ArrayList<>();
         memories.add(memory);
 
-        when(memoryRepository.findAll()).thenReturn(memories);
+        when(memoryRepository.findAll(Sort.by(Sort.Direction.DESC, "endDate"))).thenReturn(memories);
 
         List<Memory> result = memoryService.getAllMemories();
 
