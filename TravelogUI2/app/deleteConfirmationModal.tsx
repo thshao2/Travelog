@@ -20,7 +20,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ visib
         <View style={styles.modalContainer}>
           <Text style={styles.titleText}>Are you sure you want to delete this pin?</Text>
           <Text style={styles.bodyText}>
-            Your journal entries will be accessable in "Saved"
+            Your journals from this pin will be accessible in profile!
           </Text>
           <View style={styles.buttonContainer}>
             <Pressable style={styles.confirmButton} onPress={onConfirm}>

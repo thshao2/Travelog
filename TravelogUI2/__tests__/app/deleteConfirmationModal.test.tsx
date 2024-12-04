@@ -17,7 +17,7 @@ describe("DeleteConfirmationModal", () => {
     );
 
     expect(screen.queryByText(/Are you sure you want to delete this pin?/i)).toBeTruthy();
-    expect(screen.queryByText(/Your journal entries will be accessable in "Saved"/i)).toBeTruthy();
+    expect(screen.queryByText(/Your journals from this pin will be accessible in profile!/i)).toBeTruthy();
     expect(screen.queryByText("Yes")).toBeTruthy();
     expect(screen.queryByText("No")).toBeTruthy();
   });
