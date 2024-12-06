@@ -39,9 +39,10 @@ interface PopupMenuProps {
   onClose: () => void,
   onAddJournal: () => void,
   onDeletePin: () => void,
+  onTitleClick: () => void,
 }
 
-const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin }: PopupMenuProps) => {
+const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJournal, onDeletePin, onTitleClick }: PopupMenuProps) => {
   const loginContext = useLoginContext();
 
   const [memories, setMemories] = useState<Journal[]>([]);
@@ -118,7 +119,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({ selectedPin, onClose, onAddJourna
         { top: selectedPin.position?.top, left: selectedPin.position?.left },
       ]}
     >
-      <Text style={styles.popupTitle}>Memories</Text>
+      <Text onPress = {onTitleClick} style={styles.popupTitle}>Memories</Text>
       <Pressable onPress={onClose} style={styles.closeButton} role="button" aria-label='close-icon'>
         <MaterialIcons name="close" size={18} color="black" />
       </Pressable>

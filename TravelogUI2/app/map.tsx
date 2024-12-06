@@ -210,6 +210,13 @@ function Map() {
     });
   };
 
+  const zoomPin = (center: [number, number], zoom: number) => {
+    mapRef.current?.flyTo({
+      center: center,
+      zoom: zoom,
+    });
+  };
+
   const handlePinDropMode = () => {
     setAddingPin(!addingPin); // Toggle pin drop mode
   };
@@ -415,6 +422,12 @@ function Map() {
             onClose={() => setSelectedPin({ pinId: null, marker: null, position: null })}
             onAddJournal={() => setIsModalVisible(true)}
             onDeletePin={async () => handleDeletePin(loginContext.accessToken)}
+            onTitleClick={() => {
+              const lngLat = selectedPin.marker?.getLngLat();
+              if (lngLat) {
+                zoomPin([lngLat.lng, lngLat.lat], 17.0); // Pass the coordinates to the zoomPin function
+              }
+            }}            
             key={memories.length}
           />
         )

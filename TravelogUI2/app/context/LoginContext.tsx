@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, PropsWithChildren, useEffect } from "react";
 import { getToken } from "../utils/util";
 
+// eslint-disable-next-line unused-imports/no-unused-imports
+import config from "../config";
+
 export const LoginContext = createContext({
   email: "",
   // eslint-disable-next-line unused-imports/no-unused-vars
