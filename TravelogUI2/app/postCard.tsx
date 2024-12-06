@@ -88,7 +88,7 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
             {/* Image */}
             <Box
               component="img"
-              src={images[currentImageIndex] || "../assets/images/default-pic.jpg"}
+              src={images[currentImageIndex] || "https://travelog-media.s3.us-west-1.amazonaws.com/default-pic.jpg"}
               alt={`Image ${currentImageIndex + 1}`}
               sx={{
                 position: "absolute",
