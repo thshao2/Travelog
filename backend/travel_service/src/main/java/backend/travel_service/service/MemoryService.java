@@ -158,72 +158,6 @@ public class MemoryService {
         }
     }
 
-    // public void updateMemory(Long memoryId, MemoryDto memoryDto) {
-    //     Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not
-    // found"));
-    //     memory.setTitle(memoryDto.getTitle());
-    //     memory.setCategory(memoryDto.getCategory());
-    //     memory.setLoc(memoryDto.getLoc());
-    //     memory.setCondition(memoryDto.getCondition());
-    //     memory.setInitDate(memoryDto.getInitDate());
-    //     memory.setEndDate(memoryDto.getEndDate());
-
-    //     ObjectMapper objectMapper = new ObjectMapper();
-    //     try {
-    //         // Parse captionText as a List of Maps with Object values
-    //         List<Map<String, String>> captionSections = objectMapper.readValue(memoryDto.getCaptionText(), new
-    // TypeReference<List<Map<String, String>>>(){});
-    //         // List<Map<String, Object>> captionSections = objectMapper.readValue(
-    //         //     memoryDto.getCaptionText(),
-    //         //     new TypeReference<List<Map<String, Object>>>() {}
-    //         // );
-    //         List<Map<String, String>> previousCaptionSections = objectMapper.readValue(memory.getCaptionText(), new
-    // TypeReference<List<Map<String, String>>>(){});
-    //         // List<Map<String, Object>> previousCaptionSections = objectMapper.readValue(
-    //         //     memory.getCaptionText(),
-    //         //     new TypeReference<List<Map<String, Object>>>() {}
-    //         // );
-
-    //         // Collect URLs of images in previous and current sections
-    //         Set<String> previousImageUrls = previousCaptionSections.stream()
-    //             .filter(section -> "image".equals(section.get("type")))
-    //             .map(section -> section.get("content"))
-    //             .collect(Collectors.toSet());
-
-    //         Set<String> currentImageUrls = captionSections.stream()
-    //             .filter(section -> "image".equals(section.get("type")))
-    //             .map(section -> section.get("content"))
-    //             .collect(Collectors.toSet());
-
-    //         // Determine deleted images (in previous but not in current)
-    //         Set<String> deletedImages = new HashSet<>(previousImageUrls);
-    //         deletedImages.removeAll(currentImageUrls);
-    //         deletedImages.forEach(this::deleteFromS3);
-
-    //         // Determine added images (in current but not in previous)
-    //         Set<String> addedImages = new HashSet<>(currentImageUrls);
-    //         addedImages.removeAll(previousImageUrls);
-
-    //         for (Map<String, String> section : captionSections) {
-    //             String type = (String) section.get("type");
-    //             String content = (String) section.get("content");
-
-    //             if ("image".equals(type) && addedImages.contains(content)) {
-    //                 // Upload new image to S3 and replace content with S3 URL
-    //                 String S3URL = uploadToS3(content, memory.getTitle());
-    //                 section.put("content", S3URL);
-    //             }
-    //         }
-
-    //         // Update captionText with modified captionSections
-    //         memory.setCaptionText(objectMapper.writeValueAsString(captionSections));
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-
-    //     memoryRepository.save(memory);
-    // }
-
     public void updateMemory(Long memoryId, MemoryDto memoryDto) {
         Memory memory = memoryRepository.findById(memoryId).orElseThrow(() -> new RuntimeException("Memory not found"));
         memory.setTitle(memoryDto.getTitle());
@@ -296,12 +230,12 @@ public class MemoryService {
     }
 
     public VisitedStatsDto getVisitedStats(Long userId) {
-        // initialize with (0,0,0) when user profile created
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-User-Id", String.valueOf(userId));
             HttpEntity<Void> entity = new HttpEntity<>(headers);
 
+            // get user profile
             ResponseEntity<UserProfileResponse> response = restTemplate.exchange(
                     "http://user-service:3010/user/profile", HttpMethod.GET, entity, UserProfileResponse.class);
 
@@ -310,25 +244,20 @@ public class MemoryService {
                 UserProfileResponse userProfileResponse = response.getBody();
 
                 if (userProfileResponse == null) {
-                    System.out.println("memoryservice - getvisited stats, null user profile");
+                    System.out.println("memoryService - getVisitedStats, null user profile");
                     return null;
                 }
                 // put stats into visitedStatsDto
                 VisitedStatsDto visitedStatsDto = new VisitedStatsDto();
-                System.out.println("FROM USER PROFILE RESPONSE: " + userProfileResponse.getContinentsVisited());
-                System.out.println(userProfileResponse.getCountriesVisited());
-                System.out.println(userProfileResponse.getContinentsVisited());
-                System.out.println("======================");
                 visitedStatsDto.setVisitedContinentCount(userProfileResponse.getContinentsVisited());
                 visitedStatsDto.setVisitedCountryCount(userProfileResponse.getCountriesVisited());
                 visitedStatsDto.setVisitedCityCount(userProfileResponse.getCitiesVisited());
 
                 return visitedStatsDto;
             } else {
-                System.out.println("IN MEMORY SERVICE -- GETVISITEDSTATS ERROR");
+                System.out.println("memoryService -- getVisitedStats error");
                 return null;
             }
-            // return new VisitedStatsDto(continents.size(), countries.size(), cities.size());
         } catch (Exception e) {
             System.out.println("An error occured while fectching visited stats: " + e);
             return null;
@@ -339,11 +268,12 @@ public class MemoryService {
         // get list of visited locations
         List<Location> visitedLocations = getVisitedLocations(userId);
 
+        // Initialize sets
         Set<String> continents = new HashSet<>();
         Set<String> countries = new HashSet<>();
         Set<String> cities = new HashSet<>();
 
-        // put into set
+        // Put into set
         for (Location location : visitedLocations) {
             List<String> locationData =
                     geocodingService.getLocationData(location.getLatitude(), location.getLongitude());
@@ -354,13 +284,13 @@ public class MemoryService {
             countries.add(country);
             cities.add(city);
 
-            // identify continent + add into set only if found
+            // Identify continent and add into set only if found
             String continent = CountryContinentMapping.getContinentByCountry(country);
             if (!"Unknown".equals(continent)) {
                 continents.add(continent);
             }
         }
-        System.out.println("I AM HERE IN MEMORY SERVICE STATS !!!");
+        // check for size
         System.out.println(continents.size());
         System.out.println(countries.size());
         System.out.println(cities.size());
@@ -377,10 +307,6 @@ public class MemoryService {
         userProfileUpdateRequest.setCitiesVisited(cities.size());
         userProfileUpdateRequest.setCountriesVisited(countries.size());
         userProfileUpdateRequest.setContinentsVisited(continents.size());
-        System.out.println("--------- checking memoryservice.java profileupdaterequest dto --------");
-        System.out.println(userProfileUpdateRequest);
-        System.out.println("-----------------------------------------------------------------------");
-        // make the actual request to update stats in user profile
 
         // Prepare the form data to send in the request body
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -397,8 +323,6 @@ public class MemoryService {
         } catch (Exception e) {
             System.err.println("An error occurred while updating the user profile: " + e);
         }
-        // and then put into a VisitedStatsDto by calling getVisitedStats, then return that VisitedStatsDto
-        // return new VisitedStats(continents.size(), countries.size(), cities.size());
         return getVisitedStats(userId);
     }
 
@@ -408,18 +332,18 @@ public class MemoryService {
         visitedStatsDto.setDefaultLocation(defaultLocation.get(2));
         return visitedStatsDto;
     }
-    // get array of s3 urls for overview slideshow
+    // Get array of s3 urls for overview slideshow
     public List<String> getOverviewUrls(Long userId, String category) {
-        // get all memories
+        // Get all memories
         List<Memory> memories = memoryRepository.findByCategory(userId, category);
 
-        // for each memory, add to list of s3 urls
+        // For each memory, add to list of S3 urls
         List<String> overviewUrls = new ArrayList<>();
 
         for (Memory memory : memories) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                // from postMemory
+                // From postMemory
                 // Parse captionText as a List of Maps with Object values
                 List<Map<String, Object>> captionSections = objectMapper.readValue(
                         memory.getCaptionText(), new TypeReference<List<Map<String, Object>>>() {});
@@ -434,18 +358,6 @@ public class MemoryService {
                 e.printStackTrace();
             }
         }
-        // // if urls is empty, add default imgs into urls
-        // if (overviewUrls.isEmpty()) {
-        //     System.out.println("no images associated w category -- default imgs will be used");
-        //
-        // overviewUrls.add("https://images.unsplash.com/photo-1541292426587-b6ca8230532b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        //
-        // overviewUrls.add("https://images.unsplash.com/photo-1541472555878-357a209eb293?q=80&w=2570&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        //
-        // overviewUrls.add("https://images.unsplash.com/photo-1541989198-c38e77540004?q=80&w=2535&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        //
-        // overviewUrls.add("https://images.unsplash.com/photo-1541918602878-4e1ebfc7b739?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
-        // }
         return overviewUrls;
     }
 }

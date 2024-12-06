@@ -38,11 +38,8 @@ function NavBar() {
     navigation.navigate("login");
   };
 
-  // Navigate to home only if user is logged in - otherwise stay in login / signup
   const navigateToHome = async () => {
-    // if (loginContext.accessToken) {
     navigation.navigate("index");
-    // }
   };
 
   return (
@@ -52,11 +49,10 @@ function NavBar() {
     }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          {/* App icon & name */}
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
             onClick={() => navigateToHome()}
           />
-
-          {/* Wrapping Typography in Button for proper click handling */}
           <Button
             onClick={() => navigateToHome()}
             sx={{
@@ -73,6 +69,7 @@ function NavBar() {
             Travelog
           </Button>
 
+          {/* Mobile Nav Bar - When user is logged in */}
           {loginContext.accessToken && <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -129,6 +126,7 @@ function NavBar() {
             </Menu>
           </Box>}
 
+          {/* Desktop version - show all buttons if user is logged in */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex", position: "absolute", right: loginContext.accessToken ? 120 : 0 } }}>
             {loginContext.accessToken && pages.map((page: any) => (
               <Button
@@ -177,54 +175,18 @@ function NavBar() {
               </Button>
             }
           </Box>
+          {/* Log out button - only display if user is logged in */}
           <Box sx={{ flexGrow: 0 }}>
-            {/* <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-
-              <MenuItem key={"Logout"} onClick={handleCloseUserMenu}>
-                <Button
-                  sx={{
-                    textAlign: "center",
-                    width: "100%",
-                    color: "inherit", // Inherit color to match the app"s theme
-                    justifyContent: "center", // Centers the text inside the button
-                    textTransform: "none", // Prevents text from being uppercased automatically
-                  }}
-                  onClick={logout}
-                >
-                  Logout
-                </Button>
-              </MenuItem>
-            </Menu> */}
             {loginContext.accessToken && <IconButton
               onClick={logout}
               sx={{
-                position: "absolute", // Position it absolutely to the right
-                right: 16, // Adjust the value as needed for padding
-                top: "50%", // Center vertically
-                transform: "translateY(-50%)", // Adjust the vertical alignment
-                color: "inherit", // Inherit color to match the theme
+                position: "absolute",
+                right: 16, 
+                top: "50%", 
+                transform: "translateY(-50%)",
+                color: "inherit",
                 "&:hover": {
-                  backgroundColor: "#4895ef",// "#8d94f7", // Gold for hover effect
+                  backgroundColor: "#4895ef",
                 },
               }}
             >

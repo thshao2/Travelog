@@ -51,14 +51,4 @@ public class Memory {
     @CollectionTable(name = "memory_media", joinColumns = @JoinColumn(name = "memory_id"))
     @Column(name = "media_id")
     private List<Long> mediaIds; // List of associated media IDs
-
-    // alternative for json array
-    // @Column(name = "media_ids", columnDefinition = "TEXT")
-    // private String mediaIdsJson; // JSON array string of media IDs
-
-    // @PrePersist
-    // protected void onCreate() {
-    //     this.initDate = LocalDateTime.now();
-    //     this.endDate = LocalDateTime.now();
-    // }
 }
