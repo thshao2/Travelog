@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Platform,
   Alert,
   Text,
   Modal,
@@ -16,6 +15,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { styles } from "./styles/rich-text-editor-styles";
 import { Section } from "./journalDetail";
+
+import imageCompression from "browser-image-compression";
 
 interface ImageData {
   id: string;
@@ -102,35 +103,58 @@ function RichTextEditor({ onContentChange, initialContent }: RichTextEditorProps
   const processImages = async (assets: any[]) => {
     const processedImages = await Promise.all(
       assets.map(async (asset) => {
-        const dimensions = await getImageDimensions(asset.uri);
-        let base64 = "";
-
-        if (Platform.OS === "web") {
-          const response = await fetch(asset.uri);
-          const blob = await response.blob();
-          base64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve((reader.result as string).split(",")[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        } else {
-          base64 = await FileSystem.readAsStringAsync(asset.uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-        }
-
+        const response = await fetch(asset.uri); // Fetch the image as a blob
+        const blob = await response.blob();
+  
+        // Compress the image using browser-image-compression
+        const compressedBlob = await compressImage(blob);
+  
+        // Convert the compressed blob to a Base64 string
+        const base64 = await blobToBase64(compressedBlob);
+  
+        // Get image dimensions for display
+        const dimensions = await getImageDimensions(URL.createObjectURL(compressedBlob));
+  
         return {
           id: `img-${Date.now()}-${Math.random()}`,
           type: "image" as const,
-          content: base64,
-          encodedContent: asset.uri,
-          dimensions,
+          content: base64, // Base64-encoded string
+          encodedContent: URL.createObjectURL(compressedBlob), // Compressed image as URI
+          dimensions, // Compressed image dimensions
         };
       }),
     );
-
+  
     return processedImages;
+  };
+  
+  // Helper function to compress the image
+  const compressImage = async (blob: Blob): Promise<Blob> => {
+    const file = new File([blob], "image.jpg", { type: blob.type }); // Convert Blob to File
+  
+    const options = {
+      maxSizeMB: 1, // Maximum size of the compressed file in MB
+      maxWidthOrHeight: 800, // Maximum width or height in pixels
+      useWebWorker: true, // Use Web Workers for faster compression
+    };
+  
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile; // `compressedFile` is still a File (inherits from Blob)
+    } catch (error) {
+      console.error("Image compression error:", error);
+      throw error;
+    }
+  };
+  
+  // Helper function to convert Blob to Base64
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string).split(",")[1]); // Extract Base64 string
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   };
 
   const addImages = async () => {

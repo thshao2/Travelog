@@ -226,6 +226,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
+                saveLabel="Save"
               />
             </View>
 
@@ -240,6 +241,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
                 inputMode="start"
                 mode="outlined"
                 style={styles.datePicker}
+                saveLabel="Save"
               />
             </View>
 
