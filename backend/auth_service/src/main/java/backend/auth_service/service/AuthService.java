@@ -57,6 +57,7 @@ public class AuthService {
         // Fetch user based on email
         Optional<User> userEntry = repository.findByEmail(inputEmail);
         System.out.println("userEntry " + userEntry);
+
         // User exists - now verify their password.
         if (userEntry.isPresent()) {
             System.out.println("userEntry is present");
@@ -73,11 +74,6 @@ public class AuthService {
         }
         return Optional.empty();
     }
-
-    // // Validate JWT Token to get User ID.
-    // public Long validateToken(String token) {
-    //   return jwtService.validateToken(token);
-    // }
 
     public User updateUser(Optional<User> existingUser, User user) {
         if (!existingUser.isPresent()) {

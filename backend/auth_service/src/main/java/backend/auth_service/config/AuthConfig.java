@@ -12,11 +12,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
-    // @Override
-    // protected void configure(HttpSecurity http) throws Exception{
-    //     http.cors().and().csrf().disable();
-    // }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf()
