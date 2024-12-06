@@ -17,6 +17,7 @@ export interface JournalDetailProps {
   onClose: () => void,
   onDelete: (journalId: number, token: string) => void,
   onEdit: (updatedJournal: Journal, token: string) => void,
+  onTitleClick: () => void,
 }
 
 export type Section = {
@@ -27,7 +28,7 @@ export type Section = {
   dimensions?: { width: number, height: number }
 }
 
-function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit }: JournalDetailProps) {
+function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onClose, onDelete, onEdit, onTitleClick }: JournalDetailProps) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedJournalTitle, setEditedJournalTitle] = useState(journal.title);
   const [editedJournalCategory, setEditedJournalCategory] = useState(journal.category);
@@ -84,7 +85,15 @@ function JournalDetailModal({ isDetailVisible, setIsDetailVisible, journal, onCl
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.headerContainer}>
-              <Text style={styles.modalTitle}>{isEditMode ? "Edit Journal" : journal.title}</Text>
+              <Text
+                onPress={() => {
+                  if (!isEditMode) {
+                    onTitleClick();
+                  }
+                }}
+                style={styles.modalTitle}>
+                {isEditMode ? "Edit Journal" : journal.title}
+              </Text>
               <View style={styles.iconContainer}>
                 <MaterialIcons name="edit" size={24} color="black" onPress={handleEditToggle} />
                 <MaterialIcons name="delete" size={24} color="red" onPress={() => onDelete(journal.id, loginContext.accessToken)} />

@@ -217,6 +217,7 @@ export default function PostCard({ journal, onRefetch, user, edit }: PostCardPro
           onClose={closeJournalDetail}
           onDelete={handleDeleteJournal}
           onEdit={handleEditJournal}
+          onTitleClick={() => {}}
         />
       )}
     </View>

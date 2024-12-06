@@ -427,7 +427,7 @@ function Map() {
               if (lngLat) {
                 zoomPin([lngLat.lng, lngLat.lat], 17.0); // Pass the coordinates to the zoomPin function
               }
-            }}            
+            }}
             key={memories.length}
           />
         )

@@ -123,6 +123,7 @@ export default function MemoryCard({ journal, onRefetch }: MemoryCardProps) {
           onClose={closeJournalDetail}
           onDelete={handleDeleteJournal}
           onEdit={handleEditJournal}
+          onTitleClick={() => {}}
         />
       )}
     </View>
