@@ -182,6 +182,9 @@ function Map() {
     }
   };
 
+  console.log(selectedPin.pinId);
+  console.log(memories.length);
+
   const postPinToDb = async (token: string | null, longitude: Double, latitude: Double) => {
     try {
       console.log("Authorization token is " + token);
@@ -279,6 +282,8 @@ function Map() {
           left: left,
         },
       });
+
+      fetchMemories(pinId);
 
       mapRef.current?.on("move", debounce(() => {
         const updatedPoint = mapRef.current?.project([lngLat.lng, lngLat.lat]);
@@ -432,7 +437,7 @@ function Map() {
                 zoomPin([lngLat.lng, lngLat.lat], 17.0); // Pass the coordinates to the zoomPin function
               }
             }}
-            key={memories.length}
+            key={selectedPin.pinId ? selectedPin.pinId.toString() + memories.length.toString() : memories.length}
           />
         )
       }
@@ -442,8 +447,8 @@ function Map() {
         isModalVisible={isModalVisible}
         setIsModalVisible={setIsModalVisible}
         onSubmitJournal={() => {
+          console.log(selectedPin);
           fetchMemories(selectedPin.pinId ? selectedPin.pinId : null);
-          console.log("HELLO");
           setIsModalVisible(false);
         }}
       />
