@@ -243,6 +243,10 @@ function Map() {
       // setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
       markersRef.current.push(newMarker);
 
+      console.log(newPin);
+
+      handlePinClick(newMarker, newPin.id);
+
       // Exit pin drop mode after adding the marker
       setAddingPin(false);
     }
@@ -439,6 +443,7 @@ function Map() {
         setIsModalVisible={setIsModalVisible}
         onSubmitJournal={() => {
           fetchMemories(selectedPin.pinId ? selectedPin.pinId : null);
+          console.log("HELLO");
           setIsModalVisible(false);
         }}
       />
