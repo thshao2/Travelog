@@ -77,7 +77,7 @@ public class UserController {
             }
             System.out.println("User profile: " + userProfile);
 
-            System.out.println("NEW PROFILE UPDATE: " + profileUpdateRequest);
+            System.out.println("Profile update request: " + profileUpdateRequest);
 
             String username = profileUpdateRequest.getUsername();
             String bio = profileUpdateRequest.getBio();
@@ -106,22 +106,21 @@ public class UserController {
             }
 
             if (citiesVisited >= 0) {
-                System.out.println("UPDATING CITIES");
+                System.out.println("Updating cities");
                 userProfile.getStatistics().setCitiesVisited(citiesVisited);
             }
             if (countriesVisited >= 0) {
-                System.out.println("UPDATING COUNTRIES");
+                System.out.println("Updating countries");
                 userProfile.getStatistics().setCountriesVisited(countriesVisited);
             }
             if (continentsVisited >= 0) {
-                System.out.println("UPDATING CONTINENTS");
+                System.out.println("Updating continents");
                 userProfile.getStatistics().setContinentsVisited(continentsVisited);
             }
             userProfileRepository.save(userProfile);
             return ResponseEntity.ok(userProfile);
 
         } catch (Exception e) {
-            System.out.println("IN USER CONTROLLER UPDATE PROFILE -- FAILED");
             System.err.println("An error occurred while fetching the user profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

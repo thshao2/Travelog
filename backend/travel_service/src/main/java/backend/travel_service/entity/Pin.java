@@ -27,11 +27,7 @@ public class Pin {
 
     @OneToOne()
     @JoinColumn(name = "location_id", referencedColumnName = "id")
-    // @Column(name = "location_id", nullable = false)
     private Location location;
-
-    // @Column(name = "memory_id", nullable = false)
-    // private Long memoryId; // FK to Memory
 
     @Column(name = "user_id", nullable = false)
     private Long userId; // FK to User in User Service

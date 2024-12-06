@@ -27,10 +27,6 @@ public class AuthService {
         if (checkDuplicateEmails(userCredential.getEmail())) {
             throw new DuplicateCredentialsException("Email is already in use");
         }
-        // check for duplicate username:
-        // if (checkDuplicateUsernames(userCredential.getUsername())) {
-        //   throw new DuplicateCredentialsException("Username is already in use");
-        // }
         // Take raw password and encode it.
         userCredential.setPassword(passwordEncoder.encode(userCredential.getPassword()));
         repository.save(userCredential);
@@ -40,10 +36,6 @@ public class AuthService {
     public boolean checkDuplicateEmails(String userEmail) {
         return repository.findByEmail(userEmail).isPresent();
     }
-    // checking for duplicate usernames:
-    // private boolean checkDuplicateUsernames(String username) {
-    //   return repository.findByUsername(username).isPresent();
-    // }
 
     // Log in by verifying credentials & issuing a jwt.
     public String logIn(User userCredential) {
