@@ -21,7 +21,7 @@ const sliderSettings = {
   slidesToShow: 1,
   slidesToScroll: 1,
   autoplay: true,
-  autoplaySpeed: 4000,
+  autoplaySpeed: 2000,
 };
 
 export default function CategoryMemPage() {

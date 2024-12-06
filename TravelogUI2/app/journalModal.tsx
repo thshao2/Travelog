@@ -59,7 +59,7 @@ function JournalModal({ selectedPin, isModalVisible, setIsModalVisible, onSubmit
     };
     fetchCoordinates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPin]);
+  }, [selectedPin, journalTitle]);
 
   const handleSubmit = async () => {
     console.log("very sad");
