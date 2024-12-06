@@ -86,7 +86,6 @@ public class MemoryService {
             // Parse captionText as a List of Maps with Object values
             List<Map<String, Object>> captionSections =
                     objectMapper.readValue(memory.getCaptionText(), new TypeReference<List<Map<String, Object>>>() {});
-            System.out.println("ABOVE FOR LOOP IN POSTMEMORY");
             for (Map<String, Object> section : captionSections) {
                 String type = (String) section.get("type");
 
@@ -116,7 +115,6 @@ public class MemoryService {
     }
 
     private String uploadToS3(String base64Image, String title) {
-        System.out.println("HERE IN UPLAODTOS3");
         byte[] decodedImage = Base64.getDecoder().decode(base64Image);
         String bucketName = "travelog-media";
         String uniqueFileName = UUID.randomUUID() + "-" + title + ".png";

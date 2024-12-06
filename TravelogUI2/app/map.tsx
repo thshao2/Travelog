@@ -26,13 +26,20 @@ import { getToken, debounce } from "./utils/util";
 
 const { API_URL } = config;
 
-const INITIAL_CENTER: [number, number] = [
-  -122.0626,
-  37.0003,
-];
-const INITIAL_ZOOM = 17.08;
+// const INITIAL_CENTER: [number, number] = [
+//   -122.0626,
+//   37.0003,
+// ];
+// const INITIAL_ZOOM = 17.08;
 
 const INITIAL_PITCH = 75;
+
+const START_CENTER: [number, number] = [
+  -116.3529,
+  80.0511,
+];
+
+const START_ZOOM = 1.0;
 
 export type Journal = {
   id: number;
@@ -53,8 +60,8 @@ function Map() {
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null); // type for HTML div element
 
-  const [center, setCenter] = useState<[number, number]>(INITIAL_CENTER);
-  const [zoom, setZoom] = useState<number>(INITIAL_ZOOM);
+  const [center, setCenter] = useState<[number, number]>(START_CENTER);
+  const [zoom, setZoom] = useState<number>(START_ZOOM);
   const [pitch, _setPitch] = useState<number>(INITIAL_PITCH);
 
   const [addingPin, setAddingPin] = useState(false); // Track pin addition mode
@@ -134,7 +141,7 @@ function Map() {
         setZoom(mapZoom);
       }
     }, 100);
-  
+
     mapRef.current.on("move", updateState);
 
     return () => {
@@ -198,8 +205,8 @@ function Map() {
 
   const handleButtonClick = () => {
     mapRef.current?.flyTo({
-      center: INITIAL_CENTER,
-      zoom: INITIAL_ZOOM,
+      center: START_CENTER,
+      zoom: START_ZOOM,
     });
   };
 
@@ -262,8 +269,7 @@ function Map() {
         },
       });
 
-      // Update popup position when the map moves
-      mapRef.current?.on("move", () => {
+      mapRef.current?.on("move", debounce(() => {
         const updatedPoint = mapRef.current?.project([lngLat.lng, lngLat.lat]);
 
         if (updatedPoint) {
@@ -286,7 +292,7 @@ function Map() {
             },
           }));
         }
-      });
+      }, 1));
     }
   };
 
