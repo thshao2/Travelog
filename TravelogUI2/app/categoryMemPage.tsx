@@ -150,7 +150,6 @@ export default function CategoryMemPage() {
       <Box
         sx={{
           display: "flex",
-          backgroundColor: "#d9d9d9",
           width: "33%",
           height: "80%",
           overflow: "hidden",

@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
 import { styles } from "./styles/rich-text-editor-styles";
 import { Section } from "./journalDetail";
 
