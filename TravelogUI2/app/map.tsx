@@ -111,7 +111,7 @@ function Map() {
   };
 
   useEffect(() => {
-    mapboxgl.accessToken = "pk.eyJ1IjoidGhzaGFvIiwiYSI6ImNtMmN0cDV4dzE1ZXcybHE0aHZncWkybzYifQ.fRl3Y5un5jRiop-3EZrJCg";
+    mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN!;
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current ? mapContainerRef.current : "",
       center: center,
